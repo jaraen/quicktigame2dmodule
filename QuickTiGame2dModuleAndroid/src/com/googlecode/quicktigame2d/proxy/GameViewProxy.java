@@ -441,6 +441,10 @@ public class GameViewProxy extends TiViewProxy implements GameViewEventListener 
 		notificationEventCache.put("eventName", "onsurfacechanged");
 		notificationEventCache.put("width",  getView().getGameViewWidth());
 		notificationEventCache.put("height", getView().getGameViewHeight());
+		/*
+		 * TODO: Use fireEvent(eventName, data, false) after [TIMOB-9487] patch is available in future release
+		 * https://github.com/appcelerator/titanium_mobile/commit/00905cd0fe6e06989694362887ce4dd50fe5a1d1
+		 */
 		this.fireEvent("onsurfacechanged", notificationEventCache);
 		if (topScene() != null) topScene().onNotification(notificationEventCache);
 	}
