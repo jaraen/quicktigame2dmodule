@@ -59,15 +59,15 @@
  * onload, ongainedfocus, enterframe, onlostfocus, ondispose
  */
 - (void)onNotification:(NSString*)type userInfo:(NSDictionary*)userInfo {
-    [self fireEvent:type withObject:userInfo];
+    [self fireEvent:type withObject:userInfo propagate:NO];
 }
 
 - (void)onAdd {
-    [self fireEvent:@"add"];
+    [self fireEvent:@"add" withObject:nil propagate:NO];
 }
 
 - (void)onRemove {
-    [self fireEvent:@"remove"];
+    [self fireEvent:@"remove" withObject:nil propagate:NO];
 }
 
 #pragma Public APIs

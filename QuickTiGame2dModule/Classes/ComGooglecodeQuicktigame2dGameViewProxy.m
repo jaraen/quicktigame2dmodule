@@ -77,7 +77,7 @@
         [(ComGooglecodeQuicktigame2dGameView*)self.view start];
     }
     
-    [self fireEvent:lowerCaseEventName withObject:notification.userInfo];
+    [self fireEvent:lowerCaseEventName withObject:notification.userInfo propagate:NO];
     
     [(ComGooglecodeQuicktigame2dSceneProxy*)[self topScene:nil] onNotification:lowerCaseEventName userInfo:notification.userInfo];
 }
