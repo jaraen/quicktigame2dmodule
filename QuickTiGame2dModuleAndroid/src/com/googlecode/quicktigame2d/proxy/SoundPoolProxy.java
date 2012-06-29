@@ -56,10 +56,10 @@ import com.googlecode.quicktigame2d.Quicktigame2dModule;
  * sound.volume = 0.5;
  * sound.loopCount = 1;
  * 
- * soundPool.play(sound);
- * soundPool.pause(sound);
- * soundPool.stop(sound);
- * soundPool.unload(sound);
+ * var stream = soundPool.play(sound);
+ * soundPool.pause(stream);
+ * soundPool.stop(stream);
+ * soundPool.unload(stream);
  * 
  * soundPool.release();
  *
