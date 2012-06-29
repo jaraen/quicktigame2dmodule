@@ -63,31 +63,18 @@ game.addEventListener('enterframe', function(e) {
 });
 
 game.addEventListener('touchstart', function(e) {
-    var f = game.toImage();
-    Titanium.Media.saveToPhotoGallery(f, {
-		success: function(e) {
-			Titanium.UI.createAlertDialog({
-				title:'Photo Gallery',
-				message:'Saved'
-			}).show();		
-		},
-		error: function(e) {
-			Titanium.UI.createAlertDialog({
-				title:'Error saving',
-				message:e.error
-			}).show();
-		}    	
-    });
+    Ti.API.info("Touches started, points: " + JSON.stringify(e.points));
+});
 
-    /**
-    // We should calculate the view scale because Ti.UI.View returns non-retina values.
-    // This scale should be 2 on retina devices.
-    var scale = game.screen.width  / game.width;
-    
-    // Move your shape to center of the event position
-    shape.x = (e.x * scale) - (shape.width * 0.5);
-    shape.y = (e.y * scale) - (shape.width * 0.5);
-     **/
+game.addEventListener('touchmove', function(e) {
+    Ti.API.info("Touches moved, points: " + JSON.stringify(e.points));
+});
+
+game.addEventListener('touchend', function(e) {
+    Ti.API.info("Touches ended, points: " + JSON.stringify(e.points));
+});
+game.addEventListener('touchcanceled', function(e) {
+    Ti.API.info("Touches canceled, points: " + JSON.stringify(e.points));
 });
 
 // Add your game view
