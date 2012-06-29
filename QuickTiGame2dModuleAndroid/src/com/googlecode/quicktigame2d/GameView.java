@@ -278,4 +278,30 @@ public class GameView extends TiUIView implements OnLifecycleEvent {
 	public void setTextureFilter(int filter) {
 		QuickTiGame2dGameView.textureFilter = filter;
 	}
+
+	/*
+	 * Copied from TiUIView.dictFromEvent, added multi-touch support
+	 * 
+	 * In Titanium 2_0_2_GA, dictFromEvent method is still private
+	 * but it will go protected so that we can overwrite it in the future release.
+	 * We have to wait for the update.
+	 */
+	/*
+	@Override
+	protected KrollDict dictFromEvent(MotionEvent e) {
+		KrollDict data = super.dictFromEvent(e);
+		
+		KrollDict points = new KrollDict();
+		int count = e.getPointerCount();
+		for (int pointerIndex = 0; pointerIndex < count; pointerIndex++) {
+			KrollDict point = new KrollDict();
+			point.put(TiC.EVENT_PROPERTY_X, (double)e.getX(pointerIndex));
+			point.put(TiC.EVENT_PROPERTY_Y, (double)e.getY(pointerIndex));
+			points.put(String.valueOf(e.getPointerId(pointerIndex)), point);
+		}
+		data.put("points", points);
+		
+		return data;
+	}
+	*/
 }
