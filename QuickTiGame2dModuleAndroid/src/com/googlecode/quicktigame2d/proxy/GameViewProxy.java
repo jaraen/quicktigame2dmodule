@@ -441,11 +441,7 @@ public class GameViewProxy extends TiViewProxy implements GameViewEventListener 
 		notificationEventCache.put("eventName", "onsurfacechanged");
 		notificationEventCache.put("width",  getView().getGameViewWidth());
 		notificationEventCache.put("height", getView().getGameViewHeight());
-		/*
-		 * TODO: Use fireEvent(eventName, data, false) after [TIMOB-9487] patch is available in future release
-		 * https://github.com/appcelerator/titanium_mobile/commit/00905cd0fe6e06989694362887ce4dd50fe5a1d1
-		 */
-		this.fireEvent("onsurfacechanged", notificationEventCache);
+		this.fireEvent("onsurfacechanged", notificationEventCache, false);
 		if (topScene() != null) topScene().onNotification(notificationEventCache);
 	}
 
@@ -457,7 +453,7 @@ public class GameViewProxy extends TiViewProxy implements GameViewEventListener 
 		notificationEventCache.put("eventName", "onload");
 		notificationEventCache.put("width",  getView().getGameViewWidth());
 		notificationEventCache.put("height", getView().getGameViewHeight());
-		this.fireEvent("onload", notificationEventCache);
+		this.fireEvent("onload", notificationEventCache, false);
 		if (topScene() != null) topScene().onNotification(notificationEventCache);
 	}
 
@@ -467,7 +463,7 @@ public class GameViewProxy extends TiViewProxy implements GameViewEventListener 
 		notificationEventCache.put("uptime", uptime());
 		notificationEventCache.put("delta", delta);
 		notificationEventCache.put("eventName", "enterframe");
-		this.fireEvent("enterframe", notificationEventCache);
+		this.fireEvent("enterframe", notificationEventCache, false);
 		if (topScene() != null) topScene().onNotification(notificationEventCache);
 	}
 
@@ -480,7 +476,7 @@ public class GameViewProxy extends TiViewProxy implements GameViewEventListener 
 		notificationEventCache.put("delta", delta);
 		notificationEventCache.put("fps",   fps);
 		notificationEventCache.put("eventName", "onfps");
-		this.fireEvent("onfps", notificationEventCache);
+		this.fireEvent("onfps", notificationEventCache, false);
 		if (topScene() != null) topScene().onNotification(notificationEventCache);
 	}
 	
@@ -491,7 +487,7 @@ public class GameViewProxy extends TiViewProxy implements GameViewEventListener 
 		notificationEventCache.put("eventName", "onloadsprite");
 		notificationEventCache.put("uptime", uptime());
 		notificationEventCache.put("name", name);
-		this.fireEvent("onloadsprite", notificationEventCache);
+		this.fireEvent("onloadsprite", notificationEventCache, false);
 		if (topScene() != null) topScene().onNotification(notificationEventCache);
 	}
 
@@ -502,7 +498,7 @@ public class GameViewProxy extends TiViewProxy implements GameViewEventListener 
 		notificationEventCache.put("eventName", "onunloadsprite");
 		notificationEventCache.put("uptime", uptime());
 		notificationEventCache.put("name", name);
-		this.fireEvent("onunloadsprite", notificationEventCache);
+		this.fireEvent("onunloadsprite", notificationEventCache, false);
 		if (topScene() != null) topScene().onNotification(notificationEventCache);
 	}
 
@@ -512,7 +508,7 @@ public class GameViewProxy extends TiViewProxy implements GameViewEventListener 
 		if (getDebug()) Log.d(Quicktigame2dModule.LOG_TAG, "GameViewProxy.onDispose");
 		notificationEventCache.put("eventName", "ondispose");
 		notificationEventCache.put("uptime", uptime());
-		this.fireEvent("ondispose", notificationEventCache);
+		this.fireEvent("ondispose", notificationEventCache, false);
 		if (topScene() != null) topScene().onNotification(notificationEventCache);
 	}
 
@@ -522,7 +518,7 @@ public class GameViewProxy extends TiViewProxy implements GameViewEventListener 
 		if (getDebug()) Log.d(Quicktigame2dModule.LOG_TAG, "GameViewProxy.onGainedFocus");
 		notificationEventCache.put("eventName", "ongainedfocus");
 		notificationEventCache.put("uptime", uptime());
-		this.fireEvent("ongainedfocus", notificationEventCache);
+		this.fireEvent("ongainedfocus", notificationEventCache, false);
 		if (topScene() != null) topScene().onNotification(notificationEventCache);
 	}
 
@@ -532,7 +528,7 @@ public class GameViewProxy extends TiViewProxy implements GameViewEventListener 
 		if (getDebug()) Log.d(Quicktigame2dModule.LOG_TAG, "GameViewProxy.onLostFocus");
 		notificationEventCache.put("eventName", "onlostfocus");
 		notificationEventCache.put("uptime", uptime());
-		this.fireEvent("onlostfocus", notificationEventCache);
+		this.fireEvent("onlostfocus", notificationEventCache, false);
 		if (topScene() != null) topScene().onNotification(notificationEventCache);
 	}
 
