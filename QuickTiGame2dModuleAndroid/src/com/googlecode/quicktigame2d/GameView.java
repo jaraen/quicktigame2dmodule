@@ -28,11 +28,13 @@
 package com.googlecode.quicktigame2d;
 
 import org.appcelerator.kroll.KrollDict;
+import org.appcelerator.titanium.TiC;
 import org.appcelerator.titanium.TiLifecycle.OnLifecycleEvent;
 import org.appcelerator.titanium.proxy.TiViewProxy;
 import org.appcelerator.titanium.view.TiUIView;
 
 import android.app.Activity;
+import android.view.MotionEvent;
 
 public class GameView extends TiUIView implements OnLifecycleEvent {
 	
@@ -282,17 +284,15 @@ public class GameView extends TiUIView implements OnLifecycleEvent {
 	/*
 	 * Copied from TiUIView.dictFromEvent, added multi-touch support
 	 * 
-	 * In Titanium 2_0_2_GA, dictFromEvent method is still private
-	 * but it will go protected so that we can overwrite it in the future release.
-	 * We have to wait for the update.
+	 * This does not work well yet because motionEvents does not support POINTER_UP and POINTER_DOWN
 	 */
-	/*
 	@Override
 	protected KrollDict dictFromEvent(MotionEvent e) {
 		KrollDict data = super.dictFromEvent(e);
 		
 		KrollDict points = new KrollDict();
 		int count = e.getPointerCount();
+		
 		for (int pointerIndex = 0; pointerIndex < count; pointerIndex++) {
 			KrollDict point = new KrollDict();
 			point.put(TiC.EVENT_PROPERTY_X, (double)e.getX(pointerIndex));
@@ -303,5 +303,4 @@ public class GameView extends TiUIView implements OnLifecycleEvent {
 		
 		return data;
 	}
-	*/
 }
