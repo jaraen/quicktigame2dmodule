@@ -77,4 +77,6 @@
 
 - (TiBlob*)toImage:(id)args;
 - (void)addImageToBlob:(NSArray*)args;
+
+- (void)registerForMultiTouch:(id)args;
 @end

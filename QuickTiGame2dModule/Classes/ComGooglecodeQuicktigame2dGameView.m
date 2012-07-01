@@ -69,6 +69,8 @@
     displayLinkInterval = 1;
     displayLink = nil;
     
+    enableMultiTouchEvents = FALSE;
+    
     animationTimerInterval = 1.0 / 60.0;
     
     // if TIMER_DISPLAYLINK, use CADisplayLink instead of NSTimer
@@ -414,6 +416,11 @@ static void freeToImageBuffer(void *info, const void *data, size_t size) {
 
 #pragma mark Multi-Touch Events
 
+// Enable multi-touch events
+-(void)registerForMultiTouch {
+    enableMultiTouchEvents = TRUE;
+}
+
 - (NSDictionary*)touchToDictionary: (UITouch*) touch {
     NSMutableDictionary *result = [NSMutableDictionary dictionaryWithDictionary:[TiUtils pointToDictionary:[touch locationInView:self]]];
     [result setValue:[TiUtils pointToDictionary:[touch locationInView:nil]] forKey:@"globalPoint"];
@@ -430,6 +437,11 @@ static void freeToImageBuffer(void *info, const void *data, size_t size) {
 
 - (void)processTouchesBegan:(NSSet *)touches withEvent:(UIEvent *)event
 {
+    if (!enableMultiTouchEvents) {
+        [super processTouchesBegan:touches withEvent:event];
+        return;
+    }
+    
     UITouch *touch = [touches anyObject];
 	
 	if ([self hasTouchableListener])
@@ -463,6 +475,11 @@ static void freeToImageBuffer(void *info, const void *data, size_t size) {
 
 - (void)processTouchesMoved:(NSSet *)touches withEvent:(UIEvent *)event
 {
+    if (!enableMultiTouchEvents) {
+        [super processTouchesMoved:touches withEvent:event];
+        return;
+    }
+    
 	UITouch *touch = [touches anyObject];
 	if ([self hasTouchableListener])
 	{
@@ -484,6 +501,11 @@ static void freeToImageBuffer(void *info, const void *data, size_t size) {
 
 - (void)processTouchesEnded:(NSSet *)touches withEvent:(UIEvent *)event
 {
+    if (!enableMultiTouchEvents) {
+        [super processTouchesEnded:touches withEvent:event];
+        return;
+    }
+    
 	if ([self hasTouchableListener])
 	{
 		UITouch *touch = [touches anyObject];
@@ -506,6 +528,11 @@ static void freeToImageBuffer(void *info, const void *data, size_t size) {
 
 - (void)processTouchesCancelled:(NSSet *)touches withEvent:(UIEvent *)event
 {
+    if (!enableMultiTouchEvents) {
+        [super processTouchesCancelled:touches withEvent:event];
+        return;
+    }
+    
 	if ([self hasTouchableListener])
 	{
 		UITouch *touch = [touches anyObject];

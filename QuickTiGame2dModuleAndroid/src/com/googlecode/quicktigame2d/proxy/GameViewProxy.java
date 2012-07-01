@@ -242,6 +242,11 @@ public class GameViewProxy extends TiViewProxy implements GameViewEventListener 
 		this.cameraTransform = cameraTransform;
 		getView().moveCamera(this.cameraTransform.getTransformer());
 	}
+	
+	@Kroll.method
+	public void registerForMultiTouch() {
+		getView().registerForMultiTouch();
+	}
 
 	@Kroll.setProperty @Kroll.method
 	public void setScreen(@SuppressWarnings("rawtypes") HashMap info) {

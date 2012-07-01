@@ -464,4 +464,9 @@
 		[self _fireEventToListener:@"blob" withObject:event listener:callback thisObject:nil];
 	}
 }
+
+- (void)registerForMultiTouch:(id)args {
+    [(ComGooglecodeQuicktigame2dGameView*)self.view registerForMultiTouch];
+}
+
 @end

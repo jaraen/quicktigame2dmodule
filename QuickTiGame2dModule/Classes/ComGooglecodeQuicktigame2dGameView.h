@@ -49,6 +49,8 @@
     BOOL layoutSubviewsDone;
     
     QuickTiGame2dEngine* game;
+    
+    BOOL enableMultiTouchEvents;
 }
 @property (readonly) GLint framebufferWidth;
 @property (readonly) GLint framebufferHeight;
@@ -93,4 +95,6 @@
 -(GLenum)correctionHint;
 -(void)setCorrectionHint:(GLenum)hint;
 -(UIImage*)toImage;
+
+-(void)registerForMultiTouch;
 @end
