@@ -288,6 +288,13 @@ public class GameView extends TiUIView implements OnLifecycleEvent {
 
 	/*
 	 * Multi-Touch Support
+	 * 
+	 * Call GameView.registerForMultiTouch() to enable multi touch events.
+	 * 
+	 * This disables all gestures including 'click' and 'dblclick' on Android.
+	 * 
+	 * To handle multiple pointer down, listen to 'touchstart_pointer' event.
+	 * To handle multiple pointer up,   listen to 'touchend_pointer' event.
 	 */
 	private static HashMap<Integer, String> motionEvents = new HashMap<Integer,String>();
 	static

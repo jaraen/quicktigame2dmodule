@@ -416,7 +416,16 @@ static void freeToImageBuffer(void *info, const void *data, size_t size) {
 
 #pragma mark Multi-Touch Events
 
-// Enable multi-touch events
+/*
+ * Multi-Touch Support
+ * 
+ * Call GameView.registerForMultiTouch() to enable multi touch events.
+ * 
+ * This does not disable gestures including 'click' and 'dblclick' on iOS.
+ * 
+ * To handle multiple pointer down, listen to 'touchstart' event and use its 'pointer' parameter.
+ * To handle multiple pointer up,   listen to 'touchend' event and use its 'pointer' parameter.
+ */
 -(void)registerForMultiTouch {
     enableMultiTouchEvents = TRUE;
 }
