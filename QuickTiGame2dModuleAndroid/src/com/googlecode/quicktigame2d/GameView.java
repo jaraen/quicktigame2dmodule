@@ -315,13 +315,23 @@ public class GameView extends TiUIView implements OnLifecycleEvent {
 		KrollDict data = super.dictFromEvent(e);
 		
 		KrollDict points = new KrollDict();
-		int count = e.getPointerCount();
+		int count  = e.getPointerCount();
+		int action = e.getActionMasked();
 		
-		for (int pointerIndex = 0; pointerIndex < count; pointerIndex++) {
+		if (action == MotionEvent.ACTION_POINTER_UP || action == MotionEvent.ACTION_POINTER_DOWN) {
+			int pointerIndex = e.getActionIndex();
+			
 			KrollDict point = new KrollDict();
 			point.put(TiC.EVENT_PROPERTY_X, (double)e.getX(pointerIndex));
 			point.put(TiC.EVENT_PROPERTY_Y, (double)e.getY(pointerIndex));
 			points.put(String.valueOf(e.getPointerId(pointerIndex)), point);
+		} else {
+			for (int pointerIndex = 0; pointerIndex < count; pointerIndex++) {
+				KrollDict point = new KrollDict();
+				point.put(TiC.EVENT_PROPERTY_X, (double)e.getX(pointerIndex));
+				point.put(TiC.EVENT_PROPERTY_Y, (double)e.getY(pointerIndex));
+				points.put(String.valueOf(e.getPointerId(pointerIndex)), point);
+			}
 		}
 		data.put("points", points);
 
