@@ -108,6 +108,14 @@
     return sprite.image;
 }
 
+-(void)setTag:(id)value {
+    sprite.tag = [[TiUtils stringValue:value] copy];
+}
+
+-(id)tag {
+    return sprite.tag;
+}
+
 - (id)width {
     return NUMINT(sprite.width);
 }

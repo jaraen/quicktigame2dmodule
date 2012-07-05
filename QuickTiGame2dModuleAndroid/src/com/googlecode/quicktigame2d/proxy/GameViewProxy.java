@@ -42,6 +42,7 @@ import com.googlecode.quicktigame2d.GameView;
 import com.googlecode.quicktigame2d.GameViewEventListener;
 import com.googlecode.quicktigame2d.QuickTiGame2dCameraInfo;
 import com.googlecode.quicktigame2d.QuickTiGame2dConstant;
+import com.googlecode.quicktigame2d.QuickTiGame2dSprite;
 import com.googlecode.quicktigame2d.QuickTiGame2dTransform;
 import com.googlecode.quicktigame2d.Quicktigame2dModule;
 
@@ -486,23 +487,29 @@ public class GameViewProxy extends TiViewProxy implements GameViewEventListener 
 	}
 	
 	@Override
-	public void onLoadSprite(String name) {
+	public void onLoadSprite(QuickTiGame2dSprite sprite) {
+		String name = sprite.getImage();
+		
 		KrollDict notificationEventCache = new KrollDict();
 		if (getDebug()) Log.d(Quicktigame2dModule.LOG_TAG, String.format("GameViewProxy.onLoadSprite %s", name));
 		notificationEventCache.put("eventName", "onloadsprite");
 		notificationEventCache.put("uptime", uptime());
 		notificationEventCache.put("name", name);
+		notificationEventCache.put("tag", sprite.getTag());
 		this.fireEvent("onloadsprite", notificationEventCache, false);
 		if (topScene() != null) topScene().onNotification(notificationEventCache);
 	}
 
 	@Override
-	public void onUnloadSprite(String name) {
+	public void onUnloadSprite(QuickTiGame2dSprite sprite) {
+		String name = sprite.getImage();
+		
 		KrollDict notificationEventCache = new KrollDict();
 		if (getDebug()) Log.d(Quicktigame2dModule.LOG_TAG, String.format("GameViewProxy.onUnloadSprite %s", name));
 		notificationEventCache.put("eventName", "onunloadsprite");
 		notificationEventCache.put("uptime", uptime());
 		notificationEventCache.put("name", name);
+		notificationEventCache.put("tag", sprite.getTag());
 		this.fireEvent("onunloadsprite", notificationEventCache, false);
 		if (topScene() != null) topScene().onNotification(notificationEventCache);
 	}

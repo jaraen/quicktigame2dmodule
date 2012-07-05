@@ -214,18 +214,18 @@ public class QuickTiGame2dGameView extends GLSurfaceView implements Renderer, On
 		}
 	}
 	
-	public void onLoadSprite(String name) {
+	public void onLoadSprite(QuickTiGame2dSprite sprite) {
 		synchronized (listeners) {
 			for (SpriteEventListener listener : listeners) {
-				listener.onLoadSprite(name);
+				listener.onLoadSprite(sprite);
 			}
 		}
 	}
 
-	public void onUnloadSprite(String name) {
+	public void onUnloadSprite(QuickTiGame2dSprite sprite) {
 		synchronized (listeners) {
 			for (SpriteEventListener listener : listeners) {
-				listener.onUnloadSprite(name);
+				listener.onUnloadSprite(sprite);
 			}
 		}
 	}
