@@ -118,6 +118,7 @@ public class QuickTiGame2dScene {
 		synchronized (sprites) {
 			if (snapshot) return;
 			for (QuickTiGame2dSprite sprite : waitingForAddSprites) {
+				if (getDebug()) Log.d(Quicktigame2dModule.LOG_TAG, String.format("addSprite: %s", sprite.getImage()));
 				sprites.add(sprite);
 			}
 			waitingForAddSprites.clear();
@@ -129,6 +130,7 @@ public class QuickTiGame2dScene {
 		synchronized (sprites) {
 			if (snapshot) return;
 			for (QuickTiGame2dSprite sprite : waitingForRemoveSprites) {
+				if (getDebug()) Log.d(Quicktigame2dModule.LOG_TAG, String.format("removeSprite: %s", sprite.getImage()));
 				sprites.remove(sprite);
 			}
 			waitingForRemoveSprites.clear();

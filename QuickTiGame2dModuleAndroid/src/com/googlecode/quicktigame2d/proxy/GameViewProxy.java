@@ -42,6 +42,7 @@ import com.googlecode.quicktigame2d.GameView;
 import com.googlecode.quicktigame2d.GameViewEventListener;
 import com.googlecode.quicktigame2d.QuickTiGame2dCameraInfo;
 import com.googlecode.quicktigame2d.QuickTiGame2dConstant;
+import com.googlecode.quicktigame2d.QuickTiGame2dScene;
 import com.googlecode.quicktigame2d.QuickTiGame2dSprite;
 import com.googlecode.quicktigame2d.QuickTiGame2dTransform;
 import com.googlecode.quicktigame2d.Quicktigame2dModule;
@@ -57,6 +58,7 @@ public class GameViewProxy extends TiViewProxy implements GameViewEventListener 
 	private HashMap<String, Object> cameraInfoCache = new HashMap<String, Object>();
 
 	private TransformProxy cameraTransform;
+	private SceneProxy previousScene = null;
 	
 	// Constructor
 	public GameViewProxy() {
@@ -154,22 +156,20 @@ public class GameViewProxy extends TiViewProxy implements GameViewEventListener 
 
 	@Kroll.method
 	public SceneProxy pushScene(SceneProxy scene) {
-		if (topScene() != null) topScene().onDeactivate();
+		previousScene = topScene();
 		
 		getView().pushScene(scene.getScene());
 		sceneStack.push(scene);
-		
-		scene.onActivate();
 		return scene;
 	}
 	
 	@Kroll.method
 	public SceneProxy popScene() {
+		previousScene = topScene();
+		
 		getView().popScene();
 		try {
 			SceneProxy proxy = sceneStack.pop();
-			proxy.onDeactivate();
-			if (topScene() != null) topScene().onActivate();
 			
 			return proxy;
 		} catch (EmptyStackException e) {
@@ -188,7 +188,7 @@ public class GameViewProxy extends TiViewProxy implements GameViewEventListener 
 	
 	@Kroll.method
 	public SceneProxy replaceScene(SceneProxy scene) {
-		if (topScene() != null) topScene().onDeactivate();
+		previousScene = topScene();
 		
 		try {
 			sceneStack.pop();
@@ -198,7 +198,6 @@ public class GameViewProxy extends TiViewProxy implements GameViewEventListener 
 		
 		getView().replaceScene(scene.getScene());
 		sceneStack.push(scene);
-		scene.onActivate();
 		
 		return topScene();
 	}
@@ -590,6 +589,21 @@ public class GameViewProxy extends TiViewProxy implements GameViewEventListener 
 					cameraTransform = null;
 				}
 			}
+		}
+	}
+
+	@Override
+	public void onActivateScene(QuickTiGame2dScene scene) {
+		if (topScene() != null && topScene().getScene() == scene) {
+			topScene().onActivate();
+		}
+	}
+
+	@Override
+	public void onDeactivateScene(QuickTiGame2dScene scene) {
+		if (previousScene != null && previousScene.getScene() == scene) {
+			previousScene.onDeactivate();
+			previousScene = null;
 		}
 	}
 }

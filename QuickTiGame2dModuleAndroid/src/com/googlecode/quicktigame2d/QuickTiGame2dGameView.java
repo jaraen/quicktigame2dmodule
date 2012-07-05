@@ -668,14 +668,18 @@ public class QuickTiGame2dGameView extends GLSurfaceView implements Renderer, On
 	    		if (sceneCommandType != null) {
 	    			if (sceneCommandType.intValue() == QuickTiGame2dConstant.SCENE_EVENT_POP) {
 	    				if (debug) Log.d(Quicktigame2dModule.LOG_TAG, "QuickTiGame2dGameView:popScene");
-	    				popSceneOrNull();
+	    				onDeactivateScene(popSceneOrNull());
+	    				onActivateScene(topScene());
 	    			} else if (sceneCommandType.intValue() == QuickTiGame2dConstant.SCENE_EVENT_PUSH) {
 	    				if (debug) Log.d(Quicktigame2dModule.LOG_TAG, "QuickTiGame2dGameView:pushScene");
+	    				onDeactivateScene(topScene());
 	    				sceneStack.push(sceneSceneQueue.poll());
+	    				onActivateScene(topScene());
 	    			} else if (sceneCommandType.intValue() == QuickTiGame2dConstant.SCENE_EVENT_REPLACE) {
 	    				if (debug) Log.d(Quicktigame2dModule.LOG_TAG, "QuickTiGame2dGameView:replaceScene");
-	    				popSceneOrNull();
+	    				onDeactivateScene(popSceneOrNull());
 	    				sceneStack.push(sceneSceneQueue.poll());
+	    				onActivateScene(topScene());
 	    			}
 
 	    			sceneSceneQueue.clear();
@@ -686,6 +690,24 @@ public class QuickTiGame2dGameView extends GLSurfaceView implements Renderer, On
 		restoreGLState(gl, false);
 	}
 
+	protected void onActivateScene(QuickTiGame2dScene activateScene) {
+		if (activateScene == null) return;
+		synchronized (listeners) {
+			for (GameViewEventListener listener : listeners) {
+				listener.onActivateScene(activateScene);
+			}
+		}
+	}
+	
+	protected void onDeactivateScene(QuickTiGame2dScene deactivateScene) {
+		if (deactivateScene == null) return;
+		synchronized (listeners) {
+			for (GameViewEventListener listener : listeners) {
+				listener.onDeactivateScene(deactivateScene);
+			}
+		}
+	}
+	
 	@Override
 	public void onSurfaceChanged(GL10 gl, int width, int height) {
 		updateSurfaceSize(width, height);
