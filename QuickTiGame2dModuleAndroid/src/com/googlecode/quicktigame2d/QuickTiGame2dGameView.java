@@ -43,6 +43,7 @@ import javax.microedition.khronos.opengles.GL10;
 import javax.microedition.khronos.opengles.GL11;
 import javax.microedition.khronos.opengles.GL11ExtensionPack;
 
+import android.app.Activity;
 import android.content.Context;
 import android.opengl.GLSurfaceView;
 import android.opengl.GLSurfaceView.Renderer;
@@ -50,10 +51,11 @@ import android.opengl.GLU;
 
 import org.appcelerator.kroll.common.Log;
 import org.appcelerator.titanium.util.TiOrientationHelper;
+import org.appcelerator.titanium.TiContext.OnLifecycleEvent;
 import com.googlecode.quicktigame2d.opengl.GLHelper;
 import com.googlecode.quicktigame2d.util.Base64;
 
-public class QuickTiGame2dGameView extends GLSurfaceView implements Renderer {
+public class QuickTiGame2dGameView extends GLSurfaceView implements Renderer, OnLifecycleEvent {
 
 	public static int correctionHint = GL10.GL_NICEST;
 	public static int textureFilter  = GL10.GL_NEAREST;
@@ -655,6 +657,10 @@ public class QuickTiGame2dGameView extends GLSurfaceView implements Renderer {
 	        snapshotSprite.onDrawFrame(gl, true);
 	    }
 		
+		loadWaitingTextures(gl);
+		unloadWaitingTextures(gl);
+		deleteWaitingGLBuffers(gl);
+		
 	    if (snapshotQueue.isEmpty()) {
 	    	synchronized(sceneCommandQueue) {
 	    		Integer sceneCommandType = sceneCommandQueue.poll();
@@ -676,10 +682,6 @@ public class QuickTiGame2dGameView extends GLSurfaceView implements Renderer {
 	    		}
 	    	}
 	    }
-	    
-		loadWaitingTextures(gl);
-		unloadWaitingTextures(gl);
-		deleteWaitingGLBuffers(gl);
 	    
 		restoreGLState(gl, false);
 	}
@@ -1072,4 +1074,42 @@ public class QuickTiGame2dGameView extends GLSurfaceView implements Renderer {
 	public void setOnFpsInterval(int onFpsInterval) {
 		this.onFpsInterval = onFpsInterval;
 	}
+
+	@Override
+	public void onPause() {
+        if (debug) Log.d(Quicktigame2dModule.LOG_TAG, "QuickTiGame2dGameView:onPause");
+		super.onPause();
+	}
+
+	@Override
+	public void onResume() {
+        if (debug) Log.d(Quicktigame2dModule.LOG_TAG, "QuickTiGame2dGameView:onResume");
+		super.onResume();
+	}
+	
+	@Override
+	public void onPause(Activity context) {
+		this.onPause();
+	}
+
+	@Override
+	public void onResume(Activity context) {
+		this.onResume();
+	}
+
+	@Override
+	public void onStart(Activity context) {
+		// Do nothing
+	}
+
+	@Override
+	public void onStop(Activity context) {
+		// Do nothing
+	}
+	
+	@Override
+	public void onDestroy(Activity arg0) {
+
+	}
+
 }
