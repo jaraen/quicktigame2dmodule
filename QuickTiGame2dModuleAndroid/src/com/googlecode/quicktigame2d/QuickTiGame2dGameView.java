@@ -539,8 +539,12 @@ public class QuickTiGame2dGameView extends GLSurfaceView implements Renderer, On
 
 		QuickTiGame2dScene scene = this.topScene();
 		
-		if (previousScene != null && previousScene != scene) {
-			previousScene.onDeactivate();
+		if (previousScene != null) {
+			if (previousScene != scene) {
+				previousScene.onDeactivate();
+			} else {
+				previousScene = null;
+			}
 		}
 		
 		if (scene != null && status != GAME_STOPPED) {

@@ -263,8 +263,12 @@ static GLint  textureFilter  = GL_NEAREST;
     
     QuickTiGame2dScene* scene = [self topScene];
     
-    if (previousScene != nil && previousScene != scene) {
-        [previousScene onDeactivate];
+    if (previousScene != nil) {
+        if (previousScene != scene) {
+            [previousScene onDeactivate];
+        } else {
+            previousScene = nil;
+        }
     }
     
     if (scene != nil && status != GAME_STOPPED) {
