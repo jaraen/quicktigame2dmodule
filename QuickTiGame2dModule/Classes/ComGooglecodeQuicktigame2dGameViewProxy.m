@@ -41,6 +41,8 @@
         screenInfoCache = [[NSMutableDictionary alloc] init];
         cameraInfoCache = [[NSMutableDictionary alloc] init];
         orientation = UIInterfaceOrientationPortrait;
+        
+        previousScene = nil;
     }
     return self;
 }
@@ -77,6 +79,20 @@
         [(ComGooglecodeQuicktigame2dGameView*)self.view start];
     }
     
+    if ([notification.name isEqualToString:@"onActivateScene"]) {
+        if ([[sceneStack top] scene] == [notification.userInfo objectForKey:@"source"]) {
+            [[sceneStack top] onActivate];
+        }
+        return;
+    }
+    if ([notification.name isEqualToString:@"onDeactivateScene"]) {
+        if ([previousScene scene] == [notification.userInfo objectForKey:@"source"]) {
+            [previousScene onDeactivate];
+            previousScene = nil;
+        }
+        return;
+    }
+    
     [self fireEvent:lowerCaseEventName withObject:notification.userInfo propagate:NO];
     
     [(ComGooglecodeQuicktigame2dSceneProxy*)[self topScene:nil] onNotification:lowerCaseEventName userInfo:notification.userInfo];
@@ -104,30 +120,25 @@
 
 - (id)pushScene:(id)args {
     ENSURE_SINGLE_ARG(args, ComGooglecodeQuicktigame2dSceneProxy);
-    [[sceneStack top] onDeactivate];
+    previousScene = [sceneStack top];
     [sceneStack push:args];
     [(ComGooglecodeQuicktigame2dGameView*)self.view pushScene:[args scene]];
-    [args onActivate];
     
     return [self topScene:nil];
 }
 
 - (id)popScene:(id)args {
-    id proxy = [sceneStack pop];
-    [proxy onDeactivate];
+    previousScene = [sceneStack pop];
     [(ComGooglecodeQuicktigame2dGameView*)self.view popScene];
-    [[sceneStack top] onActivate];
-    return proxy;
+    return previousScene;
 }
 
 - (id)replaceScene:(id)args {
     ENSURE_SINGLE_ARG(args, ComGooglecodeQuicktigame2dSceneProxy);
     
-    [[sceneStack top] onDeactivate];
-    [sceneStack pop];
+    previousScene = [sceneStack pop];
     [sceneStack push:args];
     [(ComGooglecodeQuicktigame2dGameView*)self.view replaceScene:[args scene]];
-    [args onActivate];
     
     return [self topScene:nil];
 }

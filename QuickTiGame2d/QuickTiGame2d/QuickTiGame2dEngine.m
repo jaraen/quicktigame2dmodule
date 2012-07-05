@@ -68,6 +68,7 @@ static GLint  textureFilter  = GL_NEAREST;
         waitingForUnloadTextures = [[NSMutableArray alloc] init];
         notificationEventCache = [[NSMutableDictionary alloc] init];
         fpsNotificationEventCache = [[NSMutableDictionary alloc] init];
+        sceneNotificationEventCache = [[NSMutableDictionary alloc] init];
         
         dirty  = TRUE;
         loaded = FALSE;
@@ -124,6 +125,7 @@ static GLint  textureFilter  = GL_NEAREST;
     [sceneStack release];
     [notificationEventCache release];
     [fpsNotificationEventCache release];
+    [sceneNotificationEventCache release];
     [snapshotTexture release];
     [snapshotSprite release];
     [snapshotQueue release];
@@ -391,14 +393,18 @@ static GLint  textureFilter  = GL_NEAREST;
     if ([snapshotQueue count] == 0 && sceneEventType != SCENE_EVENT_UNKNOWN) {
         if (sceneEventType == SCENE_EVENT_POP) {
             if (debug) NSLog(@"[DEBUG] QuickTiGame2dEngine:popScene");
-            [sceneStack pop];
+            [self onDeactivateScene:[sceneStack pop]];
+            [self onActivateScene:[sceneStack top]];
         } else if (sceneEventType == SCENE_EVENT_PUSH) {
             if (debug) NSLog(@"[DEBUG] QuickTiGame2dEngine:pushScene");
+            [self onDeactivateScene:[sceneStack top]];
             [sceneStack push:sceneEventArg];
+            [self onActivateScene:sceneEventArg];
         } else if (sceneEventType == SCENE_EVENT_REPLACE) {
             if (debug) NSLog(@"[DEBUG] QuickTiGame2dEngine:replaceScene");
-            [sceneStack pop];
+            [self onDeactivateScene:[sceneStack pop]];
             [sceneStack push:sceneEventArg];
+            [self onActivateScene:sceneEventArg];
         }
     
         sceneEventType = SCENE_EVENT_UNKNOWN;
@@ -427,6 +433,22 @@ static GLint  textureFilter  = GL_NEAREST;
     [self fireOnLoadEvent];
     
     [QuickTiGame2dEngine restoreGLState:FALSE];
+}
+
+- (void)onActivateScene:(QuickTiGame2dScene*)scene {
+    if (scene == nil) return;
+    
+    [sceneNotificationEventCache setObject:[NSNumber numberWithDouble:[QuickTiGame2dEngine uptime]] forKey:@"uptime"];
+    [sceneNotificationEventCache setObject:scene forKey:@"source"];
+    [[QuickTiGame2dEngine sharedNotificationCenter] postNotificationName:@"onActivateScene" object:self userInfo:sceneNotificationEventCache];
+}
+
+- (void)onDeactivateScene:(QuickTiGame2dScene*)scene {
+    if (scene == nil) return;
+    
+    [sceneNotificationEventCache setObject:[NSNumber numberWithDouble:[QuickTiGame2dEngine uptime]] forKey:@"uptime"];
+    [sceneNotificationEventCache setObject:scene forKey:@"source"];
+    [[QuickTiGame2dEngine sharedNotificationCenter] postNotificationName:@"onDeactivateScene" object:self userInfo:sceneNotificationEventCache];
 }
 
 - (void)onGainedFocus {

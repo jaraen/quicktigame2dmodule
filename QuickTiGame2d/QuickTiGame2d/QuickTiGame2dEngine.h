@@ -70,6 +70,7 @@ typedef struct CameraInfo {
     
     NSMutableDictionary* notificationEventCache;
     NSMutableDictionary* fpsNotificationEventCache;
+    NSMutableDictionary* sceneNotificationEventCache;
     
     UIInterfaceOrientation orientation;
     BOOL shouldRotateOrientation;

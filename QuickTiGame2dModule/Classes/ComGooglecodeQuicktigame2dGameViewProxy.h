@@ -34,6 +34,7 @@
     NSMutableDictionary* screenInfoCache;
     NSMutableDictionary* cameraInfoCache;
     NSInteger orientation;
+    ComGooglecodeQuicktigame2dSceneProxy* previousScene;
 }
 @property (nonatomic, readwrite, assign) id debug;
 @property (nonatomic, readwrite, assign) id screen;
