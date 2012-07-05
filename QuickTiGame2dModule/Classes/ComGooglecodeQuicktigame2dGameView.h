@@ -97,4 +97,5 @@
 -(UIImage*)toImage;
 
 -(void)registerForMultiTouch;
+-(void)startCurrentScene;
 @end

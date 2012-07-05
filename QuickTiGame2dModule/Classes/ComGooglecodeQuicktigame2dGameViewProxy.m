@@ -145,6 +145,7 @@
 
 - (void)startCurrentScene:(id)args {
     [((ComGooglecodeQuicktigame2dGameView*)self.view).game releaseSnapshot];
+    [((ComGooglecodeQuicktigame2dGameView*)self.view).game startCurrentScene];
 }
 
 - (id)topScene:(id)args {

@@ -385,6 +385,10 @@ static void freeToImageBuffer(void *info, const void *data, size_t size) {
     free((void*)data);
 }
 
+-(void)startCurrentScene {
+    [game startCurrentScene];
+}
+
 -(UIImage*)toImage {
     NSInteger dataLength = framebufferWidth * framebufferHeight * 4;
     GLubyte *buffer =  (GLubyte *) malloc(dataLength);

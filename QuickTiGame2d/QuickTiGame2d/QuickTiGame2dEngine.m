@@ -108,6 +108,9 @@ static GLint  textureFilter  = GL_NEAREST;
         onFpsInterval    = DEFAULT_ONFPS_INTERVAL;
         lastOnFpsTime    = 0;
         fpsFrameCount    = 0;
+        
+        resetPreviousScene = FALSE;
+        previousScene = nil;
     }
     return self;
 }
@@ -260,6 +263,10 @@ static GLint  textureFilter  = GL_NEAREST;
     
     QuickTiGame2dScene* scene = [self topScene];
     
+    if (previousScene != nil && previousScene != scene) {
+        [previousScene onDeactivate];
+    }
+    
     if (scene != nil && status != GAME_STOPPED) {
 
         @synchronized (snapshotQueue) {
@@ -393,23 +400,31 @@ static GLint  textureFilter  = GL_NEAREST;
     if ([snapshotQueue count] == 0 && sceneEventType != SCENE_EVENT_UNKNOWN) {
         if (sceneEventType == SCENE_EVENT_POP) {
             if (debug) NSLog(@"[DEBUG] QuickTiGame2dEngine:popScene");
-            [self onDeactivateScene:[sceneStack pop]];
+            previousScene = [sceneStack pop];
+            [self onDeactivateScene:previousScene];
             [self onActivateScene:[sceneStack top]];
         } else if (sceneEventType == SCENE_EVENT_PUSH) {
             if (debug) NSLog(@"[DEBUG] QuickTiGame2dEngine:pushScene");
-            [self onDeactivateScene:[sceneStack top]];
+            previousScene = [sceneStack top];
+            [self onDeactivateScene:previousScene];
             [sceneStack push:sceneEventArg];
-            [self onActivateScene:sceneEventArg];
+            [self onActivateScene:[sceneStack top]];
         } else if (sceneEventType == SCENE_EVENT_REPLACE) {
             if (debug) NSLog(@"[DEBUG] QuickTiGame2dEngine:replaceScene");
-            [self onDeactivateScene:[sceneStack pop]];
+            previousScene = [sceneStack pop];
+            [self onDeactivateScene:previousScene];
             [sceneStack push:sceneEventArg];
-            [self onActivateScene:sceneEventArg];
+            [self onActivateScene:[sceneStack top]];
         }
     
         sceneEventType = SCENE_EVENT_UNKNOWN;
         [sceneEventArg release];
         sceneEventArg  = nil;
+    }
+    
+    if (resetPreviousScene) {
+        previousScene = nil;
+        resetPreviousScene = FALSE;
     }
     
     [QuickTiGame2dEngine restoreGLState:FALSE];
@@ -714,6 +729,11 @@ static GLint  textureFilter  = GL_NEAREST;
             [snapshotQueue push:[NSNumber numberWithInt:SNAPSHOT_RELEASE]];
         }
     }
+}
+
+
+-(void)startCurrentScene {
+    resetPreviousScene = TRUE;
 }
 
 - (GLint)viewportWidth {

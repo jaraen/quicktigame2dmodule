@@ -103,6 +103,8 @@ typedef struct CameraInfo {
     NSMutableArray* cameraTransformsToBeRemoved;
     
     QuickTiGame2dScene* hudScene;
+    QuickTiGame2dScene* previousScene;
+    BOOL resetPreviousScene;
 }
 @property (readwrite) GLint viewportWidth;
 @property (readwrite) GLint viewportHeight;
@@ -160,5 +162,7 @@ typedef struct CameraInfo {
 
 -(void)addHUD:(QuickTiGame2dSprite*)sprite;
 -(void)removeHUD:(QuickTiGame2dSprite*)sprite;
+
+-(void)startCurrentScene;
 
 @end

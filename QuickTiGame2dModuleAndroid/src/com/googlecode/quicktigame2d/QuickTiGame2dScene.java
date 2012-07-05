@@ -106,6 +106,10 @@ public class QuickTiGame2dScene {
 		}
 		}
 	}
+	
+	public void onDeactivate() {
+		removeWaitingSprites();
+	}
 
 	public void onDispose() {
 		waitingForAddSprites.clear();

@@ -132,6 +132,8 @@ public class QuickTiGame2dGameView extends GLSurfaceView implements Renderer, On
 	private List<QuickTiGame2dTransform> cameraTransformsToBeRemoved = new ArrayList<QuickTiGame2dTransform>();
 	
 	private QuickTiGame2dScene hudScene;
+	private QuickTiGame2dScene previousScene = null;
+	private boolean resetPreviousScene = false;
 	
 	public QuickTiGame2dGameView(Context context) {
 		super(context);
@@ -248,6 +250,7 @@ public class QuickTiGame2dGameView extends GLSurfaceView implements Renderer, On
 
 	public void startCurrentScene() {
 		releaseSnapshot();
+		resetPreviousScene = true;
 	}
 	
 	public void commitLoadTexture(String texture) {
@@ -533,8 +536,12 @@ public class QuickTiGame2dGameView extends GLSurfaceView implements Renderer, On
 		}
 		
 		restoreGLState(gl, true);
-		
+
 		QuickTiGame2dScene scene = this.topScene();
+		
+		if (previousScene != null && previousScene != scene) {
+			previousScene.onDeactivate();
+		}
 		
 		if (scene != null && status != GAME_STOPPED) {
 			
@@ -668,16 +675,19 @@ public class QuickTiGame2dGameView extends GLSurfaceView implements Renderer, On
 	    		if (sceneCommandType != null) {
 	    			if (sceneCommandType.intValue() == QuickTiGame2dConstant.SCENE_EVENT_POP) {
 	    				if (debug) Log.d(Quicktigame2dModule.LOG_TAG, "QuickTiGame2dGameView:popScene");
-	    				onDeactivateScene(popSceneOrNull());
+	    				previousScene = popSceneOrNull();
+	    				onDeactivateScene(previousScene);
 	    				onActivateScene(topScene());
 	    			} else if (sceneCommandType.intValue() == QuickTiGame2dConstant.SCENE_EVENT_PUSH) {
 	    				if (debug) Log.d(Quicktigame2dModule.LOG_TAG, "QuickTiGame2dGameView:pushScene");
-	    				onDeactivateScene(topScene());
+	    				previousScene = topScene();
+	    				onDeactivateScene(previousScene);
 	    				sceneStack.push(sceneSceneQueue.poll());
 	    				onActivateScene(topScene());
 	    			} else if (sceneCommandType.intValue() == QuickTiGame2dConstant.SCENE_EVENT_REPLACE) {
 	    				if (debug) Log.d(Quicktigame2dModule.LOG_TAG, "QuickTiGame2dGameView:replaceScene");
-	    				onDeactivateScene(popSceneOrNull());
+	    				previousScene = popSceneOrNull();
+	    				onDeactivateScene(previousScene);
 	    				sceneStack.push(sceneSceneQueue.poll());
 	    				onActivateScene(topScene());
 	    			}
@@ -685,6 +695,11 @@ public class QuickTiGame2dGameView extends GLSurfaceView implements Renderer, On
 	    			sceneSceneQueue.clear();
 	    		}
 	    	}
+	    }
+	    
+	    if (resetPreviousScene) {
+	    	previousScene = null;
+	    	resetPreviousScene = false;
 	    }
 	    
 		restoreGLState(gl, false);
