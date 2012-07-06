@@ -66,6 +66,7 @@
 @property (readwrite) BOOL enableOnFpsEvent;
 @property (readwrite) NSInteger onFpsInterval;
 @property (readwrite) NSInteger timerType;
+@property (readwrite) BOOL usePerspective;
 
 - (void)attachContext;
 - (void)detachContext;

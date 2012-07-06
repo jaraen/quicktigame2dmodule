@@ -49,6 +49,7 @@
 @property (nonatomic, readwrite, assign) id useFastTimer;
 @property (nonatomic, readwrite, assign) id timerType;
 @property (nonatomic, readwrite, assign) id opaque;
+@property (nonatomic, readwrite, assign) id usePerspective;
 
 - (void)onNotification:(NSNotification*)notification;
 

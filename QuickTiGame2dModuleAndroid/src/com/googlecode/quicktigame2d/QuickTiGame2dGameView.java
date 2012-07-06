@@ -964,6 +964,14 @@ public class QuickTiGame2dGameView extends GLSurfaceView implements Renderer, On
 	    }
 	}
 
+	public boolean isUsePerspective() {
+		return usePerspective;
+	}
+
+	public void setUsePerspective(boolean usePerspective) {
+		this.usePerspective = usePerspective;
+	}
+
 	public boolean isOnDrawFrameEventEnabled() {
 		return enableOnDrawFrameEvent;
 	}

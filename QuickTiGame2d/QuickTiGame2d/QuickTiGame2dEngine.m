@@ -49,6 +49,7 @@
 @implementation QuickTiGame2dEngine
 @synthesize enableOnDrawFrameEvent, enableOnFpsEvent;
 @synthesize onFpsInterval;
+@synthesize usePerspective;
 
 static NSMutableDictionary* textureCache;
 static NSMutableArray* waitingForLoadTextures;

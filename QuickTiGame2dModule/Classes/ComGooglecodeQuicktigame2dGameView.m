@@ -254,6 +254,14 @@
     [game pause];
 }
 
+- (BOOL)usePerspective {
+    return game.usePerspective;
+}
+
+- (void)setUsePerspective:(BOOL)value {
+    game.usePerspective = value;
+}
+
 - (NSInteger)gameviewportWidth {
     return game.viewportWidth;
 }

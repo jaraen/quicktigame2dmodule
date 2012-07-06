@@ -336,6 +336,15 @@
     [(ComGooglecodeQuicktigame2dGameView*)self.view alpha:[args floatValue]];
 }
 
+- (id)usePerspective {
+    return NUMBOOL(((ComGooglecodeQuicktigame2dGameView *)[self view]).usePerspective);
+}
+
+- (void)setUsePerspective:(id)value {
+    ENSURE_SINGLE_ARG(value, NSNumber);
+    ((ComGooglecodeQuicktigame2dGameView *)[self view]).usePerspective = [value boolValue];
+}
+
 - (id)enableOnDrawFrameEvent {
     return NUMBOOL(((ComGooglecodeQuicktigame2dGameView *)[self view]).enableOnDrawFrameEvent);
 }

@@ -222,6 +222,14 @@ public class GameView extends TiUIView implements OnLifecycleEvent {
 		getGameView().removeListener(listener);
 	}
 	
+	public boolean isUsePerspective() {
+		return getGameView().isUsePerspective();
+	}
+
+	public void setUsePerspective(boolean usePerspective) {
+		getGameView().setUsePerspective(usePerspective);
+	}
+	
 	public boolean isOnDrawFrameEventEnabled() {
 		return getGameView().isOnDrawFrameEventEnabled();
 	}

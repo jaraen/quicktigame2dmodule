@@ -104,6 +104,7 @@ typedef struct CameraInfo {
     
     QuickTiGame2dScene* hudScene;
     QuickTiGame2dScene* previousScene;
+    
     BOOL resetPreviousScene;
 }
 @property (readwrite) GLint viewportWidth;
@@ -114,6 +115,7 @@ typedef struct CameraInfo {
 @property (readwrite) BOOL enableOnDrawFrameEvent;
 @property (readwrite) BOOL enableOnFpsEvent;
 @property (readwrite) NSInteger onFpsInterval;
+@property (readwrite) BOOL usePerspective;
 
 - (void)drawFrame;
 - (void)onLoad:(GLint)framebufferWidth height:(GLint)framebufferHeight;

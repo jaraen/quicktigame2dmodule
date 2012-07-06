@@ -326,7 +326,17 @@ public class GameViewProxy extends TiViewProxy implements GameViewEventListener 
 		
 		return cameraInfoCache;
 	}
+
+	@Kroll.setProperty @Kroll.method
+	public void setUsePerspective(boolean use) {
+		getView().setUsePerspective(use);
+	}
 	
+	@Kroll.getProperty @Kroll.method
+	public boolean getUsePerspective() {
+		return getView().isUsePerspective();
+	}
+
 	@Kroll.setProperty @Kroll.method
 	public void setOpaque(boolean enable) {
 		// do nothing because opaque is not supported on Android
