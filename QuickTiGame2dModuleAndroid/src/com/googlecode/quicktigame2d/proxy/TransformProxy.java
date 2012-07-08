@@ -450,18 +450,22 @@ public class TransformProxy extends KrollProxy {
 		float cy2 = 0;
 		if (info.containsKey("cx1")) {
 			cx1 = (float)TiConvert.toDouble(info.get("cx1"));
+		} else {
 			Log.w(Quicktigame2dModule.LOG_TAG, "Transform.bezierConfig cx1 is missing, assume value equals 0.");
 		}
 		if (info.containsKey("cy1")) {
 			cy1 = (float)TiConvert.toDouble(info.get("cy1"));
+		} else {
 			Log.w(Quicktigame2dModule.LOG_TAG, "Transform.bezierConfig cy1 is missing, assume value equals 0.");
 		}
 		if (info.containsKey("cx2")) {
 			cx1 = (float)TiConvert.toDouble(info.get("cx2"));
+		} else {
 			Log.w(Quicktigame2dModule.LOG_TAG, "Transform.bezierConfig cx2 is missing, assume value equals 0.");
 		}
 		if (info.containsKey("cy2")) {
 			cx1 = (float)TiConvert.toDouble(info.get("cy2"));
+		} else {
 			Log.w(Quicktigame2dModule.LOG_TAG, "Transform.bezierConfig cy2 is missing, assume value equals 0.");
 		}
 		

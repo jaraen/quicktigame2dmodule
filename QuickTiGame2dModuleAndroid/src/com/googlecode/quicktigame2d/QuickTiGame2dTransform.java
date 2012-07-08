@@ -164,11 +164,11 @@ public class QuickTiGame2dTransform {
         if (locked) return;
         
         if (useBezier) {
-        	if (x != null) current_x = (int) currentBezier_X(start_x, x.floatValue());
-        	if (y != null) current_y = (int) currentBezier_Y(start_y, y.floatValue());
+        	if (x != null) current_x = currentBezier_X(start_x, x.floatValue());
+        	if (y != null) current_y = currentBezier_Y(start_y, y.floatValue());
         } else {
-        	if (x != null) current_x = (int) current(start_x, x.floatValue());
-        	if (y != null) current_y = (int) current(start_y, y.floatValue());
+        	if (x != null) current_x = current(start_x, x.floatValue());
+        	if (y != null) current_y = current(start_y, y.floatValue());
         }
         
         if (z != null) current_z = (int) current(start_z, z.floatValue());
