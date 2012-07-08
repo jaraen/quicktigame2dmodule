@@ -103,6 +103,7 @@
     BOOL reversing;
     
     BOOL completed;
+    BOOL locked;
 }
 @property (readwrite, retain) NSNumber* x;
 @property (readwrite, retain) NSNumber* y;
@@ -167,6 +168,7 @@
 @property (readwrite) BOOL autoreverse;
 @property (readwrite) BOOL reversing;
 @property (readwrite) BOOL completed;
+@property (readwrite) BOOL locked;
 
 -(void)start;
 -(void)restart;

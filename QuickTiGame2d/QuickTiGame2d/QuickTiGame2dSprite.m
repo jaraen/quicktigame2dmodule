@@ -937,6 +937,8 @@
 
     if (transform.completed) return;
     
+    transform.locked = isChild;
+
     [transform apply];
     
     if (isChild && relativeToTransformParent) {

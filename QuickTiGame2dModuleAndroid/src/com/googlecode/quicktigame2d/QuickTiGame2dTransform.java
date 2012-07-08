@@ -106,6 +106,7 @@ public class QuickTiGame2dTransform {
     
     private boolean completed;
     private boolean isStartEventFired = false;
+    private boolean locked = false;
     
     public QuickTiGame2dTransform() {
     	easing = QuickTiGame2dConstant.ANIMATION_EASING_LINEAR;
@@ -153,6 +154,7 @@ public class QuickTiGame2dTransform {
 
     public void apply() {
         if (!hasStarted()) return;
+        if (locked) return;
         
         if (x != null) current_x = (int) current(start_x, x.floatValue());
         if (y != null) current_y = (int) current(start_y, y.floatValue());
@@ -949,6 +951,14 @@ public class QuickTiGame2dTransform {
 
 	public void setScale_centerY(Number scale_centerY) {
 		this.scale_centerY = scale_centerY;
+	}
+
+	public boolean isLocked() {
+		return locked;
+	}
+
+	public void setLocked(boolean locked) {
+		this.locked = locked;
 	}
 
 }

@@ -42,7 +42,7 @@
 @synthesize current_rotate_axis, current_rotate_centerX, current_rotate_centerY, current_scaleX;
 @synthesize current_scaleY, current_red, current_green, current_blue, current_alpha;
 
-@synthesize autoreverse, reversing, completed;
+@synthesize autoreverse, reversing, completed, locked;
 
 - (id)init {
     self = [super init];
@@ -54,6 +54,7 @@
         reversing   = FALSE;
         
         completed   = FALSE;
+        locked      = FALSE;
     }
     return self;
 }
@@ -121,6 +122,7 @@
 
 -(void)apply {
     if (![self hasStarted]) return;
+    if (locked) return;
     
     current_x = [self current:start_x to:[x floatValue]];
     current_y = [self current:start_y to:[y floatValue]];

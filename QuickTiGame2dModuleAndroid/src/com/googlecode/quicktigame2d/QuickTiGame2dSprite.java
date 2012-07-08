@@ -1000,6 +1000,7 @@ public class QuickTiGame2dSprite {
 	protected void applyTransform(QuickTiGame2dTransform transform, boolean isChild) {
 		if (transform.isCompleted()) return;
 		
+		transform.setLocked(isChild);
 	    transform.apply();
 	    
 	    if (isChild && relativeToTransformParent) {
