@@ -31,6 +31,7 @@
 @interface ComGooglecodeQuicktigame2dTransformProxy : TiProxy {
     QuickTiGame2dTransform* transform;
     NSMutableDictionary* notificationEventCache;
+    NSMutableDictionary* bezierConfigCache;
 }
 @property (nonatomic, readwrite, assign) id x;
 @property (nonatomic, readwrite, assign) id y;
@@ -65,6 +66,9 @@
 @property (nonatomic, readwrite, assign) id lookAt_eyeZ;
 @property (nonatomic, readwrite, assign) id lookAt_centerX;
 @property (nonatomic, readwrite, assign) id lookAt_centerY;
+
+@property (nonatomic, readwrite, assign) id bezier;
+@property (nonatomic, readwrite, assign) id bezierConfig;
 
 - (QuickTiGame2dTransform*)transformer;
 
