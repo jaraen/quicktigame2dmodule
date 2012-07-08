@@ -224,39 +224,35 @@
 }
 
 -(float)currentBezier_X:(float)_from to:(float)_to {
-    float t = [self ease:[self elapsed] duration:self.duration];
+    float percent = [self ease:[self elapsed] duration:self.duration];
     if ([self hasExpired]) {
-        t = reversing ? 0 : 1;
+        percent = reversing ? 0 : 1;
     }
     
-    float qx, qy;
     float q1, q2, q3, q4;
-    int plotx, ploty;
     
-    q1 = t*t*t*-1 + t*t*3 + t*-3 + 1;
-    q2 = t*t*t*3 + t*t*-6 + t*3;
-    q3 = t*t*t*-3 + t*t*3;
-    q4 = t*t*t;
+    q1 = percent * percent * percent * -1 + percent*percent *  3 + percent * -3 + 1;
+    q2 = percent * percent * percent *  3 + percent*percent * -6 + percent *  3;
+    q3 = percent * percent * percent * -3 + percent*percent *  3;
+    q4 = percent * percent * percent;
     
-    return q1*_from + q2*[self.bezierCurvePoint1_X floatValue] + q3*[bezierCurvePoint2_X floatValue] + q4*_to;
+    return q1 * _from + q2 * [self.bezierCurvePoint1_X floatValue] + q3 * [bezierCurvePoint2_X floatValue] + q4 * _to;
 }
 
 -(float)currentBezier_Y:(float)_from to:(float)_to {
-    float t = [self ease:[self elapsed] duration:self.duration];
+    float percent = [self ease:[self elapsed] duration:self.duration];
     if ([self hasExpired]) {
-        t = reversing ? 0 : 1;
+        percent = reversing ? 0 : 1;
     }
     
-    float qx, qy;
     float q1, q2, q3, q4;
-    int plotx, ploty;
     
-    q1 = t*t*t*-1 + t*t*3 + t*-3 + 1;
-    q2 = t*t*t*3 + t*t*-6 + t*3;
-    q3 = t*t*t*-3 + t*t*3;
-    q4 = t*t*t;
+    q1 = percent * percent * percent * -1 + percent*percent *  3 + percent * -3 + 1;
+    q2 = percent * percent * percent *  3 + percent*percent * -6 + percent *  3;
+    q3 = percent * percent * percent * -3 + percent*percent *  3;
+    q4 = percent * percent * percent;
     
-    return q1*_from + q2*[self.bezierCurvePoint1_Y floatValue] + q3*[self.bezierCurvePoint2_Y floatValue] + q4*_to;
+    return q1 * _from + q2 * [self.bezierCurvePoint1_Y floatValue] + q3 * [self.bezierCurvePoint2_Y floatValue] + q4 * _to;
 }
 
 
