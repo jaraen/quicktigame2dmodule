@@ -39,11 +39,14 @@
         
         // create our text instance
         sprite = [[QuickTiGame2dTextSprite alloc] init];
+        
+        sizeInfoCache = nil;
     }
     return self;
 }
 
 - (void)dealloc {
+    [sizeInfoCache release];
     [super dealloc];
 }
 
@@ -88,6 +91,19 @@
 -(void)setTextAlign:(id)value {
     [(QuickTiGame2dTextSprite*)sprite setTextAlignment:[TiUtils textAlignmentValue:value]];
     [(QuickTiGame2dTextSprite*)sprite reload];
+}
+
+-(id)sizeWithText:(id)value {
+    CGSize size = [(QuickTiGame2dTextSprite*)sprite sizeWithText:[[TiUtils stringValue:value] copy]];
+    
+    if (sizeInfoCache == nil) {
+        sizeInfoCache = [[NSMutableDictionary alloc] init];
+    }
+    
+    [sizeInfoCache setValue:NUMFLOAT(size.width)  forKey:@"width"];
+    [sizeInfoCache setValue:NUMFLOAT(size.height) forKey:@"height"];
+
+    return sizeInfoCache;
 }
 
 @end
