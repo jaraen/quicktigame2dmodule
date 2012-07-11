@@ -614,6 +614,10 @@
     animation.interval = interval;
     animation.loop     = loop;
 
+    if ([frames count] > 0) {
+        animation.start = [[frames objectAtIndex:0] intValue];
+    }
+    
     [animation initializeIndividualFrames];
     for (int i = 0; i < [frames count]; i++) {
         [animation setFrame:i withValue:[[frames objectAtIndex:i] intValue]];
