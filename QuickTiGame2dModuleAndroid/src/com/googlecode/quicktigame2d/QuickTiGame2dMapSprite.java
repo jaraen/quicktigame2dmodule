@@ -709,6 +709,10 @@ public class QuickTiGame2dMapSprite extends QuickTiGame2dSprite {
 	    animation.setCount(frames.length);
 	    animation.setInterval(interval);
 	    animation.setLoop(loop);
+	    
+	    if (frames.length > 0) {
+	    	animation.setStart(frames[0]);
+	    }
 
 	    animation.initializeIndividualFrames();
 	    for (int i = 0; i < frames.length; i++) {
