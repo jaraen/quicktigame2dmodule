@@ -93,6 +93,24 @@
     positionFixed = other.positionFixed;
 }
 
+-(BOOL)collides:(float)otherX otherY:(float)otherY tiltY:(float)tiltY {
+    float thisX = initialX;
+    float thisY = initialY;
+    
+    otherX = otherX - offsetX - thisX;
+    otherY = otherY - (height * tiltY) - thisY;
+
+    float dHeight = height - (height * tiltY);
+    float ratio = MIN(width, dHeight) / MAX(width, dHeight);
+    float rHeight = dHeight * ratio;
+    
+    float a1 = (ratio * otherX) - rHeight;
+    float a2 = (ratio * otherX) + rHeight;
+    float a3 = -(ratio * otherX) + rHeight;
+    float a4 = -(ratio * otherX) + (3 * rHeight);
+    
+    return (otherY > a1 && otherY < a2 && otherY > a3 && otherY < a4);
+}
 @end
 
 @implementation QuickTiGame2dMapSprite
@@ -595,18 +613,10 @@
     return TRUE;
 }
 
--(void)addTileToArray:(QuickTiGame2dMapTile*)tile array:(NSMutableArray*)array {
-    if (tile == nil) return;
-    
-    [array addObject:tile];
-}
-
 /*
  * Get tiles from position of the screen
  */
--(NSArray*)getTilesAtPosition:(NSInteger)sx sy:(NSInteger)sy {
-
-    NSMutableArray* ptiles = [[[NSMutableArray alloc] init] autorelease];
+-(QuickTiGame2dMapTile*)getTileAtPosition:(NSInteger)sx sy:(NSInteger)sy {
 
     NSInteger posX = sx - x;
     NSInteger posY = sy - y;
@@ -628,15 +638,36 @@
         int indexX = (int)floor((a + b) / 2);
         int indexY = (int)floor(indexX - a);
         
-        [self addTileToArray:[self getTile:(indexX + (tileCountX * indexY))] array:ptiles];
+        QuickTiGame2dMapTile* tile = [self getTile:(indexX + (tileCountX * indexY))];
+        
+        if (tile != nil && [tile collides:posX otherY:posY tiltY:tileTiltFactorY]) {
+            return tile;
+        }
         
         //
-        // Add tiles around for convenience because tiles can be overwrapped
+        // Check other tiles around because tiles can be overwrapped
         //
-        [self addTileToArray:[self getTile:((indexX + 1) + (tileCountX * indexY))] array:ptiles];
-        [self addTileToArray:[self getTile:(indexX + (tileCountX * (indexY + 1)))] array:ptiles];
-        [self addTileToArray:[self getTile:(indexX + (tileCountX * (indexY - 1)))] array:ptiles];
-        [self addTileToArray:[self getTile:((indexX - 1) + (tileCountX * indexY))] array:ptiles];
+        tile = [self getTile:((indexX + 1) + (tileCountX * indexY))];
+        if (tile != nil && [tile collides:posX otherY:posY tiltY:tileTiltFactorY]) {
+            return tile;
+        }
+        
+        tile = [self getTile:(indexX + (tileCountX * (indexY + 1)))];
+        if (tile != nil && [tile collides:posX otherY:posY tiltY:tileTiltFactorY]) {
+            return tile;
+        }
+        
+        tile = [self getTile:(indexX + (tileCountX * (indexY - 1)))];
+        if (tile != nil && [tile collides:posX otherY:posY tiltY:tileTiltFactorY]) {
+            return tile;
+        }
+        
+        tile = [self getTile:((indexX - 1) + (tileCountX * indexY))];
+        if (tile != nil && [tile collides:posX otherY:posY tiltY:tileTiltFactorY]) {
+            return tile;
+        }
+        
+        return nil;
         
     } else if (orientation == MAP_ORIENTATION_HEXAGONAL) {
         
@@ -644,10 +675,10 @@
         int indexX = posX / tiltStepX;
         int indexY = posY / tiltStepY;
         
-        [ptiles addObject:[self getTile:(indexX + (tileCountX * indexY))]];
+        return [self getTile:(indexX + (tileCountX * indexY))];
     }
     
-    return ptiles;
+    return nil;
 }
 
 -(QuickTiGame2dMapTile*)getTile:(NSInteger)index {
