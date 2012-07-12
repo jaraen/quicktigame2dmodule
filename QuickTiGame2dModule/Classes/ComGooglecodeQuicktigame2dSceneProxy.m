@@ -57,8 +57,10 @@
 - (void)onNotification:(NSString*)type userInfo:(NSDictionary*)userInfo {
     [self fireEvent:type withObject:userInfo propagate:NO];
     
-    for (ComGooglecodeQuicktigame2dSpriteProxy* sprite in spriteStack) {
-        [sprite onNotification:type userInfo:userInfo];
+    @synchronized(spriteStack) {
+        for (ComGooglecodeQuicktigame2dSpriteProxy* sprite in spriteStack) {
+            [sprite onNotification:type userInfo:userInfo];
+        }
     }
 }
 
@@ -114,7 +116,9 @@
 
 -(id)add:(id)args {
     ENSURE_SINGLE_ARG(args, ComGooglecodeQuicktigame2dSpriteProxy);
-    [spriteStack push:args];
+    @synchronized(spriteStack) {
+        [spriteStack push:args];
+    }
     [args onAdd];
     
     [scene addSprite:[args sprite]];
@@ -124,7 +128,9 @@
 -(void)remove:(id)args {
     ENSURE_SINGLE_ARG(args, ComGooglecodeQuicktigame2dSpriteProxy);
     [args onRemove];
-    [spriteStack removeObject:args];
+    @synchronized(spriteStack) {
+        [spriteStack removeObject:args];
+    }
     
     [scene removeSprite:[args sprite]];
 }
