@@ -87,6 +87,8 @@ public class MapSpriteProxy extends SpriteProxy {
 		
 		QuickTiGame2dMapTile tile = getMapSprite().getTile(index);
 		
+		if (tile == null) return null;
+		
 		info.put("index", Integer.valueOf(index));
 		info.put("gid",   Integer.valueOf(tile.gid));
 		info.put("red",   Double.valueOf(tile.red));
@@ -101,7 +103,6 @@ public class MapSpriteProxy extends SpriteProxy {
 		info.put("height",   Double.valueOf(tile.height > 0 ? tile.height : getMapSprite().getHeight()));
 		info.put("margin",   Double.valueOf(tile.margin));
 		info.put("border",   Double.valueOf(tile.border));
-		
 		
 		return info;
 	}
@@ -139,6 +140,8 @@ public class MapSpriteProxy extends SpriteProxy {
 	    }
 	    
 	    QuickTiGame2dMapTile tile = getMapSprite().getTile(index);
+	    
+	    if (tile == null) return false;
 	    
 	    if (gid   >= 0) tile.gid   = gid;
 	    if (red   >= 0) tile.red   = red;
