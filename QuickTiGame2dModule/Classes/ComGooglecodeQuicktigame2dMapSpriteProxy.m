@@ -71,8 +71,8 @@
 #pragma Public APIs
 
 -(id)getTileAtPosition:(id)args {
-    NSInteger sx = [[args objectAtIndex:0] intValue]; 
-    NSInteger sy = [[args objectAtIndex:1] intValue];
+    float sx = [[args objectAtIndex:0] floatValue]; 
+    float sy = [[args objectAtIndex:1] floatValue];
     
     QuickTiGame2dMapSprite* mapSprite = (QuickTiGame2dMapSprite*)sprite;
     QuickTiGame2dMapTile* tile = [mapSprite getTileAtPosition:sx sy:sy];

@@ -29,6 +29,7 @@ package com.googlecode.quicktigame2d;
 
 public class QuickTiGame2dMapTile {
     public String image;
+    public int   index;
     public int   firstgid;
     public int   gid;
     public float red;
@@ -54,6 +55,7 @@ public class QuickTiGame2dMapTile {
     
     public QuickTiGame2dMapTile() {
         gid   = 0;
+        index = 0;
         red   = 1;
         green = 1;
         blue  = 1;
@@ -76,6 +78,7 @@ public class QuickTiGame2dMapTile {
     
     public void cc(QuickTiGame2dMapTile other) {
         gid   = other.gid;
+        index = other.index;
         red   = other.red;
         green = other.green;
         blue  = other.blue;
@@ -93,5 +96,24 @@ public class QuickTiGame2dMapTile {
         initialX = other.initialX;
         initialY = other.initialY;
         positionFixed = other.positionFixed;
+    }
+    
+    public boolean collides(float otherX, float otherY, float tiltY) {
+        float thisX = initialX;
+        float thisY = initialY;
+        
+        otherX = otherX - offsetX - thisX;
+        otherY = otherY - (height * tiltY) - thisY;
+
+        float dHeight = height - (height * tiltY);
+        float ratio = Math.min(width, dHeight) / Math.max(width, dHeight);
+        float rHeight = dHeight * ratio;
+        
+        float a1 = (ratio * otherX) - rHeight;
+        float a2 = (ratio * otherX) + rHeight;
+        float a3 = -(ratio * otherX) + rHeight;
+        float a4 = -(ratio * otherX) + (3 * rHeight);
+        
+        return (otherY > a1 && otherY < a2 && otherY > a3 && otherY < a4);
     }
 }

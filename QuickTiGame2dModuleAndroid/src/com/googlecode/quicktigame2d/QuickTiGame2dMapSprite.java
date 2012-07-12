@@ -238,6 +238,7 @@ public class QuickTiGame2dMapSprite extends QuickTiGame2dSprite {
 			
 			QuickTiGame2dMapTile tile = new QuickTiGame2dMapTile();
 			tile.alpha = 0;
+			tile.index = i;
 			tiles.add(tile);
 			
 			updateQuad(i, tile);
@@ -458,6 +459,7 @@ public class QuickTiGame2dMapSprite extends QuickTiGame2dSprite {
 	    QuickTiGame2dMapTile tile = new QuickTiGame2dMapTile();
 	    tile.gid = gid;
 	    tile.alpha = 1;
+	    tile.index = index;
 	    
 	    setTile(index, tile);
 	}
@@ -506,6 +508,7 @@ public class QuickTiGame2dMapSprite extends QuickTiGame2dSprite {
 	        QuickTiGame2dMapTile tile = new QuickTiGame2dMapTile();
 	        tile.gid = data.get(i).intValue();
 	        tile.alpha = 1;
+	        tile.index = i;
 	        
 	        setTile(i, tile);
 	    }
@@ -535,6 +538,70 @@ public class QuickTiGame2dMapSprite extends QuickTiGame2dSprite {
 	    }
 	    
 	    return true;
+	}
+	
+	public QuickTiGame2dMapTile getTileAtPosition(float sx, float sy) {
+	    float posX = sx - x;
+	    float posY = sy - y;
+	    
+	    float tiltStepX = (tileWidth  * tileTiltFactorX);
+	    float tiltStepY = (tileHeight * tileTiltFactorY);
+	    
+	    if (orientation == QuickTiGame2dConstant.MAP_ORIENTATION_ISOMETRIC) {
+	        
+	        //
+	        // poor implementation but this is enough this time
+	        //
+	        float localX = ((int)(posX / tiltStepX)) * tiltStepX;
+	        float localY = ((int)(posY / tiltStepY)) * tiltStepY - tiltStepY;
+	        
+	        float a = localX / tileTiltFactorX / tileWidth;
+	        float b = localY / tileTiltFactorY / tileHeight;
+	        
+	        int indexX = (int)Math.floor((a + b) / 2);
+	        int indexY = (int)Math.floor(indexX - a);
+	        
+	        QuickTiGame2dMapTile tile = getTile(indexX + (tileCountX * indexY));
+	        
+	        if (tile != null && tile.collides(posX, posY, tileTiltFactorY)) {
+	            return tile;
+	        }
+	        
+	        //
+	        // Check other tiles around because tiles can be overwrapped
+	        //
+	        tile = getTile((indexX + 1) + (tileCountX * indexY));
+	        if (tile != null && tile.collides(posX, posY, tileTiltFactorY)) {
+	            return tile;
+	        }
+	        
+	        tile = getTile(indexX + (tileCountX * (indexY + 1)));
+	        if (tile != null && tile.collides(posX, posY, tileTiltFactorY)) {
+	            return tile;
+	        }
+	        
+	        tile = getTile(indexX + (tileCountX * (indexY - 1)));
+	        if (tile != null && tile.collides(posX, posY, tileTiltFactorY)) {
+	            return tile;
+	        }
+	        
+	        tile = getTile((indexX - 1) + (tileCountX * indexY));
+	        if (tile != null && tile.collides(posX, posY, tileTiltFactorY)) {
+	            return tile;
+	        }
+	        
+	        return null;
+	        
+	    } else if (orientation == QuickTiGame2dConstant.MAP_ORIENTATION_HEXAGONAL) {
+	        
+	    } else {
+	        float indexX = posX / tiltStepX;
+	        float indexY = posY / tiltStepY;
+	        
+	        return getTile((int)(indexX + (tileCountX * indexY)));
+	    }
+	    
+	    return null;
 	}
 	
 	public QuickTiGame2dMapTile getTile(int index) {

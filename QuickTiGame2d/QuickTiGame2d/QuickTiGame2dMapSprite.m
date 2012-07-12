@@ -526,6 +526,7 @@
     QuickTiGame2dMapTile* tile = [[QuickTiGame2dMapTile alloc] init];
     tile.gid = gid;
     tile.alpha = 1;
+    tile.index = index;
     
     [self setTile:index tile:tile];
     
@@ -576,6 +577,7 @@
         QuickTiGame2dMapTile* tile = [[QuickTiGame2dMapTile alloc] init];
         tile.gid = [[data objectAtIndex:i] intValue];
         tile.alpha = 1;
+        tile.index = i;
         
         [self setTile:i tile:tile];
         
@@ -616,10 +618,10 @@
 /*
  * Get tiles from position of the screen
  */
--(QuickTiGame2dMapTile*)getTileAtPosition:(NSInteger)sx sy:(NSInteger)sy {
+-(QuickTiGame2dMapTile*)getTileAtPosition:(float)sx sy:(float)sy {
 
-    NSInteger posX = sx - x;
-    NSInteger posY = sy - y;
+    float posX = sx - x;
+    float posY = sy - y;
     
     float tiltStepX = (tileWidth  * tileTiltFactorX);
     float tiltStepY = (tileHeight * tileTiltFactorY);
