@@ -563,7 +563,7 @@ public class QuickTiGame2dMapSprite extends QuickTiGame2dSprite {
 	        
 	        QuickTiGame2dMapTile tile = getTile(indexX + (tileCountX * indexY));
 	        
-	        if (tile != null && tile.collides(posX, posY, tileTiltFactorY)) {
+	        if (tile != null && tile.collidesIsometric(posX, posY, tileTiltFactorY)) {
 	            return tile;
 	        }
 	        
@@ -571,37 +571,32 @@ public class QuickTiGame2dMapSprite extends QuickTiGame2dSprite {
 	        // Check other tiles around because tiles can be overwrapped
 	        //
 	        tile = getTile((indexX + 1) + (tileCountX * indexY));
-	        if (tile != null && tile.collides(posX, posY, tileTiltFactorY)) {
+	        if (tile != null && tile.collidesIsometric(posX, posY, tileTiltFactorY)) {
 	            return tile;
 	        }
 	        
 	        tile = getTile(indexX + (tileCountX * (indexY + 1)));
-	        if (tile != null && tile.collides(posX, posY, tileTiltFactorY)) {
+	        if (tile != null && tile.collidesIsometric(posX, posY, tileTiltFactorY)) {
 	            return tile;
 	        }
 	        
 	        tile = getTile(indexX + (tileCountX * (indexY - 1)));
-	        if (tile != null && tile.collides(posX, posY, tileTiltFactorY)) {
+	        if (tile != null && tile.collidesIsometric(posX, posY, tileTiltFactorY)) {
 	            return tile;
 	        }
 	        
 	        tile = getTile((indexX - 1) + (tileCountX * indexY));
-	        if (tile != null && tile.collides(posX, posY, tileTiltFactorY)) {
+	        if (tile != null && tile.collidesIsometric(posX, posY, tileTiltFactorY)) {
 	            return tile;
 	        }
 	        
 	        return null;
-	        
-	    } else if (orientation == QuickTiGame2dConstant.MAP_ORIENTATION_HEXAGONAL) {
-	        
 	    } else {
 	        float indexX = posX / tiltStepX;
 	        float indexY = posY / tiltStepY;
 	        
 	        return getTile((int)(indexX + (tileCountX * indexY)));
 	    }
-	    
-	    return null;
 	}
 	
 	public QuickTiGame2dMapTile getTile(int index) {

@@ -93,7 +93,7 @@
     positionFixed = other.positionFixed;
 }
 
--(BOOL)collides:(float)otherX otherY:(float)otherY tiltY:(float)tiltY {
+-(BOOL)collidesIsometric:(float)otherX otherY:(float)otherY tiltY:(float)tiltY {
     float thisX = initialX;
     float thisY = initialY;
     
@@ -642,7 +642,7 @@
         
         QuickTiGame2dMapTile* tile = [self getTile:(indexX + (tileCountX * indexY))];
         
-        if (tile != nil && [tile collides:posX otherY:posY tiltY:tileTiltFactorY]) {
+        if (tile != nil && [tile collidesIsometric:posX otherY:posY tiltY:tileTiltFactorY]) {
             return tile;
         }
         
@@ -650,28 +650,26 @@
         // Check other tiles around because tiles can be overwrapped
         //
         tile = [self getTile:((indexX + 1) + (tileCountX * indexY))];
-        if (tile != nil && [tile collides:posX otherY:posY tiltY:tileTiltFactorY]) {
+        if (tile != nil && [tile collidesIsometric:posX otherY:posY tiltY:tileTiltFactorY]) {
             return tile;
         }
         
         tile = [self getTile:(indexX + (tileCountX * (indexY + 1)))];
-        if (tile != nil && [tile collides:posX otherY:posY tiltY:tileTiltFactorY]) {
+        if (tile != nil && [tile collidesIsometric:posX otherY:posY tiltY:tileTiltFactorY]) {
             return tile;
         }
         
         tile = [self getTile:(indexX + (tileCountX * (indexY - 1)))];
-        if (tile != nil && [tile collides:posX otherY:posY tiltY:tileTiltFactorY]) {
+        if (tile != nil && [tile collidesIsometric:posX otherY:posY tiltY:tileTiltFactorY]) {
             return tile;
         }
         
         tile = [self getTile:((indexX - 1) + (tileCountX * indexY))];
-        if (tile != nil && [tile collides:posX otherY:posY tiltY:tileTiltFactorY]) {
+        if (tile != nil && [tile collidesIsometric:posX otherY:posY tiltY:tileTiltFactorY]) {
             return tile;
         }
         
         return nil;
-        
-    } else if (orientation == MAP_ORIENTATION_HEXAGONAL) {
         
     } else {
         int indexX = posX / tiltStepX;

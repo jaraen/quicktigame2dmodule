@@ -98,7 +98,7 @@ public class QuickTiGame2dMapTile {
         positionFixed = other.positionFixed;
     }
     
-    public boolean collides(float otherX, float otherY, float tiltY) {
+    public boolean collidesIsometric(float otherX, float otherY, float tiltY) {
         float thisX = initialX;
         float thisY = initialY;
         
