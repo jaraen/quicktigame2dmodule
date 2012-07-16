@@ -553,8 +553,12 @@
 
 -(void)setTile:(NSInteger)index tile:(QuickTiGame2dMapTile*)tile {
     
-    tile.firstgid = firstgid;
+    // Clear tile before updating with new tile
+    [self removeTile:index];
     
+    tile.firstgid = firstgid;
+
+    // Update tile properties if we found multiple tilesets
     if ([tilesets count] > 1 && tile.gid >= 0) {
         if (tile.image == nil) {
             for (id gids in tilesetgids) {
@@ -582,42 +586,42 @@
             tile.atlasY = [[prop objectForKey:@"atlasY"] floatValue];
             tile.atlasWidth  = [[prop objectForKey:@"atlasWidth"] floatValue];
             tile.atlasHeight = [[prop objectForKey:@"atlasHeight"] floatValue];
+        }
+    }
+    
+    // check if this tile consists of multiple tiles
+    // this assumes tile has same tile count for X&Y axis (2x2, 3x3, 4x4)
+    int overwrapTileCount = [self getOverwrapTileCount:tile];
+    if (overwrapTileCount >= 2) {
+        float baseTileHeight = tileWidth * 0.5;
+        float baseTileMargin = tile.height - (overwrapTileCount * baseTileHeight);
+        for (int i = 2; i <= overwrapTileCount; i++) {
             
-            // check if this tile consists of multiple tiles
-            // this assumes tile has same tile count for X&Y axis (2x2, 3x3, 4x4)
-            int overwrapTileCount = [self getOverwrapTileCount:tile];
-            if (overwrapTileCount >= 2) {
-                float baseTileHeight = tileWidth * 0.5;
-                float baseTileMargin = tile.height - (overwrapTileCount * baseTileHeight);
-                for (int i = 2; i <= overwrapTileCount; i++) {
-                    
-                    QuickTiGame2dMapTile* tile2 = [[QuickTiGame2dMapTile alloc] init];
-                    
-                    [tile2 cc:tile];
-                    
-                    tile2.positionFixed = FALSE;
-                    tile2.index    = index + ((i - 1) * tileCountX);
-                    
-                    tile2.width    = tileWidth;
-                    tile2.height   = baseTileHeight + baseTileMargin;
-                    tile2.atlasX   = tile.atlasX + ((overwrapTileCount - i) * tileWidth * 0.5);
-                    tile2.atlasY   = tile.atlasY + (baseTileHeight * 0.5) * (i - 1);
-                    
-                    tile2.overwrapWidth  = tile.width;
-                    tile2.overwrapHeight = tile.height;
-                    tile2.isOverwrap      = TRUE;
-                    tile2.offsetX = -tileWidth * 0.5;;
-                    tile2.offsetY = tile.offsetY;
-                    
-                    tile2.suppressUpdate = TRUE;
-                    
-                    @synchronized (updatedTiles) {
-                        [updatedTiles setObject:tile2 forKey:[NSNumber numberWithInt:tile2.index]];
-                    }
-                    
-                    [tile2 release];
-                }
+            QuickTiGame2dMapTile* tile2 = [[QuickTiGame2dMapTile alloc] init];
+            
+            [tile2 cc:tile];
+            
+            tile2.positionFixed = FALSE;
+            tile2.index    = index + ((i - 1) * tileCountX);
+            
+            tile2.width    = tileWidth;
+            tile2.height   = baseTileHeight + baseTileMargin;
+            tile2.atlasX   = tile.atlasX + ((overwrapTileCount - i) * tileWidth * 0.5);
+            tile2.atlasY   = tile.atlasY + (baseTileHeight * 0.5) * (i - 1);
+            
+            tile2.overwrapWidth  = tile.width;
+            tile2.overwrapHeight = tile.height;
+            tile2.isOverwrap      = TRUE;
+            tile2.offsetX = -tileWidth * 0.5;;
+            tile2.offsetY = tile.offsetY;
+            
+            tile2.suppressUpdate = TRUE;
+            
+            @synchronized (updatedTiles) {
+                [updatedTiles setObject:tile2 forKey:[NSNumber numberWithInt:tile2.index]];
             }
+            
+            [tile2 release];
         }
     }
     
@@ -654,6 +658,24 @@
     if (index >= [tiles count]) return FALSE;
     
     QuickTiGame2dMapTile* tile = [tiles objectAtIndex:index];
+    
+    // check if this tile consists of multiple tiles
+    // this assumes tile has same tile count for X&Y axis (2x2, 3x3, 4x4)
+    NSInteger overwrapTileCount = [self getOverwrapTileCount:tile];
+    for (int i = 1; i < overwrapTileCount; i++) {
+        
+        QuickTiGame2dMapTile* tile2 = [self getTile:(index + (i * tileCountX))];
+        if (tile2 == nil) continue;
+        
+        tile2.gid   = 0;
+        tile2.alpha = 0;
+        
+        @synchronized (updatedTiles) {
+            [updatedTiles setObject:tile2 forKey:[NSNumber numberWithInt:tile2.index]];
+        }
+    }
+    
+    tile.gid   = 0;
     tile.alpha = 0;
     
     @synchronized (updatedTiles) {
