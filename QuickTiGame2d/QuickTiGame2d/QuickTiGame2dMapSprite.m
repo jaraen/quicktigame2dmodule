@@ -44,7 +44,7 @@
 @synthesize gid, red, green, blue, alpha, flip, width, height;
 @synthesize atlasX, atlasY, firstgid, margin, border, atlasWidth, atlasHeight;
 @synthesize offsetX, offsetY, initialX, initialY, positionFixed;
-@synthesize image, index;
+@synthesize image, index, suppressUpdate, isOverwrap, overwrapWidth, overwrapHeight;
 
 -(id)init {
     self = [super init];
@@ -68,6 +68,11 @@
         initialY = 0;
         positionFixed = FALSE;
         index = 0;
+        
+        suppressUpdate = FALSE;
+        isOverwrap     = FALSE;
+        overwrapWidth  = 0;
+        overwrapHeight = 0;
     }
     return self;
 }
@@ -91,6 +96,11 @@
     initialX = other.initialX;
     initialY = other.initialY;
     positionFixed = other.positionFixed;
+    
+    suppressUpdate = other.suppressUpdate;
+    isOverwrap     = other.isOverwrap;
+    overwrapWidth  = other.overwrapWidth;
+    overwrapHeight = other.overwrapHeight;
 }
 
 -(BOOL)collidesIsometric:(float)otherX otherY:(float)otherY tiltY:(float)tiltY {
@@ -286,7 +296,7 @@
     int tileNo = tile.gid - tile.firstgid;
     if ([tilesets count] > 1) {
         float awidth = tile.atlasWidth > 0 ? tile.atlasWidth : width;
-        float twidth = tile.width > 0 ? tile.width : tileWidth;
+        float twidth = tile.isOverwrap ? tile.overwrapWidth : tile.width > 0 ? tile.width : tileWidth;
         
         int xcount = (int)round((awidth - (tile.margin * 2) + tile.border) / (float)(twidth  + tile.border));
         int xindex = tileNo % xcount;
@@ -305,8 +315,8 @@
     if ([tilesets count] > 1) {
         float awidth  = tile.atlasWidth  > 0 ? tile.atlasWidth  : width;
         float aheight = tile.atlasHeight > 0 ? tile.atlasHeight : height;
-        float twidth = tile.width > 0 ? tile.width : tileWidth;
-        float theight = tile.height > 0 ? tile.height : tileHeight;
+        float twidth  = tile.isOverwrap ? tile.overwrapWidth  : tile.width  > 0 ? tile.width  : tileWidth;
+        float theight = tile.isOverwrap ? tile.overwrapHeight : tile.height > 0 ? tile.height : tileHeight;
         int xcount = (int)round((awidth  - (tile.margin * 2) + tile.border) / (float)(twidth  + tile.border));
         int ycount = (int)round((aheight - (tile.margin * 2) + tile.border) / (float)(theight + tile.border));
         int yindex = [self flipY] ? ycount - (tileNo / xcount) - 1 : (tileNo / xcount);
@@ -327,12 +337,16 @@
 
 -(float)tileCoordEndX:(QuickTiGame2dMapTile*)tile {
     float twidth = tile.width > 0 ? tile.width : tileWidth;
-    return (float)([self tex_coord_startX:tile] + twidth) / (float)self.texture.glWidth - [self getTexelHalfX];
+    float value  = (float)([self tex_coord_startX:tile] + twidth) / (float)self.texture.glWidth - [self getTexelHalfX];
+    
+    return value > 1.0f ? 1.0f : value;
 }
 
 -(float)tileCoordStartY:(QuickTiGame2dMapTile*)tile {
     float theight = tile.height > 0 ? tile.height : tileHeight;
-    return (float)([self tex_coord_startY:tile] + theight) / (float)self.texture.glHeight - [self getTexelHalfY];
+    float value   = (float)([self tex_coord_startY:tile] + theight) / (float)self.texture.glHeight - [self getTexelHalfY];
+    
+    return value > 1.0f ? 1.0f : value;
 }
 
 -(float)tileCoordEndY:(QuickTiGame2dMapTile*)tile {
@@ -533,6 +547,10 @@
     [tile release];
 }
 
+-(NSInteger)getOverwrapTileCount:(QuickTiGame2dMapTile*)tile {
+    return (NSInteger)(tile.width / tileWidth);
+}
+
 -(void)setTile:(NSInteger)index tile:(QuickTiGame2dMapTile*)tile {
     
     tile.firstgid = firstgid;
@@ -564,6 +582,42 @@
             tile.atlasY = [[prop objectForKey:@"atlasY"] floatValue];
             tile.atlasWidth  = [[prop objectForKey:@"atlasWidth"] floatValue];
             tile.atlasHeight = [[prop objectForKey:@"atlasHeight"] floatValue];
+            
+            // check if this tile consists of multiple tiles
+            // this assumes tile has same tile count for X&Y axis (2x2, 3x3, 4x4)
+            int overwrapTileCount = [self getOverwrapTileCount:tile];
+            if (overwrapTileCount >= 2) {
+                float baseTileHeight = tileWidth * 0.5;
+                float baseTileMargin = tile.height - (overwrapTileCount * baseTileHeight);
+                for (int i = 2; i <= overwrapTileCount; i++) {
+                    
+                    QuickTiGame2dMapTile* tile2 = [[QuickTiGame2dMapTile alloc] init];
+                    
+                    [tile2 cc:tile];
+                    
+                    tile2.positionFixed = FALSE;
+                    tile2.index    = index + ((i - 1) * tileCountX);
+                    
+                    tile2.width    = tileWidth;
+                    tile2.height   = baseTileHeight + baseTileMargin;
+                    tile2.atlasX   = tile.atlasX + ((overwrapTileCount - i) * tileWidth * 0.5);
+                    tile2.atlasY   = tile.atlasY + (baseTileHeight * 0.5) * (i - 1);
+                    
+                    tile2.overwrapWidth  = tile.width;
+                    tile2.overwrapHeight = tile.height;
+                    tile2.isOverwrap      = TRUE;
+                    tile2.offsetX = -tileWidth * 0.5;;
+                    tile2.offsetY = tile.offsetY;
+                    
+                    tile2.suppressUpdate = TRUE;
+                    
+                    @synchronized (updatedTiles) {
+                        [updatedTiles setObject:tile2 forKey:[NSNumber numberWithInt:tile2.index]];
+                    }
+                    
+                    [tile2 release];
+                }
+            }
         }
     }
     
@@ -574,6 +628,13 @@
 
 -(void)setTiles:(NSArray*)data {
     for (int i = 0; i < [data count]; i++) {
+        
+        QuickTiGame2dMapTile* overwrap = [updatedTiles objectForKey:[NSNumber numberWithInt:i]];
+        if (overwrap != nil && overwrap.suppressUpdate) {
+            overwrap.suppressUpdate = FALSE;
+            continue;
+        }
+        
         QuickTiGame2dMapTile* tile = [[QuickTiGame2dMapTile alloc] init];
         tile.gid = [[data objectAtIndex:i] intValue];
         tile.alpha = 1;
