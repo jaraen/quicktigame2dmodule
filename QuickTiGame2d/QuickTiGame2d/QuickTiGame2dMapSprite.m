@@ -102,25 +102,6 @@
     overwrapWidth  = other.overwrapWidth;
     overwrapHeight = other.overwrapHeight;
 }
-
--(BOOL)collidesIsometric:(float)otherX otherY:(float)otherY tiltY:(float)tiltY {
-    float thisX = initialX;
-    float thisY = initialY;
-    
-    otherX = otherX - offsetX - thisX;
-    otherY = otherY - (height * tiltY) - thisY;
-
-    float dHeight = height - (height * tiltY);
-    float ratio = MIN(width, dHeight) / MAX(width, dHeight);
-    float rHeight = dHeight * ratio;
-    
-    float a1 = (ratio * otherX) - rHeight;
-    float a2 = (ratio * otherX) + rHeight;
-    float a3 = -(ratio * otherX) + rHeight;
-    float a4 = -(ratio * otherX) + (3 * rHeight);
-    
-    return (otherY > a1 && otherY < a2 && otherY > a3 && otherY < a4);
-}
 @end
 
 @implementation QuickTiGame2dMapSprite
@@ -698,6 +679,22 @@
     return TRUE;
 }
 
+-(BOOL)collidesIsometric:(float)otherX otherY:(float)otherY withTile:(QuickTiGame2dMapTile*) tile {
+    otherX = otherX - tile.offsetX - tile.initialX;
+    otherY = otherY - (tileHeight * tileTiltFactorY) - tile.initialY;
+    
+    float dHeight = tileHeight - (tileHeight * tileTiltFactorY);
+    float ratio = MIN(tileWidth, dHeight) / MAX(tileWidth, dHeight);
+    float rHeight = dHeight * ratio;
+    
+    float a1 = (ratio * otherX) - rHeight;
+    float a2 = (ratio * otherX) + rHeight;
+    float a3 = -(ratio * otherX) + rHeight;
+    float a4 = -(ratio * otherX) + (3 * rHeight);
+    
+    return (otherY > a1 && otherY < a2 && otherY > a3 && otherY < a4);
+}
+
 /*
  * Get tiles from position of the screen
  */
@@ -725,7 +722,7 @@
         
         QuickTiGame2dMapTile* tile = [self getTile:(indexX + (tileCountX * indexY))];
         
-        if (tile != nil && [tile collidesIsometric:posX otherY:posY tiltY:tileTiltFactorY]) {
+        if (tile != nil && [self collidesIsometric:posX otherY:posY withTile:tile]) {
             return tile;
         }
         
@@ -733,22 +730,22 @@
         // Check other tiles around because tiles can be overwrapped
         //
         tile = [self getTile:((indexX + 1) + (tileCountX * indexY))];
-        if (tile != nil && [tile collidesIsometric:posX otherY:posY tiltY:tileTiltFactorY]) {
+        if (tile != nil && [self collidesIsometric:posX otherY:posY withTile:tile]) {
             return tile;
         }
         
         tile = [self getTile:(indexX + (tileCountX * (indexY + 1)))];
-        if (tile != nil && [tile collidesIsometric:posX otherY:posY tiltY:tileTiltFactorY]) {
+        if (tile != nil && [self collidesIsometric:posX otherY:posY withTile:tile]) {
             return tile;
         }
         
         tile = [self getTile:(indexX + (tileCountX * (indexY - 1)))];
-        if (tile != nil && [tile collidesIsometric:posX otherY:posY tiltY:tileTiltFactorY]) {
+        if (tile != nil && [self collidesIsometric:posX otherY:posY withTile:tile]) {
             return tile;
         }
         
         tile = [self getTile:((indexX - 1) + (tileCountX * indexY))];
-        if (tile != nil && [tile collidesIsometric:posX otherY:posY tiltY:tileTiltFactorY]) {
+        if (tile != nil && [self collidesIsometric:posX otherY:posY withTile:tile]) {
             return tile;
         }
         

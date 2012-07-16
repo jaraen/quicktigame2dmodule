@@ -128,7 +128,6 @@ typedef struct {
 @property (readwrite) float overwrapHeight;
 
 -(void)cc:(QuickTiGame2dMapTile*)other;
--(BOOL)collidesIsometric:(float)otherX otherY:(float)otherY tiltY:(float)tiltY;
 @end
 
 #define MAXIMUM_UPDATE_RATE 60.0f	// The maximum number of updates that occur per frame

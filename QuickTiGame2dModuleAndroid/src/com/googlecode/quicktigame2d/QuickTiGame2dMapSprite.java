@@ -540,6 +540,22 @@ public class QuickTiGame2dMapSprite extends QuickTiGame2dSprite {
 	    return true;
 	}
 	
+    public boolean collidesIsometric(float otherX, float otherY, QuickTiGame2dMapTile tile) {
+        otherX = otherX - tile.offsetX - tile.initialX;
+        otherY = otherY - (tileHeight * tileTiltFactorY) - tile.initialY;
+        
+        float dHeight = tileHeight - (tileHeight * tileTiltFactorY);
+        float ratio = Math.min(tileWidth, dHeight) / Math.max(tileWidth, dHeight);
+        float rHeight = dHeight * ratio;
+        
+        float a1 = (ratio * otherX) - rHeight;
+        float a2 = (ratio * otherX) + rHeight;
+        float a3 = -(ratio * otherX) + rHeight;
+        float a4 = -(ratio * otherX) + (3 * rHeight);
+        
+        return (otherY > a1 && otherY < a2 && otherY > a3 && otherY < a4);
+    }
+    
 	public QuickTiGame2dMapTile getTileAtPosition(float sx, float sy) {
 	    float posX = sx - x;
 	    float posY = sy - y;
@@ -563,7 +579,7 @@ public class QuickTiGame2dMapSprite extends QuickTiGame2dSprite {
 	        
 	        QuickTiGame2dMapTile tile = getTile(indexX + (tileCountX * indexY));
 	        
-	        if (tile != null && tile.collidesIsometric(posX, posY, tileTiltFactorY)) {
+	        if (tile != null && collidesIsometric(posX, posY, tile)) {
 	            return tile;
 	        }
 	        
@@ -571,22 +587,22 @@ public class QuickTiGame2dMapSprite extends QuickTiGame2dSprite {
 	        // Check other tiles around because tiles can be overwrapped
 	        //
 	        tile = getTile((indexX + 1) + (tileCountX * indexY));
-	        if (tile != null && tile.collidesIsometric(posX, posY, tileTiltFactorY)) {
+	        if (tile != null && collidesIsometric(posX, posY, tile)) {
 	            return tile;
 	        }
 	        
 	        tile = getTile(indexX + (tileCountX * (indexY + 1)));
-	        if (tile != null && tile.collidesIsometric(posX, posY, tileTiltFactorY)) {
+	        if (tile != null && collidesIsometric(posX, posY, tile)) {
 	            return tile;
 	        }
 	        
 	        tile = getTile(indexX + (tileCountX * (indexY - 1)));
-	        if (tile != null && tile.collidesIsometric(posX, posY, tileTiltFactorY)) {
+	        if (tile != null && collidesIsometric(posX, posY, tile)) {
 	            return tile;
 	        }
 	        
 	        tile = getTile((indexX - 1) + (tileCountX * indexY));
-	        if (tile != null && tile.collidesIsometric(posX, posY, tileTiltFactorY)) {
+	        if (tile != null && collidesIsometric(posX, posY, tile)) {
 	            return tile;
 	        }
 	        

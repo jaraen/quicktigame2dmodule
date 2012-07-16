@@ -98,22 +98,4 @@ public class QuickTiGame2dMapTile {
         positionFixed = other.positionFixed;
     }
     
-    public boolean collidesIsometric(float otherX, float otherY, float tiltY) {
-        float thisX = initialX;
-        float thisY = initialY;
-        
-        otherX = otherX - offsetX - thisX;
-        otherY = otherY - (height * tiltY) - thisY;
-
-        float dHeight = height - (height * tiltY);
-        float ratio = Math.min(width, dHeight) / Math.max(width, dHeight);
-        float rHeight = dHeight * ratio;
-        
-        float a1 = (ratio * otherX) - rHeight;
-        float a2 = (ratio * otherX) + rHeight;
-        float a3 = -(ratio * otherX) + rHeight;
-        float a4 = -(ratio * otherX) + (3 * rHeight);
-        
-        return (otherY > a1 && otherY < a2 && otherY > a3 && otherY < a4);
-    }
 }
