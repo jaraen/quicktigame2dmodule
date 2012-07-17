@@ -330,7 +330,7 @@ public class QuickTiGame2dMapSprite extends QuickTiGame2dSprite {
 		
 		if (tilesets.size() > 1) {
 	        float awidth = tile.atlasWidth > 0 ? tile.atlasWidth : width;
-	        float twidth = tile.width > 0 ? tile.width : tileWidth;
+	        float twidth = tile.isOverwrap ? tile.overwrapWidth : tile.width > 0 ? tile.width : tileWidth;
 	        
 	        int xcount = (int)Math.round((awidth - (tile.margin * 2) + tile.border) / (float)(twidth  + tile.border));
 	        int xindex = tileNo % xcount;
@@ -348,8 +348,8 @@ public class QuickTiGame2dMapSprite extends QuickTiGame2dSprite {
 		if (tilesets.size() > 1) {
 	        float awidth  = tile.atlasWidth  > 0 ? tile.atlasWidth  : width;
 	        float aheight = tile.atlasHeight > 0 ? tile.atlasHeight : height;
-	        float twidth = tile.width > 0 ? tile.width : tileWidth;
-	        float theight = tile.height > 0 ? tile.height : tileHeight;
+	        float twidth  = tile.isOverwrap ? tile.overwrapWidth  : tile.width  > 0 ? tile.width : tileWidth;
+	        float theight = tile.isOverwrap ? tile.overwrapHeight : tile.height > 0 ? tile.height : tileHeight;
 	        
 	        int xcount = (int)Math.round((awidth  - (tile.margin * 2) + tile.border) / (float)(twidth  + tile.border));
 	        int ycount = (int)Math.round((aheight - (tile.margin * 2) + tile.border) / (float)(theight + tile.border));
@@ -370,12 +370,15 @@ public class QuickTiGame2dMapSprite extends QuickTiGame2dSprite {
 
 	private float tileCoordEndX(QuickTiGame2dMapTile tile) {
 	    float twidth = tile.width > 0 ? tile.width : tileWidth;
-	    return (float)(tex_coord_startX(tile) + twidth) / (float)getTexture().getGlWidth() - getTexelHalfX();
+	    float value  = (float)(tex_coord_startX(tile) + twidth) / (float)getTexture().getGlWidth() - getTexelHalfX();
+	    
+	    return value > 1.0f ? 1.0f : value;
 	}
 
 	private float tileCoordStartY(QuickTiGame2dMapTile tile) {
 	    float theight = tile.height > 0 ? tile.height : tileHeight;
-	    return (float)(tex_coord_startY(tile) + theight) / (float)getTexture().getGlHeight() - getTexelHalfY();
+	    float value   = (float)(tex_coord_startY(tile) + theight) / (float)getTexture().getGlHeight() - getTexelHalfY();
+	    return value > 1.0f ? 1.0f : value;
 	}
 
 	private float tileCoordEndY(QuickTiGame2dMapTile tile) {
@@ -464,6 +467,10 @@ public class QuickTiGame2dMapSprite extends QuickTiGame2dSprite {
 	    setTile(index, tile);
 	}
 
+	public int getOverwrapTileCount(QuickTiGame2dMapTile tile) {
+	    return (int)(tile.width / tileWidth);
+	}
+
 	public void setTile(int index, QuickTiGame2dMapTile tile) {
 	    
 	    tile.firstgid = firstgid;
@@ -498,6 +505,42 @@ public class QuickTiGame2dMapSprite extends QuickTiGame2dSprite {
 	        }
 	    }
 		
+	    // check if this tile consists of multiple tiles
+	    // this assumes tile has same tile count for X&Y axis (2x2, 3x3, 4x4)
+	    int overwrapTileCount = getOverwrapTileCount(tile);
+	    if (overwrapTileCount >= 2) {
+	        float baseTileHeight = (float) tileWidth * 0.5f;
+	        float baseTileMargin = tile.height - (overwrapTileCount * baseTileHeight);
+	        for (int i = 2; i <= overwrapTileCount; i++) {
+	            
+	            QuickTiGame2dMapTile tile2 = new QuickTiGame2dMapTile();
+	            
+	            tile2.cc(tile);
+	            
+	            tile2.positionFixed = false;
+	            tile2.index    = index + ((i - 1) * tileCountX);
+	            
+	            tile2.width    = tileWidth;
+	            tile2.height   = baseTileHeight + baseTileMargin;
+	            tile2.atlasX   = tile.atlasX + ((overwrapTileCount - i) * tileWidth * 0.5f);
+	            tile2.atlasY   = tile.atlasY + (baseTileHeight * 0.5f) * (i - 1);
+	            
+	            tile2.overwrapWidth  = tile.width;
+	            tile2.overwrapHeight = tile.height;
+	            tile2.isOverwrap      = true;
+	            tile2.offsetX = -tileWidth * 0.5f;
+	            tile2.offsetY = tile.offsetY;
+	            
+	            tile2.suppressUpdate = true;
+	            
+	    	    synchronized(updatedTiles) {
+	    	    	updatedTiles.put(Integer.valueOf(tile2.index), tile2);
+	    	    }
+	    	    
+	    	    tile2 = null;
+	        }
+	    }
+	    
 	    synchronized(updatedTiles) {
 	    	updatedTiles.put(Integer.valueOf(index), tile);
 	    }
@@ -505,6 +548,13 @@ public class QuickTiGame2dMapSprite extends QuickTiGame2dSprite {
 
 	public void setTiles(List<Integer> data) {
 	    for (int i = 0; i < data.size(); i++) {
+	    	
+	    	QuickTiGame2dMapTile overwrap = updatedTiles.get(Integer.valueOf(i));
+	    	if (overwrap != null && overwrap.suppressUpdate) {
+	    		overwrap.suppressUpdate = false;
+	    		continue;
+	    	}
+	    	
 	        QuickTiGame2dMapTile tile = new QuickTiGame2dMapTile();
 	        tile.gid = data.get(i).intValue();
 	        tile.alpha = 1;
@@ -518,6 +568,24 @@ public class QuickTiGame2dMapSprite extends QuickTiGame2dSprite {
 	    if (index >= tiles.size()) return false;
 	    
 	    QuickTiGame2dMapTile tile = tiles.get(index);
+	    
+	    // check if this tile consists of multiple tiles
+	    // this assumes tile has same tile count for X&Y axis (2x2, 3x3, 4x4)
+	    int overwrapTileCount = getOverwrapTileCount(tile);
+	    for (int i = 1; i < overwrapTileCount; i++) {
+	        
+	        QuickTiGame2dMapTile tile2 = getTile(index + (i * tileCountX));
+	        if (tile2 == null) continue;
+	        
+	        tile2.gid   = 0;
+	        tile2.alpha = 0;
+	        
+		    synchronized(updatedTiles) {
+		    	updatedTiles.put(Integer.valueOf(tile2.index), tile2);
+		    }
+	    }
+
+	    tile.gid   = 0;
 	    tile.alpha = 0;
 	    
 	    synchronized(updatedTiles) {

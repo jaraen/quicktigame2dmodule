@@ -574,7 +574,7 @@
     // this assumes tile has same tile count for X&Y axis (2x2, 3x3, 4x4)
     int overwrapTileCount = [self getOverwrapTileCount:tile];
     if (overwrapTileCount >= 2) {
-        float baseTileHeight = tileWidth * 0.5;
+        float baseTileHeight = tileWidth * 0.5f;
         float baseTileMargin = tile.height - (overwrapTileCount * baseTileHeight);
         for (int i = 2; i <= overwrapTileCount; i++) {
             
@@ -587,13 +587,13 @@
             
             tile2.width    = tileWidth;
             tile2.height   = baseTileHeight + baseTileMargin;
-            tile2.atlasX   = tile.atlasX + ((overwrapTileCount - i) * tileWidth * 0.5);
-            tile2.atlasY   = tile.atlasY + (baseTileHeight * 0.5) * (i - 1);
+            tile2.atlasX   = tile.atlasX + ((overwrapTileCount - i) * tileWidth * 0.5f);
+            tile2.atlasY   = tile.atlasY + (baseTileHeight * 0.5f) * (i - 1);
             
             tile2.overwrapWidth  = tile.width;
             tile2.overwrapHeight = tile.height;
             tile2.isOverwrap      = TRUE;
-            tile2.offsetX = -tileWidth * 0.5;;
+            tile2.offsetX = -tileWidth * 0.5f;
             tile2.offsetY = tile.offsetY;
             
             tile2.suppressUpdate = TRUE;

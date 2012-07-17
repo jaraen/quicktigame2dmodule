@@ -53,6 +53,11 @@ public class QuickTiGame2dMapTile {
     public float initialX;
     public float initialY;
     
+    boolean  isOverwrap;
+    float overwrapWidth;
+    float overwrapHeight;
+    boolean  suppressUpdate;
+    
     public QuickTiGame2dMapTile() {
         gid   = 0;
         index = 0;
@@ -74,6 +79,10 @@ public class QuickTiGame2dMapTile {
         initialY = 0;
         positionFixed = false;
         image = null;
+        isOverwrap = false;
+        overwrapWidth  = 0;
+        overwrapHeight = 0;
+        suppressUpdate = false;
     }
     
     public void cc(QuickTiGame2dMapTile other) {
@@ -96,6 +105,10 @@ public class QuickTiGame2dMapTile {
         initialX = other.initialX;
         initialY = other.initialY;
         positionFixed = other.positionFixed;
+        isOverwrap = other.isOverwrap;
+        overwrapWidth = other.overwrapWidth;
+        overwrapHeight = other.overwrapHeight;
+        suppressUpdate = other.suppressUpdate;
     }
     
 }
