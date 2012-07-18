@@ -107,7 +107,7 @@
 }
 
 -(void)setName:(id)value {
-    scene.name = [[TiUtils stringValue:value] copy];
+    scene.name = [[[TiUtils stringValue:value] copy] autorelease];
 }
 
 -(id)name {
