@@ -111,7 +111,6 @@ typedef void (^CommandBlock)(void);
         lastOnFpsTime    = 0;
         fpsFrameCount    = 0;
         
-        resetPreviousScene = FALSE;
         previousScene = nil;
     }
     return self;
@@ -272,12 +271,11 @@ typedef void (^CommandBlock)(void);
     
     QuickTiGame2dScene* scene = [self topScene];
     
-    if (previousScene != nil) {
+    if (!takeSnapshot && previousScene != nil) {
         if (previousScene != scene) {
             [previousScene onDeactivate];
-        } else {
-            previousScene = nil;
         }
+        previousScene = nil;
     }
     
     if (scene != nil && status != GAME_STOPPED) {
@@ -404,12 +402,7 @@ typedef void (^CommandBlock)(void);
             ((CommandBlock)[afterCommandQueue poll])();
         }
     }
-    
-    if (resetPreviousScene) {
-        previousScene = nil;
-        resetPreviousScene = FALSE;
-    }
-    
+        
     [QuickTiGame2dEngine restoreGLState:FALSE];
 }
 
@@ -755,7 +748,7 @@ typedef void (^CommandBlock)(void);
 
 
 -(void)startCurrentScene {
-    resetPreviousScene = TRUE;
+    [self releaseSnapshot];
 }
 
 - (GLint)viewportWidth {

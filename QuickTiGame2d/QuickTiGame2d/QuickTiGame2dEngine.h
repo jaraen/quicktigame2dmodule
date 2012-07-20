@@ -103,8 +103,6 @@ typedef struct CameraInfo {
     
     QuickTiGame2dScene* hudScene;
     QuickTiGame2dScene* previousScene;
-    
-    BOOL resetPreviousScene;
 }
 @property (readwrite) GLint viewportWidth;
 @property (readwrite) GLint viewportHeight;
