@@ -66,7 +66,8 @@ typedef struct CameraInfo {
     BOOL loaded;
     
     ArrayStackQueue* sceneStack;
-    ArrayStackQueue* snapshotQueue;
+    ArrayStackQueue* beforeCommandQueue;
+    ArrayStackQueue* afterCommandQueue;
     
     NSMutableDictionary* notificationEventCache;
     NSMutableDictionary* fpsNotificationEventCache;
@@ -82,11 +83,9 @@ typedef struct CameraInfo {
     
     BOOL takeSnapshot;
     BOOL releaseSnapshot;
+    
     QuickTiGame2dTexture* snapshotTexture;
     QuickTiGame2dSprite*  snapshotSprite;
-    
-    NSInteger sceneEventType;
-    QuickTiGame2dScene* sceneEventArg;
     
     CameraInfo defaultPortraitCamera;
     CameraInfo defaultLandscapeCamera;
