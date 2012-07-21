@@ -48,6 +48,7 @@ import android.graphics.PixelFormat;
 import android.opengl.GLSurfaceView;
 import android.opengl.GLSurfaceView.Renderer;
 import android.opengl.GLU;
+import android.os.Handler;
 
 import org.appcelerator.kroll.common.Log;
 import org.appcelerator.titanium.util.TiOrientationHelper;
@@ -55,7 +56,7 @@ import org.appcelerator.titanium.TiContext.OnLifecycleEvent;
 import com.googlecode.quicktigame2d.opengl.GLHelper;
 import com.googlecode.quicktigame2d.util.Base64;
 
-public class QuickTiGame2dGameView extends GLSurfaceView implements Renderer, OnLifecycleEvent {
+public class QuickTiGame2dGameView extends GLSurfaceView implements Renderer, OnLifecycleEvent, Runnable {
 
 	public static int correctionHint = GL10.GL_NICEST;
 	public static int textureFilter  = GL10.GL_NEAREST;
@@ -133,6 +134,8 @@ public class QuickTiGame2dGameView extends GLSurfaceView implements Renderer, On
 	private boolean isRendererSet    = false;
 	private boolean opaqueBackground = true;
 	
+	private Handler redrawHandler = new Handler();
+	
 	public QuickTiGame2dGameView(Context context) {
 		super(context);
 		
@@ -188,6 +191,7 @@ public class QuickTiGame2dGameView extends GLSurfaceView implements Renderer, On
 	
 	public void onLostFocus() {
 		focused = false;
+		
 		synchronized (listeners) {
 			for (GameViewEventListener listener : listeners) {
 				listener.onLostFocus();
@@ -195,19 +199,36 @@ public class QuickTiGame2dGameView extends GLSurfaceView implements Renderer, On
 		}
 	}
 	
+	/*
+     * Requrest drawing OpenGL surface
+	 */
+	@Override
+	public void run() {
+		if (focused) {
+			requestRender();
+			redrawHandler.postDelayed(this, getFpsMsec());
+		}
+	}
+	
 	public void onGainedFocus() {
 		
 		if (!isRendererSet) {
 			setRenderer(this);
+			setRenderMode(RENDERMODE_WHEN_DIRTY);
+			
 			isRendererSet = true;
 		}
 		
 		focused = true;
+		
 		synchronized (listeners) {
 			for (GameViewEventListener listener : listeners) {
 				listener.onGainedFocus();
 			}
 		}
+		
+        // Enqueue drawing OpenGL surface
+        redrawHandler.post(this);
 	}
 	
 	public void onDispose() {
@@ -555,8 +576,7 @@ public class QuickTiGame2dGameView extends GLSurfaceView implements Renderer, On
 			
 			// check event delta time
 			int delta = (int)((uptime() - lastOnDrawTime) * 1000);
-			boolean fpsTimeElapsed = isFpsTimeElapsed(delta);
-			if (fpsTimeElapsed && enableOnDrawFrameEvent) {
+			if (enableOnDrawFrameEvent) {
 				synchronized (listeners) {
 					for (GameViewEventListener listener : listeners) {
 						listener.onDrawFrame(delta);
@@ -564,9 +584,9 @@ public class QuickTiGame2dGameView extends GLSurfaceView implements Renderer, On
 				}
 			}
 			
-			if (fpsTimeElapsed) lastOnDrawTime = uptime();
+			lastOnDrawTime = uptime();
 			
-	        if (enableOnFpsEvent && fpsTimeElapsed) {
+	        if (enableOnFpsEvent) {
 	        	fpsFrameCount++;
 	        	int   fpsdelta = (int)((uptime() - lastOnFpsTime) * 1000);
 	        	float fpsvalue = fpsFrameCount / (fpsdelta / 1000.0f);
@@ -609,7 +629,7 @@ public class QuickTiGame2dGameView extends GLSurfaceView implements Renderer, On
 	        }
 	        
 			synchronized (cameraTransforms) {
-				if (fpsTimeElapsed) onTransformCamera();
+				onTransformCamera();
 			}
 			
 			updateViewport(gl);
@@ -617,7 +637,7 @@ public class QuickTiGame2dGameView extends GLSurfaceView implements Renderer, On
 			scene.setDebug(debug);
 			scene.setSnapshot(takeSnapshot);
 			
-			scene.onDrawFrame(gl, fpsTimeElapsed, this);
+			scene.onDrawFrame(gl, this);
 			
 	        if (hudScene.hasSprite()) {
 	            updateHUDViewport(gl);
@@ -625,7 +645,7 @@ public class QuickTiGame2dGameView extends GLSurfaceView implements Renderer, On
 	            hudScene.setDebug(debug);
 	            hudScene.setSnapshot(takeSnapshot);
 	            
-	            hudScene.onDrawFrame(gl, fpsTimeElapsed, this);
+	            hudScene.onDrawFrame(gl, this);
 	            
 	            dirty = true;
 	        }
@@ -659,7 +679,7 @@ public class QuickTiGame2dGameView extends GLSurfaceView implements Renderer, On
 		
 	    if (snapshotSprite != null) {
 	        if (!snapshotSprite.isLoaded()) snapshotSprite.onLoad(gl, this);
-	        snapshotSprite.onDrawFrame(gl, true);
+	        snapshotSprite.onDrawFrame(gl);
 	    }
 		
 		loadWaitingTextures(gl);
@@ -1134,6 +1154,7 @@ public class QuickTiGame2dGameView extends GLSurfaceView implements Renderer, On
 	@Override
 	public void onResume() {
         if (debug) Log.d(Quicktigame2dModule.LOG_TAG, "QuickTiGame2dGameView:onResume");
+        
 		super.onResume();
 	}
 	

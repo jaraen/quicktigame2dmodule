@@ -105,13 +105,11 @@ public class QuickTiGame2dMapSprite extends QuickTiGame2dSprite {
 	}
 
     @Override
-	public void onDrawFrame(GL10 gl10, boolean fpsTimeElapsed) {
+	public void onDrawFrame(GL10 gl10) {
 		GL11 gl = (GL11)gl10;
 
 	    synchronized (transforms) {
-			if (fpsTimeElapsed) {
-				onTransform();
-			}
+			onTransform();
 	    }
 	    
 	    synchronized (updatedTiles) {
