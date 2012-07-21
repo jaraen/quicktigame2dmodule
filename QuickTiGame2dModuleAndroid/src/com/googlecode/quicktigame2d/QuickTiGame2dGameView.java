@@ -546,6 +546,58 @@ public class QuickTiGame2dGameView extends GLSurfaceView implements Renderer, On
 		// look ahead for 1 frame
 		return delta + 16 >= getFpsMsec();
 	}
+
+	private void prepareScreenShot(GL10 gl) {
+        
+        if (!takeSnapshot && releaseSnapshot) {
+            if (debug) Log.d(Quicktigame2dModule.LOG_TAG, "QuickTiGame2dGameView:releaseSnapshot");
+            if (snapshotSprite != null) {
+            	snapshotSprite.onDispose();
+            	snapshotSprite = null;
+            }
+            releaseSnapshot = false;
+        }
+        
+        if (takeSnapshot) {
+            if (debug) Log.d(Quicktigame2dModule.LOG_TAG, "QuickTiGame2dGameView:takeSnapshot start");
+            
+            GL11ExtensionPack gl11Ext = (GL11ExtensionPack)gl;
+            
+            int[] framebufferOldId = new int[1];
+            gl11Ext.glGetIntegerv(GL11ExtensionPack.GL_FRAMEBUFFER_BINDING_OES, framebufferOldId, 0);
+            int error = gl.glGetError();
+            if (error != GL10.GL_NO_ERROR) {
+                framebufferOldId[0] = 0;
+            }
+            snapshotTexture.setFramebufferOldId(framebufferOldId[0]);
+            
+            gl11Ext.glBindFramebufferOES(GL11ExtensionPack.GL_FRAMEBUFFER_OES, snapshotTexture.getFramebufferId());
+            
+            dirty = true;
+        }
+	}
+
+	private void finishScreenShot(GL10 gl) {
+        if (takeSnapshot) {
+            if(snapshotTexture.getFramebufferOldId() >= 0) {
+	            GL11ExtensionPack gl11Ext = (GL11ExtensionPack)gl;
+	            
+                gl11Ext.glBindFramebufferOES(GL11ExtensionPack.GL_FRAMEBUFFER_OES, snapshotTexture.getFramebufferOldId());
+                snapshotTexture.setFramebufferOldId(0);
+
+                snapshotSprite  = new QuickTiGame2dSprite();
+                snapshotSprite.setImage(QuickTiGame2dConstant.SNAPSHOT_TEXTURE_NAME);
+                snapshotSprite.setWidth(width);
+                snapshotSprite.setHeight(height);
+                snapshotSprite.setX(0);
+                snapshotSprite.setY(0);
+                snapshotSprite.setZ(99.5f);
+            }
+            
+            takeSnapshot = false;
+            if (debug) Log.d(Quicktigame2dModule.LOG_TAG, "QuickTiGame2dGameView:takeSnapshot end");
+        }
+	}
 	
 	@Override
 	public void onDrawFrame(GL10 gl) {
@@ -601,32 +653,7 @@ public class QuickTiGame2dGameView extends GLSurfaceView implements Renderer, On
 	        	}
 	        }
 			
-	        if (!takeSnapshot && releaseSnapshot) {
-	            if (debug) Log.d(Quicktigame2dModule.LOG_TAG, "QuickTiGame2dGameView:releaseSnapshot");
-	            if (snapshotSprite != null) {
-	            	snapshotSprite.onDispose();
-	            	snapshotSprite = null;
-	            }
-	            releaseSnapshot = false;
-	        }
-	        
-	        if (takeSnapshot) {
-	            if (debug) Log.d(Quicktigame2dModule.LOG_TAG, "QuickTiGame2dGameView:takeSnapshot start");
-	            
-	            GL11ExtensionPack gl11Ext = (GL11ExtensionPack)gl;
-	            
-	            int[] framebufferOldId = new int[1];
-	            gl11Ext.glGetIntegerv(GL11ExtensionPack.GL_FRAMEBUFFER_BINDING_OES, framebufferOldId, 0);
-                int error = gl.glGetError();
-                if (error != GL10.GL_NO_ERROR) {
-                    framebufferOldId[0] = 0;
-                }
-                snapshotTexture.setFramebufferOldId(framebufferOldId[0]);
-	            
-	            gl11Ext.glBindFramebufferOES(GL11ExtensionPack.GL_FRAMEBUFFER_OES, snapshotTexture.getFramebufferId());
-	            
-	            dirty = true;
-	        }
+	        prepareScreenShot(gl);
 	        
 			synchronized (cameraTransforms) {
 				onTransformCamera();
@@ -649,36 +676,17 @@ public class QuickTiGame2dGameView extends GLSurfaceView implements Renderer, On
 	            
 	            dirty = true;
 	        }
-	        
-	        if (takeSnapshot) {
-	            if(snapshotTexture.getFramebufferOldId() >= 0) {
-		            GL11ExtensionPack gl11Ext = (GL11ExtensionPack)gl;
-		            
-	                gl11Ext.glBindFramebufferOES(GL11ExtensionPack.GL_FRAMEBUFFER_OES, snapshotTexture.getFramebufferOldId());
-	                snapshotTexture.setFramebufferOldId(0);
 
-	                snapshotSprite  = new QuickTiGame2dSprite();
-	                snapshotSprite.setImage(QuickTiGame2dConstant.SNAPSHOT_TEXTURE_NAME);
-	                snapshotSprite.setWidth(width);
-	                snapshotSprite.setHeight(height);
-	                snapshotSprite.setX(0);
-	                snapshotSprite.setY(0);
-	                snapshotSprite.setZ(99.5f);
-	            }
-	            
-	            takeSnapshot = false;
-	            if (debug) Log.d(Quicktigame2dModule.LOG_TAG, "QuickTiGame2dGameView:takeSnapshot end");
-	        }
+	        finishScreenShot(gl);
 	        
 	        scene.setSnapshot(takeSnapshot);
-			
 		} else {
 			gl.glClear(GL10.GL_COLOR_BUFFER_BIT | GL10.GL_DEPTH_BUFFER_BIT);
 			gl.glClearColor(color[0], color[1], color[2], color[3]);
 		}
 		
 	    if (snapshotSprite != null) {
-	        if (!snapshotSprite.isLoaded()) snapshotSprite.onLoad(gl, this);
+	        snapshotSprite.onLoad(gl, this);
 	        snapshotSprite.onDrawFrame(gl);
 	    }
 		

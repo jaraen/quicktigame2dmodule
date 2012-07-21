@@ -44,6 +44,10 @@
 - (void)clearTransformCamera:(QuickTiGame2dTransform*)transform;
 + (void)unloadTexture:(NSString*)name;
 + (void)unloadAllTextures;
+
+- (void)prepareScreenShot;
+- (void)finishScreenShot;
+
 @end
 
 @implementation QuickTiGame2dEngine
@@ -260,6 +264,48 @@ typedef void (^CommandBlock)(void);
     }
 }
 
+- (void)prepareScreenShot {
+    if (!takeSnapshot && releaseSnapshot) {
+        if (debug) NSLog(@"[DEBUG] QuickTiGame2dEngine:releaseSnapshot");
+        [snapshotSprite onDispose];
+        [snapshotSprite release];
+        snapshotSprite = nil;
+        releaseSnapshot = FALSE;
+    }
+    
+    if (takeSnapshot) {
+        if (debug) NSLog(@"[DEBUG] QuickTiGame2dEngine:takeSnapshot start");
+        
+        GLint framebufferOldId;
+        glGetIntegerv(GL_FRAMEBUFFER_BINDING, &framebufferOldId);
+        snapshotTexture.framebufferOldId = framebufferOldId;
+        
+        glBindFramebuffer(GL_FRAMEBUFFER, snapshotTexture.framebufferId);
+        
+        dirty = TRUE;
+    }
+}
+
+- (void)finishScreenShot {
+    if (takeSnapshot) {
+        if(snapshotTexture.framebufferOldId > 0) {
+            glBindFramebuffer(GL_FRAMEBUFFER, snapshotTexture.framebufferOldId);
+            snapshotTexture.framebufferOldId = 0;
+            
+            [snapshotSprite release];
+            snapshotSprite  = [[QuickTiGame2dSprite alloc] init];
+            snapshotSprite.image  = @SNAPSHOT_TEXTURE_NAME;
+            snapshotSprite.width  = width;
+            snapshotSprite.height = height;
+            snapshotSprite.x      = 0;
+            snapshotSprite.y      = 0;
+            snapshotSprite.z      = 99.5f;
+        }
+        takeSnapshot = FALSE;
+        if (debug) NSLog(@"[DEBUG] QuickTiGame2dEngine:takeSnapshot end");
+    }
+}
+
 - (void)drawFrame {
     [QuickTiGame2dEngine restoreGLState:TRUE];
 
@@ -280,25 +326,7 @@ typedef void (^CommandBlock)(void);
     
     if (scene != nil && status != GAME_STOPPED) {
         
-        if (!takeSnapshot && releaseSnapshot) {
-            if (debug) NSLog(@"[DEBUG] QuickTiGame2dEngine:releaseSnapshot");
-            [snapshotSprite onDispose];
-            [snapshotSprite release];
-            snapshotSprite = nil;
-            releaseSnapshot = FALSE;
-        }
-        
-        if (takeSnapshot) {
-            if (debug) NSLog(@"[DEBUG] QuickTiGame2dEngine:takeSnapshot start");
-            
-            GLint framebufferOldId;
-            glGetIntegerv(GL_FRAMEBUFFER_BINDING, &framebufferOldId);
-            snapshotTexture.framebufferOldId = framebufferOldId;
-            
-            glBindFramebuffer(GL_FRAMEBUFFER, snapshotTexture.framebufferId);
-            
-            dirty = TRUE;
-        }
+        [self prepareScreenShot];
         
         @synchronized (cameraTransforms) {
             [self onTransformCamera];
@@ -350,23 +378,7 @@ typedef void (^CommandBlock)(void);
             dirty = TRUE;
         }
         
-        if (takeSnapshot) {
-            if(snapshotTexture.framebufferOldId > 0) {
-                glBindFramebuffer(GL_FRAMEBUFFER, snapshotTexture.framebufferOldId);
-                snapshotTexture.framebufferOldId = 0;
-
-                [snapshotSprite release];
-                snapshotSprite  = [[QuickTiGame2dSprite alloc] init];
-                snapshotSprite.image  = @SNAPSHOT_TEXTURE_NAME;
-                snapshotSprite.width  = width;
-                snapshotSprite.height = height;
-                snapshotSprite.x      = 0;
-                snapshotSprite.y      = 0;
-                snapshotSprite.z      = 99;
-            }
-            takeSnapshot = FALSE;
-            if (debug) NSLog(@"[DEBUG] QuickTiGame2dEngine:takeSnapshot end");
-        }
+        [self finishScreenShot];
         
         scene.snapshot = takeSnapshot;
         [scene removeWaitingSprites];
