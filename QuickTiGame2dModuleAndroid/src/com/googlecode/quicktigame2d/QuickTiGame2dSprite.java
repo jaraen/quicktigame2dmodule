@@ -799,6 +799,14 @@ public class QuickTiGame2dSprite {
 		this.height = height;
 	}
 	
+	public float getScaledWidth() {
+		return getWidth() * getScaleX();
+	}
+	
+	public float getScaledHeight() {
+		return getHeight() * getScaleY();
+	}
+	
 	public int getBorder() {
 		return border;
 	}
