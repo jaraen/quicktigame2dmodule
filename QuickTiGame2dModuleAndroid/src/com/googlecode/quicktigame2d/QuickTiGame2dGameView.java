@@ -690,9 +690,9 @@ public class QuickTiGame2dGameView extends GLSurfaceView implements Renderer, On
 	        snapshotSprite.onDrawFrame(gl);
 	    }
 		
-		loadWaitingTextures(gl);
 		unloadWaitingTextures(gl);
 		deleteWaitingGLBuffers(gl);
+		loadWaitingTextures(gl);
 	    
 		while(beforeCommandQueue.isEmpty() && !afterCommandQueue.isEmpty()) {
 			afterCommandQueue.poll().run();

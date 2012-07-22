@@ -389,23 +389,23 @@ typedef void (^CommandBlock)(void);
     }
     
     if (snapshotSprite != nil) {
-        if (!snapshotSprite.loaded) [snapshotSprite onLoad];
+        [snapshotSprite onLoad];
         [snapshotSprite drawFrame];
     }
 
     @synchronized(textureCache) {
-        if ([waitingForLoadTextures count] > 0) {
-            for (NSString* name in waitingForLoadTextures) {
-                [QuickTiGame2dEngine loadTexture:name];
-            }
-            [waitingForLoadTextures removeAllObjects];
-        }
-        
         if ([waitingForUnloadTextures count] > 0) {
             for (NSString* name in waitingForUnloadTextures) {
                 [QuickTiGame2dEngine unloadTexture:name];
             }
             [waitingForUnloadTextures removeAllObjects];
+        }
+        
+        if ([waitingForLoadTextures count] > 0) {
+            for (NSString* name in waitingForLoadTextures) {
+                [QuickTiGame2dEngine loadTexture:name];
+            }
+            [waitingForLoadTextures removeAllObjects];
         }
     }
     
