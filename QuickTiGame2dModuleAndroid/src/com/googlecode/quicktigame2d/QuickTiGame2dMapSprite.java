@@ -623,8 +623,8 @@ public class QuickTiGame2dMapSprite extends QuickTiGame2dSprite {
     }
     
 	public QuickTiGame2dMapTile getTileAtPosition(float sx, float sy) {
-	    float posX = sx - x;
-	    float posY = sy - y;
+	    float posX = (sx - x) / getScaleX();
+	    float posY = (sy - y) / getScaleY();
 	    
 	    float tiltStepX = (tileWidth  * tileTiltFactorX);
 	    float tiltStepY = (tileHeight * tileTiltFactorY);
@@ -868,4 +868,27 @@ public class QuickTiGame2dMapSprite extends QuickTiGame2dSprite {
 	    animating = true;
 	}
 
+	public float getScreenX(QuickTiGame2dMapTile tile) {
+		return getX() + (tile.initialX + tile.offsetX) * getScaleX();
+	}
+	
+	public float getScreenY(QuickTiGame2dMapTile tile) {
+		return getY() + (tile.initialY + tile.offsetY) * getScaleY();
+	}
+	
+	public float getScaledTileWidth() {
+		return getTileWidth() * getScaleX();
+	}
+	
+	public float getScaledTileHeight() {
+		return getTileHeight() * getScaleY();
+	}
+	
+	public float getScaledTileWidth(QuickTiGame2dMapTile tile) {
+		return tile.width * getScaleX();
+	}
+	
+	public float getScaledTileHeight(QuickTiGame2dMapTile tile) {
+		return tile.height * getScaleY();
+	}
 }

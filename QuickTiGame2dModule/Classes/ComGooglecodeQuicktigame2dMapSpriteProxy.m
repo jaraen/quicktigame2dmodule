@@ -96,11 +96,15 @@
     [dic setValue:NUMFLOAT(tile.blue)   forKey:@"blue"];
     [dic setValue:NUMFLOAT(tile.alpha)  forKey:@"alpha"];
     [dic setValue:NUMBOOL(tile.flip)    forKey:@"flip"];
-    [dic setValue:NUMFLOAT(mapSprite.x + tile.initialX + tile.offsetX)  forKey:@"screenX"];
-    [dic setValue:NUMFLOAT(mapSprite.y + tile.initialY + tile.offsetY)  forKey:@"screenY"];
+    [dic setValue:NUMFLOAT([mapSprite screenX:tile]) forKey:@"screenX"];
+    [dic setValue:NUMFLOAT([mapSprite screenY:tile]) forKey:@"screenY"];
     
-    [dic setValue:NUMFLOAT(tile.width  > 0 ? tile.width  : mapSprite.width)   forKey:@"width"];
-    [dic setValue:NUMFLOAT(tile.height > 0 ? tile.height : mapSprite.height)  forKey:@"height"];
+    [dic setValue:NUMFLOAT(tile.width  > 0 ? 
+                           [mapSprite scaledTileWidth:tile]  : [mapSprite scaledTileWidth])
+                           forKey:@"width"];
+    [dic setValue:NUMFLOAT(tile.height > 0 ? 
+                           [mapSprite scaledTileHeight:tile] : [mapSprite scaledTileHeight])
+                           forKey:@"height"];
     [dic setValue:NUMFLOAT(tile.margin)  forKey:@"margin"];
     [dic setValue:NUMFLOAT(tile.border)  forKey:@"border"];
 }

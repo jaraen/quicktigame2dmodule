@@ -89,10 +89,12 @@ public class MapSpriteProxy extends SpriteProxy {
 		info.put("alpha", Double.valueOf(tile.alpha));
 		info.put("flip",  Boolean.valueOf(tile.flip));
 		
-		info.put("screenX",  Double.valueOf(getMapSprite().getX() + tile.initialX + tile.offsetX));
-		info.put("screenY",  Double.valueOf(getMapSprite().getY() + tile.initialY + tile.offsetY));
-		info.put("width",    Double.valueOf(tile.width  > 0 ? tile.width  : getMapSprite().getWidth()));
-		info.put("height",   Double.valueOf(tile.height > 0 ? tile.height : getMapSprite().getHeight()));
+		info.put("screenX",  Double.valueOf(getMapSprite().getScreenX(tile)));
+		info.put("screenY",  Double.valueOf(getMapSprite().getScreenY(tile)));
+		info.put("width",    Double.valueOf(tile.width  > 0 ? 
+				getMapSprite().getScaledTileWidth(tile)  : getMapSprite().getScaledTileWidth()));
+		info.put("height",   Double.valueOf(tile.height > 0 ?
+				getMapSprite().getScaledTileHeight(tile) : getMapSprite().getScaledTileHeight()));
 		info.put("margin",   Double.valueOf(tile.margin));
 		info.put("border",   Double.valueOf(tile.border));
 	}

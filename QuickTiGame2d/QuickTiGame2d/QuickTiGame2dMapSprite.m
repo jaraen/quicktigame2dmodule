@@ -534,9 +534,6 @@
 
 -(void)setTile:(NSInteger)index tile:(QuickTiGame2dMapTile*)tile {
     
-    // Clear tile before updating with new tile
-    [self removeTile:index];
-    
     tile.firstgid = firstgid;
 
     // Update tile properties if we found multiple tilesets
@@ -700,8 +697,8 @@
  */
 -(QuickTiGame2dMapTile*)getTileAtPosition:(float)sx sy:(float)sy {
 
-    float posX = sx - x;
-    float posY = sy - y;
+    float posX = (sx - x)  / self.scaleX;
+    float posY = (sy - y)  / self.scaleY;
     
     float tiltStepX = (tileWidth  * tileTiltFactorX);
     float tiltStepY = (tileHeight * tileTiltFactorY);
@@ -897,6 +894,30 @@
     [animation release];
     
     animating = TRUE;
+}
+
+-(float)screenX:(QuickTiGame2dMapTile*)tile {
+    return self.x + (tile.initialX + tile.offsetX) * self.scaleX;
+}
+
+-(float)screenY:(QuickTiGame2dMapTile*)tile {
+    return self.y + (tile.initialY + tile.offsetY) * self.scaleY;
+}
+
+-(float)scaledTileWidth {
+    return self.tileWidth  * self.scaleX;
+}
+
+-(float)scaledTileHeight {
+    return self.tileHeight * self.scaleY;
+}
+
+-(float)scaledTileWidth:(QuickTiGame2dMapTile*)tile {
+    return tile.width * self.scaleX;
+}
+
+-(float)scaledTileHeight:(QuickTiGame2dMapTile*)tile {
+    return tile.height * self.scaleY;
 }
 
 @end

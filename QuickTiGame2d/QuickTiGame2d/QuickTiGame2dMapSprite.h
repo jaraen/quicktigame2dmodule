@@ -88,4 +88,14 @@
         count:(NSInteger)count interval:(NSInteger)interval loop:(NSInteger)loop;
 -(void)animateTile:(NSInteger)tileIndex frames:(NSArray*)frames interval:(NSInteger)interval;
 -(void)animateTile:(NSInteger)tileIndex frames:(NSArray*)frames interval:(NSInteger)interval loop:(NSInteger)loop;
+
+-(float)screenX:(QuickTiGame2dMapTile*)tile;
+-(float)screenY:(QuickTiGame2dMapTile*)tile;
+
+-(float)scaledTileWidth;
+-(float)scaledTileHeight;
+
+-(float)scaledTileWidth:(QuickTiGame2dMapTile*)tile;
+-(float)scaledTileHeight:(QuickTiGame2dMapTile*)tile;
+
 @end
