@@ -55,6 +55,9 @@
     
     NSMutableArray* tilesetgids;
     NSMutableDictionary* tilesets;
+    
+    float tileOffsetX;
+    float tileOffsetY;
 }
 @property (readwrite) float tileWidth;
 @property (readwrite) float tileHeight;
@@ -65,6 +68,8 @@
 @property (readwrite) NSInteger orientation;
 @property (readwrite) float tileTiltFactorX;
 @property (readwrite) float tileTiltFactorY;
+@property (readwrite) float tileOffsetX;
+@property (readwrite) float tileOffsetY;
 
 -(void)onLoad;
 -(void)bindVertex;

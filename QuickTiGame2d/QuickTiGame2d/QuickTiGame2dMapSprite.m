@@ -107,6 +107,7 @@
 @implementation QuickTiGame2dMapSprite
 @synthesize tileWidth, tileHeight, tileCount, tileCountX, tileCountY;
 @synthesize firstgid, tileTiltFactorX, tileTiltFactorY;
+@synthesize tileOffsetX, tileOffsetY;
 
 -(id)init {
     self = [super init];
@@ -677,7 +678,7 @@
 }
 
 -(BOOL)collidesIsometric:(float)otherX otherY:(float)otherY withTile:(QuickTiGame2dMapTile*) tile {
-    otherX = otherX - tile.offsetX - tile.initialX;
+    otherX = otherX - tileOffsetX - tile.initialX;
     otherY = otherY - (tileHeight * tileTiltFactorY) - tile.initialY;
     
     float dHeight = tileHeight - (tileHeight * tileTiltFactorY);
@@ -832,6 +833,8 @@
         self.firstgid   = [[prop objectForKey:@"firstgid"]   intValue];
         self.tileWidth  = [[prop objectForKey:@"tilewidth"]  floatValue];
         self.tileHeight = [[prop objectForKey:@"tileheight"] floatValue];
+        self.tileOffsetX =[[prop objectForKey:@"offsetX"] floatValue];
+        self.tileOffsetY =[[prop objectForKey:@"offsetY"] floatValue];
     }
     
     [tilesetgids addObject:[NSDictionary dictionaryWithObjectsAndKeys:

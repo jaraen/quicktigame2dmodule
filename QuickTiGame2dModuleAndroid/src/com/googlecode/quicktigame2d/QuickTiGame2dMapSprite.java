@@ -50,6 +50,8 @@ public class QuickTiGame2dMapSprite extends QuickTiGame2dSprite {
     
     private float tileWidth;
     private float tileHeight;
+    private float tileOffsetX;
+    private float tileOffsetY;
     
     private int tileCount;
     private int tileCountX;
@@ -607,7 +609,7 @@ public class QuickTiGame2dMapSprite extends QuickTiGame2dSprite {
 	}
 	
     public boolean collidesIsometric(float otherX, float otherY, QuickTiGame2dMapTile tile) {
-        otherX = otherX - tile.offsetX - tile.initialX;
+        otherX = otherX - this.tileOffsetX - tile.initialX;
         otherY = otherY - (tileHeight * tileTiltFactorY) - tile.initialY;
         
         float dHeight = tileHeight - (tileHeight * tileTiltFactorY);
@@ -682,7 +684,7 @@ public class QuickTiGame2dMapSprite extends QuickTiGame2dSprite {
 	}
 	
 	public QuickTiGame2dMapTile getTile(int index) {
-	    if (index >= tiles.size()) return null;
+	    if (index < 0 || index >= tiles.size()) return null;
 	    
 	    return tiles.get(index);
 	}
@@ -810,6 +812,8 @@ public class QuickTiGame2dMapSprite extends QuickTiGame2dSprite {
 	        this.firstgid   = (int)Float.parseFloat(prop.get("firstgid"));
 	        this.tileWidth  = Float.parseFloat(prop.get("tilewidth"));
 	        this.tileHeight = Float.parseFloat(prop.get("tileheight"));
+	        this.tileOffsetX = Float.parseFloat(prop.get("offsetX"));
+	        this.tileOffsetY = Float.parseFloat(prop.get("offsetY"));
 	    }
 	    
 	    Map<String, String> gids = new HashMap<String, String>();
