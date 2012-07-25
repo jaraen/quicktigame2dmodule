@@ -111,4 +111,20 @@ public class QuickTiGame2dMapTile {
         suppressUpdate = other.suppressUpdate;
     }
     
+    public String description() {
+        return String.format("gid:%d, firstgid:%d size:%fx%f, initial:%fx%f atlas:%fx%f atlas size:%fx%f offset:%fx%f overwrap:%fx%f",
+        					gid, firstgid, width, height, initialX, initialY, atlasX, atlasY, atlasWidth, 
+        					atlasHeight, offsetX, offsetY, overwrapWidth, overwrapHeight); 
+    }
+
+    public void clearViewProperty() {
+        gid   = 0;
+        red   = 1;
+        green = 1;
+        blue  = 1;
+        alpha = 1;
+        flip  = false;
+        isOverwrap = false;
+    }
+
 }

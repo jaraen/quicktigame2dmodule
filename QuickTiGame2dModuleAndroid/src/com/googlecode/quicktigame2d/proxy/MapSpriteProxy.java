@@ -126,6 +126,10 @@ public class MapSpriteProxy extends SpriteProxy {
 		
 		return info;
 	}
+	@Kroll.method
+	public boolean setTile(@SuppressWarnings("rawtypes") HashMap info) {
+		return updateTile(info);
+	}
 	
 	@Kroll.method
 	public boolean updateTile(@SuppressWarnings("rawtypes") HashMap info) {
@@ -159,9 +163,12 @@ public class MapSpriteProxy extends SpriteProxy {
 	        return false;
 	    }
 	    
-	    QuickTiGame2dMapTile tile = getMapSprite().getTile(index);
+	    QuickTiGame2dMapTile target = getMapSprite().getTile(index);
 	    
-	    if (tile == null) return false;
+	    if (target == null) return false;
+	    
+	    QuickTiGame2dMapTile tile = new QuickTiGame2dMapTile();
+	    tile.cc(target);
 	    
 	    if (gid   >= 0) tile.gid   = gid;
 	    if (red   >= 0) tile.red   = red;

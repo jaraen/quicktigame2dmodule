@@ -144,9 +144,12 @@
         return NUMBOOL(FALSE);
     }
     
-    QuickTiGame2dMapTile* tile = [((QuickTiGame2dMapSprite*)sprite) getTile:index];
+    QuickTiGame2dMapTile* target = [((QuickTiGame2dMapSprite*)sprite) getTile:index];
     
-    if (tile == nil) return NUMBOOL(FALSE);
+    if (target == nil) return NUMBOOL(FALSE);
+    
+    QuickTiGame2dMapTile* tile = [[QuickTiGame2dMapTile alloc] init];
+    [tile cc:target];
     
     if (gid   >= 0) tile.gid   = gid;
     if (red   >= 0) tile.red   = red;
@@ -159,6 +162,8 @@
     }
     
     [((QuickTiGame2dMapSprite*)sprite) setTile:index tile:tile];
+    
+    [tile release];
     
     return NUMBOOL(TRUE);
 }
@@ -185,13 +190,17 @@
     ENSURE_SINGLE_ARG(args, NSNumber);
     NSInteger index = [args intValue];
     
-    if (index >= ((QuickTiGame2dMapSprite*)sprite).tileCount) {
+    if (index < 0 || index >= ((QuickTiGame2dMapSprite*)sprite).tileCount) {
         return NUMBOOL(FALSE);
     }
     
     [((QuickTiGame2dMapSprite*)sprite) removeTile:index];
     
     return NUMBOOL(TRUE);
+}
+
+-(id)setTile:(id)args {
+    return [self updateTile:args];
 }
 
 -(id)flipTile:(id)args {

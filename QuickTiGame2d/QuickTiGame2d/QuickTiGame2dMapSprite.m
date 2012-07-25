@@ -102,6 +102,20 @@
     overwrapWidth  = other.overwrapWidth;
     overwrapHeight = other.overwrapHeight;
 }
+
+-(NSString*)description {
+    return [NSString stringWithFormat:@"gid:%d, firstgid:%d size:%fx%f, initial:%fx%f atlas:%fx%f atlas size:%fx%f offset:%fx%f overwrap:%fx%f", gid, firstgid, width, height, initialX, initialY, atlasX, atlasY, atlasWidth, atlasHeight, offsetX, offsetY, overwrapWidth, overwrapHeight]; 
+}
+
+-(void)clearViewProperty {
+    gid   = 0;
+    red   = 1;
+    green = 1;
+    blue  = 1;
+    alpha = 1;
+    flip  = FALSE;
+    isOverwrap = FALSE;
+}
 @end
 
 @implementation QuickTiGame2dMapSprite
@@ -535,11 +549,18 @@
 
 -(void)setTile:(NSInteger)index tile:(QuickTiGame2dMapTile*)tile {
     
+    if ([self getTile:index].isOverwrap) {
+        NSLog(@"[DEBUG] Tile %d can not be replaced because it is part of multiple tiles.", index);
+        return;
+    }
+    
     tile.firstgid = firstgid;
 
     // Update tile properties if we found multiple tilesets
-    if ([tilesets count] > 1 && tile.gid >= 0) {
-        if (tile.image == nil) {
+    if ([tilesets count] > 1) {
+        if (tile.gid <= 0) {
+            tile.image = [[tilesetgids objectAtIndex:0] objectForKey:@"image"];
+        } else if (tile.image == nil) {
             for (id gids in tilesetgids) {
                 NSInteger tsgid = [[gids objectForKey:@"firstgid"] intValue];
                 if (tsgid > tile.gid) {
@@ -580,8 +601,15 @@
             
             [tile2 cc:tile];
             
-            tile2.positionFixed = FALSE;
             tile2.index    = index + ((i - 1) * tileCountX);
+            
+            QuickTiGame2dMapTile* target2 = [self getTile:tile2.index];
+            if (target2 != nil) {
+                tile2.initialX = target2.initialX;
+                tile2.initialY = target2.initialY;
+            } else {
+                tile2.positionFixed = FALSE;
+            }
             
             tile2.width    = tileWidth;
             tile2.height   = baseTileHeight + baseTileMargin;
@@ -636,6 +664,11 @@
 -(BOOL)removeTile:(NSInteger)index {
     if (index >= [tiles count]) return FALSE;
     
+    if ([self getTile:index].isOverwrap) {
+        NSLog(@"[DEBUG] Tile %d can not be removed because it is part of multiple tiles.", index);
+        return FALSE;
+    }
+    
     QuickTiGame2dMapTile* tile = [tiles objectAtIndex:index];
     
     // check if this tile consists of multiple tiles
@@ -646,15 +679,15 @@
         QuickTiGame2dMapTile* tile2 = [self getTile:(index + (i * tileCountX))];
         if (tile2 == nil) continue;
         
-        tile2.gid   = 0;
+        [tile2 clearViewProperty];
         tile2.alpha = 0;
         
         @synchronized (updatedTiles) {
             [updatedTiles setObject:tile2 forKey:[NSNumber numberWithInt:tile2.index]];
         }
     }
-    
-    tile.gid   = 0;
+
+    [tile clearViewProperty];
     tile.alpha = 0;
     
     @synchronized (updatedTiles) {
