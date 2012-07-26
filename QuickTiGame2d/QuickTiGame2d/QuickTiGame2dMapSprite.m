@@ -708,34 +708,32 @@
 -(BOOL)removeTile:(NSInteger)index {
     if (index >= [tiles count]) return FALSE;
     
-    if ([self getTile:index].isChild) {
+    QuickTiGame2dMapTile* target = [self getTile:index];
+    if (target == nil) return FALSE;
+    
+    if (target.isChild) {
         NSLog(@"[DEBUG] Tile %d can not be removed because it is part of multiple tiles.", index);
         return FALSE;
     }
     
-    QuickTiGame2dMapTile* tile = [tiles objectAtIndex:index];
-    
     // check if this tile consists of multiple tiles
     // this assumes tile has same tile count for X&Y axis (2x2, 3x3, 4x4)
-    NSInteger overwrapTileCount = [self getOverwrapTileCount:tile];
-    for (int i = 1; i < overwrapTileCount; i++) {
-        
-        QuickTiGame2dMapTile* tile2 = [self getTile:(index + (i * tileCountX))];
-        if (tile2 == nil) continue;
-        
-        [tile2 clearViewProperty];
-        tile2.alpha = 0;
-        
-        @synchronized (updatedTiles) {
-            [updatedTiles setObject:tile2 forKey:[NSNumber numberWithInt:tile2.index]];
+    NSInteger overwrapTileCount = [self getOverwrapTileCount:target];
+    // Fill out neighboring tile with empty tile
+    for (int row = 0; row < overwrapTileCount; row++) {
+        for (int column = 0; column < overwrapTileCount; column++) {
+            
+            QuickTiGame2dMapTile* tile2 = [self getTile:index + column + (row * tileCountX)];
+            
+            if (tile2 == nil) continue;
+            
+            [tile2 clearViewProperty];
+            tile2.alpha = 0;
+            
+            @synchronized (updatedTiles) {
+                [updatedTiles setObject:tile2 forKey:[NSNumber numberWithInt:tile2.index]];
+            }
         }
-    }
-
-    [tile clearViewProperty];
-    tile.alpha = 0;
-    
-    @synchronized (updatedTiles) {
-        [updatedTiles setObject:tile forKey:[NSNumber numberWithInt:index]];
     }
     
     return TRUE;

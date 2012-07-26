@@ -618,35 +618,32 @@ public class QuickTiGame2dMapSprite extends QuickTiGame2dSprite {
 	    if (index < 0 || index >= tiles.size()) return false;
 	    
 	    QuickTiGame2dMapTile target = getTile(index);
-	    if (target != null && target.isChild) {
+	    if (target == null) return false;
+	    
+	    if (target.isChild) {
 	        Log.d(Quicktigame2dModule.LOG_TAG, String.format(
 	        		"Tile %d can not be removed because it is part of multiple tiles.", index));
 	        return false;
 	    }
 	    
-	    QuickTiGame2dMapTile tile = tiles.get(index);
-	    
 	    // check if this tile consists of multiple tiles
 	    // this assumes tile has same tile count for X&Y axis (2x2, 3x3, 4x4)
-	    int overwrapTileCount = getOverwrapTileCount(tile);
-	    for (int i = 1; i < overwrapTileCount; i++) {
-	        
-	        QuickTiGame2dMapTile tile2 = getTile(index + (i * tileCountX));
-	        if (tile2 == null) continue;
-	        
-	        tile2.clearViewProperty();
-	        tile2.alpha = 0;
-	        
-		    synchronized(updatedTiles) {
-		    	updatedTiles.put(Integer.valueOf(tile2.index), tile2);
-		    }
-	    }
+	    int overwrapTileCount = getOverwrapTileCount(target);
+	    // Fill out neighboring tile with empty tile
+	    for (int row = 0; row < overwrapTileCount; row++) {
+	    	for (int column = 0; column < overwrapTileCount; column++) {
 
-	    tile.clearViewProperty();
-	    tile.alpha = 0;
-	    
-	    synchronized(updatedTiles) {
-	    	updatedTiles.put(Integer.valueOf(index), tile);
+	    		QuickTiGame2dMapTile tile2 = getTile(index + column + (row * tileCountX));
+
+	    		if (tile2 == null) continue;
+
+	    		tile2.clearViewProperty();
+	    		tile2.alpha = 0;
+
+	    		synchronized(updatedTiles) {
+	    			updatedTiles.put(Integer.valueOf(tile2.index), tile2);
+	    		}
+	    	}
 	    }
 	    
 	    return true;
