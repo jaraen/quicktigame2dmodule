@@ -549,8 +549,8 @@ public class QuickTiGame2dMapSprite extends QuickTiGame2dSprite {
 	            
 	            tile2.overwrapWidth  = tile.width;
 	            tile2.overwrapHeight = tile.height;
-	            tile2.overwrapAtlasX = tile.overwrapAtlasX;
-	            tile2.overwrapAtlasY = tile.overwrapAtlasY;
+	            tile2.overwrapAtlasX = tile.atlasX;
+	            tile2.overwrapAtlasY = tile.atlasY;
 	            tile2.isOverwrap      = true;
 	            tile2.offsetX = -tileWidth * 0.5f;
 	            tile2.offsetY = tile.offsetY;
