@@ -51,7 +51,7 @@ public class QuickTiGame2dMapSprite extends QuickTiGame2dSprite {
     private float tileWidth;
     private float tileHeight;
     private float tileOffsetX;
-    private float tileOffsetY;
+	private float tileOffsetY;
     
     private int tileCount;
     private int tileCountX;
@@ -334,7 +334,13 @@ public class QuickTiGame2dMapSprite extends QuickTiGame2dSprite {
 	        
 	        int xcount = (int)Math.round((awidth - (tile.margin * 2) + tile.border) / (float)(twidth  + tile.border));
 	        int xindex = tileNo % xcount;
-	        return tile.atlasX + ((tile.border + twidth) * xindex) + tile.margin;
+	        
+	        float atlasX = tile.atlasX;
+	        if (tile.flip && tile.isOverwrap) {
+	            atlasX = (tile.overwrapAtlasX * 2) - tile.atlasX - tile.width + tile.overwrapWidth;
+	        }
+	        
+	        return atlasX + ((tile.border + twidth) * xindex) + tile.margin;
 		} else {
 			int xcount = (int)Math.round((getTexture().getWidth() - (margin * 2) + border) / (float)(tileWidth  + border));
 			int xindex = tileNo % xcount;
@@ -543,6 +549,8 @@ public class QuickTiGame2dMapSprite extends QuickTiGame2dSprite {
 	            
 	            tile2.overwrapWidth  = tile.width;
 	            tile2.overwrapHeight = tile.height;
+	            tile2.overwrapAtlasX = tile.overwrapAtlasX;
+	            tile2.overwrapAtlasY = tile.overwrapAtlasY;
 	            tile2.isOverwrap      = true;
 	            tile2.offsetX = -tileWidth * 0.5f;
 	            tile2.offsetY = tile.offsetY;

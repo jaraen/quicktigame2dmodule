@@ -53,10 +53,13 @@ public class QuickTiGame2dMapTile {
     public float initialX;
     public float initialY;
     
-    boolean  isOverwrap;
-    float overwrapWidth;
-    float overwrapHeight;
-    boolean  suppressUpdate;
+    public boolean  isOverwrap;
+    public float overwrapWidth;
+    public float overwrapHeight;
+    public float overwrapAtlasX;
+    public float overwrapAtlasY;
+    
+    public boolean  suppressUpdate;
     
     public QuickTiGame2dMapTile() {
         gid   = 0;
@@ -82,6 +85,8 @@ public class QuickTiGame2dMapTile {
         isOverwrap = false;
         overwrapWidth  = 0;
         overwrapHeight = 0;
+        overwrapAtlasX = 0;
+        overwrapAtlasY = 0;
         suppressUpdate = false;
     }
     
@@ -108,13 +113,15 @@ public class QuickTiGame2dMapTile {
         isOverwrap = other.isOverwrap;
         overwrapWidth = other.overwrapWidth;
         overwrapHeight = other.overwrapHeight;
+        overwrapAtlasX = other.overwrapAtlasX;
+        overwrapAtlasY = other.overwrapAtlasY;
         suppressUpdate = other.suppressUpdate;
     }
     
     public String description() {
-        return String.format("gid:%d, firstgid:%d size:%fx%f, initial:%fx%f atlas:%fx%f atlas size:%fx%f offset:%fx%f overwrap:%fx%f",
+        return String.format("gid:%d, firstgid:%d size:%fx%f, initial:%fx%f atlas:%fx%f atlas size:%fx%f offset:%fx%f overwrap:%fx%f overwrap atlas:%fx%f",
         					gid, firstgid, width, height, initialX, initialY, atlasX, atlasY, atlasWidth, 
-        					atlasHeight, offsetX, offsetY, overwrapWidth, overwrapHeight); 
+        					atlasHeight, offsetX, offsetY, overwrapWidth, overwrapHeight, overwrapAtlasX, overwrapAtlasY); 
     }
 
     public void clearViewProperty() {

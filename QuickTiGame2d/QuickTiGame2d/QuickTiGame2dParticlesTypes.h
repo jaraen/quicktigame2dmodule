@@ -97,6 +97,8 @@ typedef struct {
     BOOL  isOverwrap;
     float overwrapWidth;
     float overwrapHeight;
+    float overwrapAtlasX;
+    float overwrapAtlasY;
     BOOL  suppressUpdate;
 
 }
@@ -126,6 +128,8 @@ typedef struct {
 @property (readwrite) BOOL  suppressUpdate;
 @property (readwrite) float overwrapWidth;
 @property (readwrite) float overwrapHeight;
+@property (readwrite) float overwrapAtlasX;
+@property (readwrite) float overwrapAtlasY;
 
 -(void)cc:(QuickTiGame2dMapTile*)other;
 @end

@@ -45,6 +45,7 @@
 @synthesize atlasX, atlasY, firstgid, margin, border, atlasWidth, atlasHeight;
 @synthesize offsetX, offsetY, initialX, initialY, positionFixed;
 @synthesize image, index, suppressUpdate, isOverwrap, overwrapWidth, overwrapHeight;
+@synthesize overwrapAtlasX, overwrapAtlasY;
 
 -(id)init {
     self = [super init];
@@ -73,6 +74,8 @@
         isOverwrap     = FALSE;
         overwrapWidth  = 0;
         overwrapHeight = 0;
+        overwrapAtlasX = 0;
+        overwrapAtlasY = 0;
     }
     return self;
 }
@@ -101,10 +104,12 @@
     isOverwrap     = other.isOverwrap;
     overwrapWidth  = other.overwrapWidth;
     overwrapHeight = other.overwrapHeight;
+    overwrapAtlasX = other.overwrapAtlasX;
+    overwrapAtlasY = other.overwrapAtlasY;
 }
 
 -(NSString*)description {
-    return [NSString stringWithFormat:@"gid:%d, firstgid:%d size:%fx%f, initial:%fx%f atlas:%fx%f atlas size:%fx%f offset:%fx%f overwrap:%fx%f", gid, firstgid, width, height, initialX, initialY, atlasX, atlasY, atlasWidth, atlasHeight, offsetX, offsetY, overwrapWidth, overwrapHeight]; 
+    return [NSString stringWithFormat:@"gid:%d, firstgid:%d size:%fx%f, initial:%fx%f atlas:%fx%f atlas size:%fx%f offset:%fx%f overwrap:%fx%f overwrap atlas:%fx%f", gid, firstgid, width, height, initialX, initialY, atlasX, atlasY, atlasWidth, atlasHeight, offsetX, offsetY, overwrapWidth, overwrapHeight, overwrapAtlasX, overwrapAtlasY]; 
 }
 
 -(void)clearViewProperty {
@@ -296,7 +301,13 @@
         
         int xcount = (int)round((awidth - (tile.margin * 2) + tile.border) / (float)(twidth  + tile.border));
         int xindex = tileNo % xcount;
-        return tile.atlasX + ((tile.border + twidth) * xindex) + tile.margin;
+
+        float atlasX = tile.atlasX;
+        if (tile.flip && tile.isOverwrap) {
+            atlasX = (tile.overwrapAtlasX * 2) - tile.atlasX - tile.width + tile.overwrapWidth;
+        }
+        
+        return atlasX + ((tile.border + twidth) * xindex) + tile.margin;
     } else {
         int xcount = (int)round((self.texture.width - (margin * 2) + border) / (float)(tileWidth  + border));
         int xindex = tileNo % xcount;
@@ -618,6 +629,8 @@
             
             tile2.overwrapWidth  = tile.width;
             tile2.overwrapHeight = tile.height;
+            tile2.overwrapAtlasX = tile.atlasX;
+            tile2.overwrapAtlasY = tile.atlasY;
             tile2.isOverwrap      = TRUE;
             tile2.offsetX = -tileWidth * 0.5f;
             tile2.offsetY = tile.offsetY;
