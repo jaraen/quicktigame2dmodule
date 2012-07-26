@@ -97,6 +97,7 @@
     [dic setValue:NUMFLOAT(tile.alpha)  forKey:@"alpha"];
     [dic setValue:NUMBOOL(tile.flip)    forKey:@"flip"];
     [dic setValue:NUMBOOL(tile.isChild) forKey:@"isChild"];
+    [dic setValue:NUMBOOL([mapSprite hasChild:tile]) forKey:@"hasChild"];
     [dic setValue:NUMINT(tile.parent)   forKey:@"parent"];
     [dic setValue:NUMFLOAT([mapSprite screenX:tile]) forKey:@"screenX"];
     [dic setValue:NUMFLOAT([mapSprite screenY:tile]) forKey:@"screenY"];

@@ -468,6 +468,12 @@ public class QuickTiGame2dMapSprite extends QuickTiGame2dSprite {
 	    return (int)(tile.width / tileWidth);
 	}
 	
+    // check if this tile consists of multiple tiles
+    // this assumes tile has same tile count for X&Y axis (2x2, 3x3, 4x4)
+	public boolean hasChild(QuickTiGame2dMapTile tile) {
+		return getOverwrapTileCount(tile) > 1;
+	}
+
 	private QuickTiGame2dMapTile updateTileProperty(QuickTiGame2dMapTile tile) {
 	    tile.firstgid = firstgid;
         

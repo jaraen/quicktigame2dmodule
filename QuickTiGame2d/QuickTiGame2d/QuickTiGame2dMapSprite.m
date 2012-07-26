@@ -554,6 +554,14 @@
     return (NSInteger)(tile.width / tileWidth);
 }
 
+/*
+ * check if this tile consists of multiple tiles
+ * this assumes tile has same tile count for X&Y axis (2x2, 3x3, 4x4)
+ */
+-(BOOL)hasChild:(QuickTiGame2dMapTile*)tile {
+    return [self getOverwrapTileCount:tile] > 1;
+}
+
 -(void)updateTileProperty:(QuickTiGame2dMapTile*)tile {
     tile.firstgid = firstgid;
     
