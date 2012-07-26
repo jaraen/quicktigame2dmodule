@@ -102,5 +102,6 @@
 -(float)scaledTileWidth:(QuickTiGame2dMapTile*)tile;
 -(float)scaledTileHeight:(QuickTiGame2dMapTile*)tile;
 
+-(NSInteger)getChildTileRowCount:(QuickTiGame2dMapTile*)tile;
 -(BOOL)hasChild:(QuickTiGame2dMapTile*)tile;
 @end

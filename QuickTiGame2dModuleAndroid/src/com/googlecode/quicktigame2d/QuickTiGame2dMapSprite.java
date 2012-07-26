@@ -464,14 +464,14 @@ public class QuickTiGame2dMapSprite extends QuickTiGame2dSprite {
 	    
 	}
 	
-	public int getOverwrapTileCount(QuickTiGame2dMapTile tile) {
+	public int getChildTileRowCount(QuickTiGame2dMapTile tile) {
 	    return (int)(tile.width / tileWidth);
 	}
 	
     // check if this tile consists of multiple tiles
     // this assumes tile has same tile count for X&Y axis (2x2, 3x3, 4x4)
 	public boolean hasChild(QuickTiGame2dMapTile tile) {
-		return getOverwrapTileCount(tile) > 1;
+		return getChildTileRowCount(tile) > 1;
 	}
 
 	private QuickTiGame2dMapTile updateTileProperty(QuickTiGame2dMapTile tile) {
@@ -525,12 +525,12 @@ public class QuickTiGame2dMapSprite extends QuickTiGame2dSprite {
 		
 	    // check if this tile consists of multiple tiles
 	    // this assumes tile has same tile count for X&Y axis (2x2, 3x3, 4x4)
-	    int overwrapTileCount = getOverwrapTileCount(tile);
-	    if (overwrapTileCount >= 2) {
+	    int childRowCount = getChildTileRowCount(tile);
+	    if (childRowCount >= 2) {
 
 	        // Fill out neighboring tile with empty tile
-	        for (int row = 0; row < overwrapTileCount; row++) {
-	            for (int column = 1; column < overwrapTileCount; column++) {
+	        for (int row = 0; row < childRowCount; row++) {
+	            for (int column = 1; column < childRowCount; column++) {
 	                
 	                int index2 = index + column + (row * tileCountX);
 	                QuickTiGame2dMapTile target2 = getTile(index2);
@@ -555,8 +555,8 @@ public class QuickTiGame2dMapSprite extends QuickTiGame2dSprite {
 	        }
 	    	
 	        float baseTileHeight = (float) tileWidth * 0.5f;
-	        float baseTileMargin = tile.height - (overwrapTileCount * baseTileHeight);
-	        for (int i = 1; i < overwrapTileCount; i++) {
+	        float baseTileMargin = tile.height - (childRowCount * baseTileHeight);
+	        for (int i = 1; i < childRowCount; i++) {
 	            
 	            QuickTiGame2dMapTile tile2 = new QuickTiGame2dMapTile();
 	            
@@ -574,7 +574,7 @@ public class QuickTiGame2dMapSprite extends QuickTiGame2dSprite {
 	            
 	            tile2.width    = tileWidth;
 	            tile2.height   = baseTileHeight + baseTileMargin;
-	            tile2.atlasX   = tile.atlasX + ((overwrapTileCount - i - 1) * tileWidth * 0.5f);
+	            tile2.atlasX   = tile.atlasX + ((childRowCount - i - 1) * tileWidth * 0.5f);
 	            tile2.atlasY   = tile.atlasY + (baseTileHeight * 0.5f) * i;
 	            
 	            tile2.overwrapWidth  = tile.width;
@@ -634,17 +634,17 @@ public class QuickTiGame2dMapSprite extends QuickTiGame2dSprite {
 	    
 	    // check if this tile consists of multiple tiles
 	    // this assumes tile has same tile count for X&Y axis (2x2, 3x3, 4x4)
-	    int overwrapTileCount = getOverwrapTileCount(target);
+	    int childRowCount = getChildTileRowCount(target);
 	    // Fill out neighboring tile with empty tile
-	    for (int row = 0; row < overwrapTileCount; row++) {
-	    	for (int column = 0; column < overwrapTileCount; column++) {
+	    for (int row = 0; row < childRowCount; row++) {
+	    	for (int column = 0; column < childRowCount; column++) {
 
 	    		QuickTiGame2dMapTile tile2 = getTile(index + column + (row * tileCountX));
 
 	    		if (tile2 == null) continue;
 
-	    		tile2.clearViewProperty();
-	    		tile2.alpha = 0;
+	    		tile2.clearViewProperty(this);
+	    		tile2.alpha  = 0;
 
 	    		synchronized(updatedTiles) {
 	    			updatedTiles.put(Integer.valueOf(tile2.index), tile2);
@@ -954,5 +954,13 @@ public class QuickTiGame2dMapSprite extends QuickTiGame2dSprite {
 	
 	public float getScaledTileHeight(QuickTiGame2dMapTile tile) {
 		return tile.height * getScaleY();
+	}
+	
+	public float getTileOffsetX() {
+		return this.tileOffsetX;
+	}
+	
+	public float getTileOffsetY() {
+		return this.tileOffsetY;
 	}
 }

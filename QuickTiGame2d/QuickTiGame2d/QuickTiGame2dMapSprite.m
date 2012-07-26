@@ -41,6 +41,10 @@
 - (void)updateTileProperty:(QuickTiGame2dMapTile*)tile;
 @end
 
+@interface QuickTiGame2dMapTile (PrivateMethods)
+-(void)clearViewProperty:(QuickTiGame2dMapSprite*)map;
+@end
+
 @implementation QuickTiGame2dMapTile
 @synthesize gid, red, green, blue, alpha, flip, width, height;
 @synthesize atlasX, atlasY, firstgid, margin, border, atlasWidth, atlasHeight;
@@ -117,7 +121,7 @@
     return [NSString stringWithFormat:@"gid:%d, firstgid:%d size:%fx%f, initial:%fx%f atlas:%fx%f atlas size:%fx%f offset:%fx%f overwrap:%fx%f overwrap atlas:%fx%f", gid, firstgid, width, height, initialX, initialY, atlasX, atlasY, atlasWidth, atlasHeight, offsetX, offsetY, overwrapWidth, overwrapHeight, overwrapAtlasX, overwrapAtlasY]; 
 }
 
--(void)clearViewProperty {
+-(void)clearViewProperty:(QuickTiGame2dMapSprite*)map {
     gid   = 0;
     red   = 1;
     green = 1;
@@ -127,6 +131,11 @@
     isOverwrap = FALSE;
     isChild    = FALSE;
     parent     = 0;
+    
+    width   = map.tileWidth;
+    height  = map.tileHeight;
+    offsetX = map.tileOffsetX;
+    offsetY = map.tileOffsetY;
 }
 @end
 
@@ -550,7 +559,7 @@
     }
 }
 
--(NSInteger)getOverwrapTileCount:(QuickTiGame2dMapTile*)tile {
+-(NSInteger)getChildTileRowCount:(QuickTiGame2dMapTile*)tile {
     return (NSInteger)(tile.width / tileWidth);
 }
 
@@ -559,7 +568,7 @@
  * this assumes tile has same tile count for X&Y axis (2x2, 3x3, 4x4)
  */
 -(BOOL)hasChild:(QuickTiGame2dMapTile*)tile {
-    return [self getOverwrapTileCount:tile] > 1;
+    return [self getChildTileRowCount:tile] > 1;
 }
 
 -(void)updateTileProperty:(QuickTiGame2dMapTile*)tile {
@@ -610,12 +619,12 @@
     
     // check if this tile consists of multiple tiles
     // this assumes tile has same tile count for X&Y axis (2x2, 3x3, 4x4)
-    int overwrapTileCount = [self getOverwrapTileCount:tile];
-    if (overwrapTileCount >= 2) {
+    int childRowCount = [self getChildTileRowCount:tile];
+    if (childRowCount >= 2) {
 
         // Fill out neighboring tile with empty tile
-        for (int row = 0; row < overwrapTileCount; row++) {
-            for (int column = 1; column < overwrapTileCount; column++) {
+        for (int row = 0; row < childRowCount; row++) {
+            for (int column = 1; column < childRowCount; column++) {
                 
                 int index2 = index + column + (row * tileCountX);
                 QuickTiGame2dMapTile* target = [self getTile:index2];
@@ -642,8 +651,8 @@
         }
         
         float baseTileHeight = tileWidth * 0.5f;
-        float baseTileMargin = tile.height - (overwrapTileCount * baseTileHeight);
-        for (int i = 1; i < overwrapTileCount; i++) {
+        float baseTileMargin = tile.height - (childRowCount * baseTileHeight);
+        for (int i = 1; i < childRowCount; i++) {
             
             QuickTiGame2dMapTile* tile2 = [[QuickTiGame2dMapTile alloc] init];
             
@@ -661,7 +670,7 @@
             
             tile2.width    = tileWidth;
             tile2.height   = baseTileHeight + baseTileMargin;
-            tile2.atlasX   = tile.atlasX + ((overwrapTileCount - i - 1) * tileWidth * 0.5f);
+            tile2.atlasX   = tile.atlasX + ((childRowCount - i - 1) * tileWidth * 0.5f);
             tile2.atlasY   = tile.atlasY + (baseTileHeight * 0.5f) * i;
             
             tile2.overwrapWidth  = tile.width;
@@ -726,17 +735,17 @@
     
     // check if this tile consists of multiple tiles
     // this assumes tile has same tile count for X&Y axis (2x2, 3x3, 4x4)
-    NSInteger overwrapTileCount = [self getOverwrapTileCount:target];
+    NSInteger childRowCount = [self getChildTileRowCount:target];
     // Fill out neighboring tile with empty tile
-    for (int row = 0; row < overwrapTileCount; row++) {
-        for (int column = 0; column < overwrapTileCount; column++) {
+    for (int row = 0; row < childRowCount; row++) {
+        for (int column = 0; column < childRowCount; column++) {
             
             QuickTiGame2dMapTile* tile2 = [self getTile:index + column + (row * tileCountX)];
             
             if (tile2 == nil) continue;
             
-            [tile2 clearViewProperty];
-            tile2.alpha = 0;
+            [tile2 clearViewProperty:self];
+            tile2.alpha  = 0;
             
             @synchronized (updatedTiles) {
                 [updatedTiles setObject:tile2 forKey:[NSNumber numberWithInt:tile2.index]];

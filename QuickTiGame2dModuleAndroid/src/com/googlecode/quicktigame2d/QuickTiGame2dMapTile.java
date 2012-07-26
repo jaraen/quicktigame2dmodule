@@ -132,7 +132,7 @@ public class QuickTiGame2dMapTile {
         					atlasHeight, offsetX, offsetY, overwrapWidth, overwrapHeight, overwrapAtlasX, overwrapAtlasY); 
     }
 
-    public void clearViewProperty() {
+    public void clearViewProperty(QuickTiGame2dMapSprite map) {
         gid   = 0;
         red   = 1;
         green = 1;
@@ -142,6 +142,11 @@ public class QuickTiGame2dMapTile {
         isOverwrap = false;
         isChild = false;
         parent = 0;
+        
+        width   = map.getTileWidth();
+        height  = map.getTileHeight();
+        offsetX = map.getTileOffsetX();
+        offsetY = map.getTileOffsetY();
     }
 
 }
