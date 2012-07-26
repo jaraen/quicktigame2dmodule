@@ -55,6 +55,7 @@ import org.appcelerator.titanium.util.TiOrientationHelper;
 import org.appcelerator.titanium.TiContext.OnLifecycleEvent;
 import com.googlecode.quicktigame2d.opengl.GLHelper;
 import com.googlecode.quicktigame2d.util.Base64;
+import com.googlecode.quicktigame2d.util.RunnableGL;
 
 public class QuickTiGame2dGameView extends GLSurfaceView implements Renderer, OnLifecycleEvent, Runnable {
 
@@ -94,8 +95,8 @@ public class QuickTiGame2dGameView extends GLSurfaceView implements Renderer, On
 	private boolean shouldReloadSnapshot = true;
 	private boolean squareVBOLoaded = false;
 
-	private Queue<Runnable> beforeCommandQueue = new ConcurrentLinkedQueue<Runnable>();
-	private Queue<Runnable> afterCommandQueue  = new ConcurrentLinkedQueue<Runnable>();;
+	private static Queue<RunnableGL> beforeCommandQueue = new ConcurrentLinkedQueue<RunnableGL>();
+	private static Queue<RunnableGL> afterCommandQueue  = new ConcurrentLinkedQueue<RunnableGL>();;
 
 	private boolean offscreenSupported = false;
 	private boolean takeSnapshot    = false;
@@ -118,12 +119,9 @@ public class QuickTiGame2dGameView extends GLSurfaceView implements Renderer, On
 	private boolean debug  = false;
 	
 	private HashMap<String, QuickTiGame2dTexture> textureCache = new HashMap<String, QuickTiGame2dTexture>();
-	private ArrayList<String> waitingForLoadTextures    = new ArrayList<String>();
-	private ArrayList<String> waitingForUnloadTextures  = new ArrayList<String>();
 	
 	private Stack<QuickTiGame2dScene> sceneStack = new Stack<QuickTiGame2dScene>();
 	private List<GameViewEventListener> listeners = new ArrayList<GameViewEventListener>();
-	private static List<Integer[]> waitingForDeleteBuffers = new ArrayList<Integer[]>();
 	
 	private List<QuickTiGame2dTransform> cameraTransforms = new ArrayList<QuickTiGame2dTransform>();
 	private List<QuickTiGame2dTransform> cameraTransformsToBeRemoved = new ArrayList<QuickTiGame2dTransform>();
@@ -275,16 +273,22 @@ public class QuickTiGame2dGameView extends GLSurfaceView implements Renderer, On
 		releaseSnapshot();
 	}
 	
-	public void commitLoadTexture(String texture) {
-		synchronized (waitingForLoadTextures) {
-			waitingForLoadTextures.add(texture);
-		}
+	public void commitLoadTexture(final String texture) {
+    	afterCommandQueue.offer(new RunnableGL() {
+    		@Override
+    		public void run(GL10 gl) {
+				loadTexture(gl, texture);
+    		}
+    	});
 	}
 
-	public void commitUnloadTexture(String texture) {
-		synchronized (waitingForUnloadTextures) {
-			waitingForUnloadTextures.add(texture);
-		}
+	public void commitUnloadTexture(final String texture) {
+    	afterCommandQueue.offer(new RunnableGL() {
+    		@Override
+    		public void run(GL10 gl) {
+				unloadTexture(gl, texture);
+    		}
+    	});
 	}
 	
 	public QuickTiGame2dTexture getTextureFromCache(String name) {
@@ -332,50 +336,16 @@ public class QuickTiGame2dGameView extends GLSurfaceView implements Renderer, On
 		textureCache.remove(name);
 	}
 	
-	private void loadWaitingTextures(GL10 gl) {
-		synchronized (waitingForLoadTextures) {
-			for (String name : waitingForLoadTextures) {
-				if (textureCache.containsKey(name)) continue;
-				loadTexture(gl, name);
-			}
-			waitingForLoadTextures.clear();
-		}
+	public static void deleteGLBuffer(final int[] ids) {
+    	afterCommandQueue.offer(new RunnableGL() {
+    		@Override
+    		public void run(GL10 gl10) {
+    			GL11 gl = (GL11)gl10;
+    			gl.glDeleteBuffers(ids.length, ids, 0);
+    		}
+    	});
 	}
 	
-	private void unloadWaitingTextures(GL10 gl) {
-		synchronized (waitingForUnloadTextures) {
-			for (String name : waitingForUnloadTextures) {
-				if (!textureCache.containsKey(name)) continue;
-				unloadTexture(gl, name);
-			}
-			waitingForUnloadTextures.clear();
-		}
-	}
-
-	public static void deleteGLBuffer(int[] ids) {
-		Integer[] intObj = new Integer[ids.length];
-		for  (int i = 0; i < ids.length; i++) {
-			intObj[i] = ids[i];
-		}
-		synchronized (waitingForDeleteBuffers) {
-			waitingForDeleteBuffers.add(intObj);
-		}
-	}
-	
-	private static void deleteWaitingGLBuffers(GL10 gl10) {
-		GL11 gl = (GL11)gl10;
-		synchronized (waitingForDeleteBuffers) {
-			for (Integer[] intObj : waitingForDeleteBuffers) {
-				int[] ids = new int[intObj.length];
-				for (int i = 0; i < ids.length; i++) {
-					ids[i] = intObj[i];
-				}
-				gl.glDeleteBuffers(ids.length, ids, 0);
-			}
-			waitingForDeleteBuffers.clear();
-		}
-	}
-
 	private void loadSquareVBOPointer(GL10 gl10) {
 		if (squareVBOLoaded) return;
 		
@@ -612,7 +582,7 @@ public class QuickTiGame2dGameView extends GLSurfaceView implements Renderer, On
 		restoreGLState(gl, true);
 
 		while(!beforeCommandQueue.isEmpty()) {
-			beforeCommandQueue.poll().run();
+			beforeCommandQueue.poll().run(gl);
 		}
 		
 		QuickTiGame2dScene scene = this.topScene();
@@ -689,13 +659,9 @@ public class QuickTiGame2dGameView extends GLSurfaceView implements Renderer, On
 	        snapshotSprite.onLoad(gl, this);
 	        snapshotSprite.onDrawFrame(gl);
 	    }
-		
-		unloadWaitingTextures(gl);
-		deleteWaitingGLBuffers(gl);
-		loadWaitingTextures(gl);
 	    
 		while(beforeCommandQueue.isEmpty() && !afterCommandQueue.isEmpty()) {
-			afterCommandQueue.poll().run();
+			afterCommandQueue.poll().run(gl);
 		}
 	    
 		restoreGLState(gl, false);
@@ -900,9 +866,9 @@ public class QuickTiGame2dGameView extends GLSurfaceView implements Renderer, On
 	public QuickTiGame2dScene popScene() {
     	snapshot();
 
-    	afterCommandQueue.offer(new Runnable() {
+    	afterCommandQueue.offer(new RunnableGL() {
     		@Override
-    		public void run() {
+    		public void run(GL10 gl) {
     			if (debug) Log.d(Quicktigame2dModule.LOG_TAG, "QuickTiGame2dGameView:popScene");
     			previousScene = popSceneOrNull();
     			onDeactivateScene(previousScene);
@@ -916,9 +882,9 @@ public class QuickTiGame2dGameView extends GLSurfaceView implements Renderer, On
 	public QuickTiGame2dScene pushScene(final QuickTiGame2dScene scene) {
 	    snapshot();
 	    
-	    afterCommandQueue.offer(new Runnable() {
+	    afterCommandQueue.offer(new RunnableGL() {
 	    	@Override
-	    	public void run() {
+	    	public void run(GL10 gl) {
 	    		if (debug) Log.d(Quicktigame2dModule.LOG_TAG, "QuickTiGame2dGameView:pushScene");
 	    		previousScene = topScene();
 	    		onDeactivateScene(previousScene);
@@ -933,9 +899,9 @@ public class QuickTiGame2dGameView extends GLSurfaceView implements Renderer, On
 	public QuickTiGame2dScene replaceScene(final QuickTiGame2dScene scene) {
 	    snapshot();
 	    
-	    afterCommandQueue.offer(new Runnable() {
+	    afterCommandQueue.offer(new RunnableGL() {
 	    	@Override
-	    	public void run() {
+	    	public void run(GL10 gl) {
 	    		if (debug) Log.d(Quicktigame2dModule.LOG_TAG, "QuickTiGame2dGameView:replaceScene");
 	    		previousScene = popSceneOrNull();
 	    		onDeactivateScene(previousScene);
@@ -973,9 +939,9 @@ public class QuickTiGame2dGameView extends GLSurfaceView implements Renderer, On
 	
 	public void snapshot() {
 	    if (offscreenSupported && topScene() != null) {
-	    	beforeCommandQueue.offer(new Runnable() {
+	    	beforeCommandQueue.offer(new RunnableGL() {
 	    		@Override
-	    		public void run() {
+	    		public void run(GL10 gl) {
 	    			takeSnapshot = true;
 	    		}
 	    	});
@@ -984,9 +950,9 @@ public class QuickTiGame2dGameView extends GLSurfaceView implements Renderer, On
 
 	public void releaseSnapshot() {
 	    if (offscreenSupported && topScene() != null) {
-	    	beforeCommandQueue.offer(new Runnable() {
+	    	beforeCommandQueue.offer(new RunnableGL() {
 	    		@Override
-	    		public void run() {
+	    		public void run(GL10 gl) {
 	    			releaseSnapshot = true;
 	    		}
 	    	});

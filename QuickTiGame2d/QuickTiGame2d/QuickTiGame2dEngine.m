@@ -56,8 +56,8 @@
 @synthesize usePerspective;
 
 static NSMutableDictionary* textureCache;
-static NSMutableArray* waitingForLoadTextures;
-static NSMutableArray* waitingForUnloadTextures;
+static ArrayStackQueue* beforeCommandQueue;
+static ArrayStackQueue* afterCommandQueue;
 static GLuint squareVBOPointerCache[2];
 static NSDate* startTime;
 static BOOL debug;
@@ -71,8 +71,6 @@ typedef void (^CommandBlock)(void);
     if (self != nil) {
         sceneStack   = [[ArrayStackQueue alloc] init];
         textureCache = [[NSMutableDictionary alloc] init];
-        waitingForLoadTextures   = [[NSMutableArray alloc] init];
-        waitingForUnloadTextures = [[NSMutableArray alloc] init];
         notificationEventCache = [[NSMutableDictionary alloc] init];
         fpsNotificationEventCache = [[NSMutableDictionary alloc] init];
         sceneNotificationEventCache = [[NSMutableDictionary alloc] init];
@@ -123,21 +121,20 @@ typedef void (^CommandBlock)(void);
 -(void)dealloc {
     
     [textureCache release];
-    [waitingForLoadTextures release];
-    [waitingForUnloadTextures release];
-    
     textureCache = nil;
-    waitingForLoadTextures   = nil;
-    waitingForUnloadTextures = nil;
 
+    [beforeCommandQueue release];
+    [afterCommandQueue release];
+    
+    beforeCommandQueue = nil;
+    afterCommandQueue  = nil;
+    
     [sceneStack release];
     [notificationEventCache release];
     [fpsNotificationEventCache release];
     [sceneNotificationEventCache release];
     [snapshotTexture release];
     [snapshotSprite release];
-    [beforeCommandQueue release];
-    [afterCommandQueue release];
     [cameraTransforms release];
     [cameraTransformsToBeRemoved release];
     [hudScene release];
@@ -392,22 +389,6 @@ typedef void (^CommandBlock)(void);
         [snapshotSprite onLoad];
         [snapshotSprite drawFrame];
     }
-
-    @synchronized(textureCache) {
-        if ([waitingForUnloadTextures count] > 0) {
-            for (NSString* name in waitingForUnloadTextures) {
-                [QuickTiGame2dEngine unloadTexture:name];
-            }
-            [waitingForUnloadTextures removeAllObjects];
-        }
-        
-        if ([waitingForLoadTextures count] > 0) {
-            for (NSString* name in waitingForLoadTextures) {
-                [QuickTiGame2dEngine loadTexture:name];
-            }
-            [waitingForLoadTextures removeAllObjects];
-        }
-    }
     
     @synchronized(afterCommandQueue) {
         while ([beforeCommandQueue count] == 0 && [afterCommandQueue count] > 0) {
@@ -526,14 +507,24 @@ typedef void (^CommandBlock)(void);
 }
 
 +(void)commitLoadTexture:(NSString*)name {
-    @synchronized(textureCache) {
-        [waitingForLoadTextures addObject:name];
+    @synchronized(afterCommandQueue) {
+        CommandBlock command = [^{
+            [QuickTiGame2dEngine loadTexture:name];
+        } copy];
+        
+        [afterCommandQueue push:command];
+        [command release];
     }
 }
 
 +(void)commitUnloadTexture:(NSString*)name {
-    @synchronized(textureCache) {
-        [waitingForUnloadTextures addObject:name];
+    @synchronized(afterCommandQueue) {
+        CommandBlock command = [^{
+            [QuickTiGame2dEngine unloadTexture:name];
+        } copy];
+        
+        [afterCommandQueue push:command];
+        [command release];
     }
 }
 

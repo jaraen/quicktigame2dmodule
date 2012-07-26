@@ -66,8 +66,6 @@ typedef struct CameraInfo {
     BOOL loaded;
     
     ArrayStackQueue* sceneStack;
-    ArrayStackQueue* beforeCommandQueue;
-    ArrayStackQueue* afterCommandQueue;
     
     NSMutableDictionary* notificationEventCache;
     NSMutableDictionary* fpsNotificationEventCache;
