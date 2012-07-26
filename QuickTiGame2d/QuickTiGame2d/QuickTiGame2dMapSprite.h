@@ -81,7 +81,6 @@
 -(NSArray*)getTiles;
 -(QuickTiGame2dMapTile*)getTileAtPosition:(float)sx sy:(float)sy;
 -(QuickTiGame2dMapTile*)getTile:(NSInteger)index;
--(void)setTile:(NSInteger)index gid:(NSInteger)gid;
 -(void)setTile:(NSInteger)index tile:(QuickTiGame2dMapTile*)tile;
 -(void)setTiles:(NSArray*)data;
 -(BOOL)removeTile:(NSInteger)index;

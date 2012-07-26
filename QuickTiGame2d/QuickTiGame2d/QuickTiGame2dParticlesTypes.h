@@ -100,7 +100,9 @@ typedef struct {
     float overwrapAtlasX;
     float overwrapAtlasY;
     BOOL  suppressUpdate;
-
+    
+    BOOL isChild;
+    NSInteger parent;
 }
 @property (readwrite, copy) NSString* image;
 @property (readwrite) NSInteger firstgid;
@@ -124,6 +126,8 @@ typedef struct {
 @property (readwrite) float initialX;
 @property (readwrite) float initialY;
 @property (readwrite) NSInteger index;
+@property (readwrite) NSInteger parent;
+@property (readwrite) BOOL  isChild;
 @property (readwrite) BOOL  isOverwrap;
 @property (readwrite) BOOL  suppressUpdate;
 @property (readwrite) float overwrapWidth;

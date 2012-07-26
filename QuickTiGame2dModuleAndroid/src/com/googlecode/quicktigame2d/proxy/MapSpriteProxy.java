@@ -88,6 +88,8 @@ public class MapSpriteProxy extends SpriteProxy {
 		info.put("blue",  Double.valueOf(tile.blue));
 		info.put("alpha", Double.valueOf(tile.alpha));
 		info.put("flip",  Boolean.valueOf(tile.flip));
+		info.put("isChild",  Boolean.valueOf(tile.isChild));
+		info.put("parent",   Integer.valueOf(tile.parent));
 		
 		info.put("screenX",  Double.valueOf(getMapSprite().getScreenX(tile)));
 		info.put("screenY",  Double.valueOf(getMapSprite().getScreenY(tile)));

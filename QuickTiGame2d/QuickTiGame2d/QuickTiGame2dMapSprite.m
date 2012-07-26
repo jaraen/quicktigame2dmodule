@@ -38,6 +38,7 @@
 - (void)createQuadBuffer;
 - (void)updateQuad:(NSInteger)index tile:(QuickTiGame2dMapTile*)cctile;
 - (void)addTileToArray:(QuickTiGame2dMapTile*)tile array:(NSMutableArray*)array;
+- (void)updateTileProperty:(QuickTiGame2dMapTile*)tile;
 @end
 
 @implementation QuickTiGame2dMapTile
@@ -45,7 +46,7 @@
 @synthesize atlasX, atlasY, firstgid, margin, border, atlasWidth, atlasHeight;
 @synthesize offsetX, offsetY, initialX, initialY, positionFixed;
 @synthesize image, index, suppressUpdate, isOverwrap, overwrapWidth, overwrapHeight;
-@synthesize overwrapAtlasX, overwrapAtlasY;
+@synthesize overwrapAtlasX, overwrapAtlasY, isChild, parent;
 
 -(id)init {
     self = [super init];
@@ -69,9 +70,11 @@
         initialY = 0;
         positionFixed = FALSE;
         index = 0;
+        parent = 0;
         
         suppressUpdate = FALSE;
         isOverwrap     = FALSE;
+        isChild        = FALSE;
         overwrapWidth  = 0;
         overwrapHeight = 0;
         overwrapAtlasX = 0;
@@ -106,6 +109,8 @@
     overwrapHeight = other.overwrapHeight;
     overwrapAtlasX = other.overwrapAtlasX;
     overwrapAtlasY = other.overwrapAtlasY;
+    isChild        = other.isChild;
+    parent         = other.parent;
 }
 
 -(NSString*)description {
@@ -120,6 +125,8 @@
     alpha = 1;
     flip  = FALSE;
     isOverwrap = FALSE;
+    isChild    = FALSE;
+    parent     = 0;
 }
 @end
 
@@ -543,30 +550,13 @@
     }
 }
 
--(void)setTile:(NSInteger)index gid:(NSInteger)gid {
-    QuickTiGame2dMapTile* tile = [[QuickTiGame2dMapTile alloc] init];
-    tile.gid = gid;
-    tile.alpha = 1;
-    tile.index = index;
-    
-    [self setTile:index tile:tile];
-    
-    [tile release];
-}
-
 -(NSInteger)getOverwrapTileCount:(QuickTiGame2dMapTile*)tile {
     return (NSInteger)(tile.width / tileWidth);
 }
 
--(void)setTile:(NSInteger)index tile:(QuickTiGame2dMapTile*)tile {
-    
-    if ([self getTile:index].isOverwrap) {
-        NSLog(@"[DEBUG] Tile %d can not be replaced because it is part of multiple tiles.", index);
-        return;
-    }
-    
+-(void)updateTileProperty:(QuickTiGame2dMapTile*)tile {
     tile.firstgid = firstgid;
-
+    
     // Update tile properties if we found multiple tilesets
     if ([tilesets count] > 1) {
         if (tile.gid <= 0) {
@@ -599,11 +589,50 @@
             tile.atlasHeight = [[prop objectForKey:@"atlasHeight"] floatValue];
         }
     }
+}
+
+-(void)setTile:(NSInteger)index tile:(QuickTiGame2dMapTile*)tile {
+    
+    if ([self getTile:index].isChild) {
+        NSLog(@"[DEBUG] Tile %d can not be replaced because it is part of multiple tiles.", index);
+        return;
+    }
+    
+    [self updateTileProperty:tile];
     
     // check if this tile consists of multiple tiles
     // this assumes tile has same tile count for X&Y axis (2x2, 3x3, 4x4)
     int overwrapTileCount = [self getOverwrapTileCount:tile];
     if (overwrapTileCount >= 2) {
+
+        // Fill out neighboring tile with empty tile
+        for (int row = 0; row < overwrapTileCount; row++) {
+            for (int column = 1; column < overwrapTileCount; column++) {
+                
+                int nidx = tile.index + column + (row * tileCountX);
+                QuickTiGame2dMapTile* target = [self getTile:nidx];
+                QuickTiGame2dMapTile* neighbor = [[QuickTiGame2dMapTile alloc] init];
+                
+                if (target != nil) {
+                    [neighbor cc:target];
+                } else {
+                    [self updateTileProperty:neighbor];
+                }
+                
+                neighbor.index = nidx;
+                neighbor.isChild = TRUE;
+                neighbor.suppressUpdate = TRUE;
+                neighbor.alpha = 0;
+                neighbor.parent = tile.index;
+                
+                @synchronized (updatedTiles) {
+                    [updatedTiles setObject:neighbor forKey:[NSNumber numberWithInt:neighbor.index]];
+                }
+                
+                [neighbor release];
+            }
+        }
+        
         float baseTileHeight = tileWidth * 0.5f;
         float baseTileMargin = tile.height - (overwrapTileCount * baseTileHeight);
         for (int i = 1; i < overwrapTileCount; i++) {
@@ -632,8 +661,10 @@
             tile2.overwrapAtlasX = tile.atlasX;
             tile2.overwrapAtlasY = tile.atlasY;
             tile2.isOverwrap      = TRUE;
+            tile2.isChild         = TRUE;
             tile2.offsetX = -tileWidth * 0.5f;
             tile2.offsetY = tile.offsetY;
+            tile2.parent  = tile.index;
             
             tile2.suppressUpdate = TRUE;
             
@@ -677,7 +708,7 @@
 -(BOOL)removeTile:(NSInteger)index {
     if (index >= [tiles count]) return FALSE;
     
-    if ([self getTile:index].isOverwrap) {
+    if ([self getTile:index].isChild) {
         NSLog(@"[DEBUG] Tile %d can not be removed because it is part of multiple tiles.", index);
         return FALSE;
     }

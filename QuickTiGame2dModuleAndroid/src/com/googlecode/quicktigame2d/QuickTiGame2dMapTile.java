@@ -61,6 +61,9 @@ public class QuickTiGame2dMapTile {
     
     public boolean  suppressUpdate;
     
+    public boolean isChild;
+    public int parent;
+    
     public QuickTiGame2dMapTile() {
         gid   = 0;
         index = 0;
@@ -88,6 +91,9 @@ public class QuickTiGame2dMapTile {
         overwrapAtlasX = 0;
         overwrapAtlasY = 0;
         suppressUpdate = false;
+        
+        isChild = false;
+        parent  = 0;
     }
     
     public void cc(QuickTiGame2dMapTile other) {
@@ -116,6 +122,8 @@ public class QuickTiGame2dMapTile {
         overwrapAtlasX = other.overwrapAtlasX;
         overwrapAtlasY = other.overwrapAtlasY;
         suppressUpdate = other.suppressUpdate;
+        isChild        = other.isChild;
+        parent         = other.parent;
     }
     
     public String description() {
@@ -132,6 +140,8 @@ public class QuickTiGame2dMapTile {
         alpha = 1;
         flip  = false;
         isOverwrap = false;
+        isChild = false;
+        parent = 0;
     }
 
 }
