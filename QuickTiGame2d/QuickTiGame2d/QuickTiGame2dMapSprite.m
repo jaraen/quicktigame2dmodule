@@ -606,13 +606,13 @@
     if (overwrapTileCount >= 2) {
         float baseTileHeight = tileWidth * 0.5f;
         float baseTileMargin = tile.height - (overwrapTileCount * baseTileHeight);
-        for (int i = 2; i <= overwrapTileCount; i++) {
+        for (int i = 1; i < overwrapTileCount; i++) {
             
             QuickTiGame2dMapTile* tile2 = [[QuickTiGame2dMapTile alloc] init];
             
             [tile2 cc:tile];
             
-            tile2.index    = index + ((i - 1) * tileCountX);
+            tile2.index    = index + (i * tileCountX);
             
             QuickTiGame2dMapTile* target2 = [self getTile:tile2.index];
             if (target2 != nil) {
@@ -624,8 +624,8 @@
             
             tile2.width    = tileWidth;
             tile2.height   = baseTileHeight + baseTileMargin;
-            tile2.atlasX   = tile.atlasX + ((overwrapTileCount - i) * tileWidth * 0.5f);
-            tile2.atlasY   = tile.atlasY + (baseTileHeight * 0.5f) * (i - 1);
+            tile2.atlasX   = tile.atlasX + ((overwrapTileCount - i - 1) * tileWidth * 0.5f);
+            tile2.atlasY   = tile.atlasY + (baseTileHeight * 0.5f) * i;
             
             tile2.overwrapWidth  = tile.width;
             tile2.overwrapHeight = tile.height;
