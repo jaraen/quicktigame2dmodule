@@ -617,8 +617,8 @@
         for (int row = 0; row < overwrapTileCount; row++) {
             for (int column = 1; column < overwrapTileCount; column++) {
                 
-                int nidx = tile.index + column + (row * tileCountX);
-                QuickTiGame2dMapTile* target = [self getTile:nidx];
+                int index2 = index + column + (row * tileCountX);
+                QuickTiGame2dMapTile* target = [self getTile:index2];
                 QuickTiGame2dMapTile* neighbor = [[QuickTiGame2dMapTile alloc] init];
                 
                 if (target != nil) {
@@ -627,11 +627,11 @@
                     [self updateTileProperty:neighbor];
                 }
                 
-                neighbor.index = nidx;
+                neighbor.index = index2;
                 neighbor.isChild = TRUE;
                 neighbor.suppressUpdate = TRUE;
                 neighbor.alpha = 0;
-                neighbor.parent = tile.index;
+                neighbor.parent = index;
                 
                 @synchronized (updatedTiles) {
                     [updatedTiles setObject:neighbor forKey:[NSNumber numberWithInt:neighbor.index]];
@@ -672,7 +672,7 @@
             tile2.isChild         = TRUE;
             tile2.offsetX = -tileWidth * 0.5f;
             tile2.offsetY = tile.offsetY;
-            tile2.parent  = tile.index;
+            tile2.parent  = index;
             
             tile2.suppressUpdate = TRUE;
             

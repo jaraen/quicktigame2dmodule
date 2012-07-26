@@ -532,8 +532,8 @@ public class QuickTiGame2dMapSprite extends QuickTiGame2dSprite {
 	        for (int row = 0; row < overwrapTileCount; row++) {
 	            for (int column = 1; column < overwrapTileCount; column++) {
 	                
-	                int nidx = tile.index + column + (row * tileCountX);
-	                QuickTiGame2dMapTile target2 = getTile(nidx);
+	                int index2 = index + column + (row * tileCountX);
+	                QuickTiGame2dMapTile target2 = getTile(index2);
 	                QuickTiGame2dMapTile neighbor = new QuickTiGame2dMapTile();;
 	                
 	                if (target2 != null) {
@@ -542,11 +542,11 @@ public class QuickTiGame2dMapSprite extends QuickTiGame2dSprite {
 	                    neighbor = updateTileProperty(neighbor);
 	                }
 	                
-	                neighbor.index = nidx;
+	                neighbor.index = index2;
 	                neighbor.isChild = true;
 	                neighbor.suppressUpdate = true;
 	                neighbor.alpha = 0;
-	                neighbor.parent = tile.index;
+	                neighbor.parent = index;
 	                
 		    	    synchronized(updatedTiles) {
 		    	    	updatedTiles.put(Integer.valueOf(neighbor.index), neighbor);
@@ -585,7 +585,7 @@ public class QuickTiGame2dMapSprite extends QuickTiGame2dSprite {
 	            tile2.isChild         = true;
 	            tile2.offsetX = -tileWidth * 0.5f;
 	            tile2.offsetY = tile.offsetY;
-	            tile2.parent  = tile.index;
+	            tile2.parent  = index;
 	            
 	            tile2.suppressUpdate = true;
 	            
