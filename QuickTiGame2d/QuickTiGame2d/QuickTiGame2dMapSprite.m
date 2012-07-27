@@ -497,41 +497,43 @@
     
     if (tile.gid - tile.firstgid < 0) tile.alpha = 0;
     
+    float parentAlpha = [self alpha];
+    
     quads[vi + 2] = tile.flip ? [self tileCoordEndX:tile] : [self tileCoordStartX:tile]; // texture x
     quads[vi + 3] = [self tileCoordEndY:tile]; // texture y
     
-    quads[vi + 4] = tile.red * tile.alpha;   // red
-    quads[vi + 5] = tile.green * tile.alpha; // green
-    quads[vi + 6] = tile.blue * tile.alpha;  // blue
-    quads[vi + 7] = tile.alpha; // alpha
+    quads[vi + 4] = tile.red * tile.alpha * parentAlpha;   // red
+    quads[vi + 5] = tile.green * tile.alpha * parentAlpha; // green
+    quads[vi + 6] = tile.blue * tile.alpha * parentAlpha;  // blue
+    quads[vi + 7] = tile.alpha * parentAlpha; // alpha
     
     // -----------------------------
     quads[vi + 10] = tile.flip ? [self tileCoordEndX:tile] : [self tileCoordStartX:tile];
     quads[vi + 11] = [self tileCoordStartY:tile];
     
-    quads[vi + 12] = tile.red * tile.alpha;   // red
-    quads[vi + 13] = tile.green * tile.alpha; // green
-    quads[vi + 14] = tile.blue * tile.alpha;  // blue
-    quads[vi + 15] = tile.alpha; // alpha
+    quads[vi + 12] = tile.red * tile.alpha * parentAlpha;   // red
+    quads[vi + 13] = tile.green * tile.alpha * parentAlpha; // green
+    quads[vi + 14] = tile.blue * tile.alpha * parentAlpha;  // blue
+    quads[vi + 15] = tile.alpha * parentAlpha; // alpha
     
     // -----------------------------
     quads[vi + 18] = tile.flip ? [self tileCoordStartX:tile] : [self tileCoordEndX:tile];
     quads[vi + 19] = [self tileCoordStartY:tile];
     
-    quads[vi + 20] = tile.red * tile.alpha;   // red
-    quads[vi + 21] = tile.green * tile.alpha; // green
-    quads[vi + 22] = tile.blue * tile.alpha;  // blue
-    quads[vi + 23] = tile.alpha; // alpha
+    quads[vi + 20] = tile.red * tile.alpha * parentAlpha;   // red
+    quads[vi + 21] = tile.green * tile.alpha * parentAlpha; // green
+    quads[vi + 22] = tile.blue * tile.alpha * parentAlpha;  // blue
+    quads[vi + 23] = tile.alpha * parentAlpha; // alpha
     
     // -----------------------------
     
     quads[vi + 26] = tile.flip ? [self tileCoordStartX:tile] : [self tileCoordEndX:tile];
     quads[vi + 27] = [self tileCoordEndY:tile];
     
-    quads[vi + 28] = tile.red * tile.alpha;   // red
-    quads[vi + 29] = tile.green * tile.alpha; // green
-    quads[vi + 30] = tile.blue * tile.alpha;  // blue
-    quads[vi + 31] = tile.alpha; // alpha
+    quads[vi + 28] = tile.red * tile.alpha * parentAlpha;   // red
+    quads[vi + 29] = tile.green * tile.alpha * parentAlpha; // green
+    quads[vi + 30] = tile.blue * tile.alpha * parentAlpha;  // blue
+    quads[vi + 31] = tile.alpha * parentAlpha; // alpha
     
     if (tile.width > 0 && tile.height > 0) {
         
@@ -877,15 +879,6 @@
     
     
     return [data autorelease];
-}
-
--(void)setAlpha:(float)alpha {
-    [super setAlpha:alpha];
-    for (int i = 0; i < [tiles count]; i++) {
-        QuickTiGame2dMapTile* tile = [tiles objectAtIndex:i];
-        tile.alpha = alpha;
-        [self setTile:i tile:tile];
-    }
 }
 
 -(void)setOrientation:(NSInteger)value {
