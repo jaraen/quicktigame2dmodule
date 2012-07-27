@@ -881,6 +881,17 @@
     return [data autorelease];
 }
 
+-(void)setAlpha:(float)alpha {
+    [super setAlpha:alpha];
+    
+    // Update all tiles to reload buffers
+    @synchronized (updatedTiles) {
+        for (int i = 0; i < [tiles count]; i++) {
+                [updatedTiles setObject:[tiles objectAtIndex:i] forKey:[NSNumber numberWithInt:i]];
+        }
+    }
+}
+
 -(void)setOrientation:(NSInteger)value {
     orientation = value;
     

@@ -813,6 +813,18 @@ public class QuickTiGame2dMapSprite extends QuickTiGame2dSprite {
 	public int getOrientation() {
 		return orientation;
 	}
+	
+	@Override
+	public void setAlpha(float alpha) {
+		super.setAlpha(alpha);
+		
+		// Update all tiles to reload buffers
+		synchronized(updatedTiles) {
+			for (int i = 0; i < tiles.size(); i++) {
+				updatedTiles.put(Integer.valueOf(i), tiles.get(i));
+			}
+		}
+	}
 
 	public void setOrientation(int orientation) {
 		this.orientation = orientation;
