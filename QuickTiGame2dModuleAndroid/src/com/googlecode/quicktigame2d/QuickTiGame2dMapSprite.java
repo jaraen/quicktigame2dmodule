@@ -936,6 +936,14 @@ public class QuickTiGame2dMapSprite extends QuickTiGame2dSprite {
 	    animating = true;
 	}
 
+	public float getDefaultX(QuickTiGame2dMapTile tile) {
+		return getX() + tile.initialX * getScaleX();
+	}
+	
+	public float getDefaultY(QuickTiGame2dMapTile tile) {
+		return getY() + tile.initialY * getScaleY();
+	}
+
 	public float getScreenX(QuickTiGame2dMapTile tile) {
 		return getX() + (tile.initialX + tile.offsetX) * getScaleX();
 	}

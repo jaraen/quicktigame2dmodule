@@ -93,8 +93,10 @@ public class MapSpriteProxy extends SpriteProxy {
 		info.put("rowCount", Integer.valueOf(getMapSprite().getChildTileRowCount(tile)));
 		info.put("parent",   Integer.valueOf(tile.parent));
 		
-		info.put("screenX",  Double.valueOf(getMapSprite().getScreenX(tile)));
-		info.put("screenY",  Double.valueOf(getMapSprite().getScreenY(tile)));
+		info.put("x",  Double.valueOf(getMapSprite().getScreenX(tile)));
+		info.put("y",  Double.valueOf(getMapSprite().getScreenY(tile)));
+		info.put("defaultX",  Double.valueOf(getMapSprite().getDefaultX(tile)));
+		info.put("defaultY",  Double.valueOf(getMapSprite().getDefaultY(tile)));
 		info.put("width",    Double.valueOf(tile.width  > 0 ? 
 				getMapSprite().getScaledTileWidth(tile)  : getMapSprite().getScaledTileWidth()));
 		info.put("height",   Double.valueOf(tile.height > 0 ?

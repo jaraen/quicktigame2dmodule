@@ -93,6 +93,9 @@
 -(void)animateTile:(NSInteger)tileIndex frames:(NSArray*)frames interval:(NSInteger)interval;
 -(void)animateTile:(NSInteger)tileIndex frames:(NSArray*)frames interval:(NSInteger)interval loop:(NSInteger)loop;
 
+-(float)defaultX:(QuickTiGame2dMapTile*)tile;
+-(float)defaultY:(QuickTiGame2dMapTile*)tile;
+
 -(float)screenX:(QuickTiGame2dMapTile*)tile;
 -(float)screenY:(QuickTiGame2dMapTile*)tile;
 

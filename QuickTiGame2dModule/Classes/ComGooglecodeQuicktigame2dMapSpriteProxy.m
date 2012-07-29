@@ -100,8 +100,10 @@
     [dic setValue:NUMBOOL([mapSprite hasChild:tile]) forKey:@"hasChild"];
     [dic setValue:NUMBOOL([mapSprite getChildTileRowCount:tile]) forKey:@"rowCount"];
     [dic setValue:NUMINT(tile.parent)   forKey:@"parent"];
-    [dic setValue:NUMFLOAT([mapSprite screenX:tile]) forKey:@"screenX"];
-    [dic setValue:NUMFLOAT([mapSprite screenY:tile]) forKey:@"screenY"];
+    [dic setValue:NUMFLOAT([mapSprite screenX:tile]) forKey:@"x"];
+    [dic setValue:NUMFLOAT([mapSprite screenY:tile]) forKey:@"y"];
+    [dic setValue:NUMFLOAT([mapSprite defaultX:tile]) forKey:@"defaultX"];
+    [dic setValue:NUMFLOAT([mapSprite defaultY:tile]) forKey:@"defaultY"];
     
     [dic setValue:NUMFLOAT(tile.width  > 0 ? 
                            [mapSprite scaledTileWidth:tile]  : [mapSprite scaledTileWidth])

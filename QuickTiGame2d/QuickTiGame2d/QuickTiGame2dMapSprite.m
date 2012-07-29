@@ -995,6 +995,14 @@
     animating = TRUE;
 }
 
+-(float)defaultX:(QuickTiGame2dMapTile*)tile {
+    return self.x + tile.initialX * self.scaleX;
+}
+
+-(float)defaultY:(QuickTiGame2dMapTile*)tile {
+    return self.y + tile.initialY * self.scaleY;
+}
+
 -(float)screenX:(QuickTiGame2dMapTile*)tile {
     return self.x + (tile.initialX + tile.offsetX) * self.scaleX;
 }
