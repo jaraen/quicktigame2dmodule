@@ -358,6 +358,8 @@ public class MapSpriteProxy extends SpriteProxy {
 			Map<String, String> param = new HashMap<String, String>();
 			param.put("offsetX", "0");
 			param.put("offsetY", "0");
+			param.put("rowCount", "0");
+			param.put("columnCount", "0");
 			
 			@SuppressWarnings("rawtypes")
 			Map info = (Map) args[i];
@@ -378,7 +380,9 @@ public class MapSpriteProxy extends SpriteProxy {
 						}
 					}
 				} else {
-					param.put(String.valueOf(key), String.valueOf(info.get(key)));
+					if (info.get(key) != null) {
+						param.put(String.valueOf(key), String.valueOf(info.get(key)));
+					}
 				}
 			}
 			

@@ -679,7 +679,7 @@
                 
                 // Clear neighboring tile that is not used
                 if (![self isTileSpaceUsed:tile row:row column:column]) {
-                    if (target.parent == index) {
+                    if (target != nil && target.parent == index) {
                         [neighbor clearViewProperty:self];
                     } else {
                         [neighbor release];
