@@ -466,8 +466,31 @@ public class QuickTiGame2dMapSprite extends QuickTiGame2dSprite {
 	    
 	}
 	
-	public int getChildTileRowCount(QuickTiGame2dMapTile tile) {
+	private int getChildTileRowCount(QuickTiGame2dMapTile tile) {
 	    return (int)(tile.width / tileWidth);
+	}
+	
+	public int getTileRowCount(QuickTiGame2dMapTile tile) {
+	    if (tile.rowCount <= 0) {
+	        return getChildTileRowCount(tile);
+	    } else {
+	        return tile.rowCount;
+	    }
+	}
+
+	public int getTileColumnCount(QuickTiGame2dMapTile tile) {
+	    if (tile.columnCount <= 0) {
+	        return getChildTileRowCount(tile);
+	    } else {
+	        return tile.columnCount;
+	    }
+	}
+
+	public boolean isHalfTile(QuickTiGame2dMapTile tile) {
+	    int row    = getTileRowCount(tile);
+	    int column = getTileColumnCount(tile);
+	    
+	    return (row > 1 || column > 1) && (row != column);
 	}
 	
     // check if this tile consists of multiple tiles

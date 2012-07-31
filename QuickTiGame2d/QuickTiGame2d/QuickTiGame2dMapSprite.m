@@ -39,6 +39,8 @@
 - (void)updateQuad:(NSInteger)index tile:(QuickTiGame2dMapTile*)cctile;
 - (void)addTileToArray:(QuickTiGame2dMapTile*)tile array:(NSMutableArray*)array;
 - (void)updateTileProperty:(QuickTiGame2dMapTile*)tile;
+- (NSInteger)getChildTileRowCount:(QuickTiGame2dMapTile*)tile;
+- (BOOL)isHalfTile:(QuickTiGame2dMapTile*)tile;
 @end
 
 @interface QuickTiGame2dMapTile (PrivateMethods)
@@ -577,6 +579,29 @@
 
 -(NSInteger)getChildTileRowCount:(QuickTiGame2dMapTile*)tile {
     return (NSInteger)(tile.width / tileWidth);
+}
+
+-(NSInteger)getTileRowCount:(QuickTiGame2dMapTile*)tile {
+    if (tile.rowCount <= 0) {
+        return [self getChildTileRowCount:tile];
+    } else {
+        return tile.rowCount;
+    }
+}
+
+-(NSInteger)getTileColumnCount:(QuickTiGame2dMapTile*)tile {
+    if (tile.columnCount <= 0) {
+        return [self getChildTileRowCount:tile];
+    } else {
+        return tile.columnCount;
+    }
+}
+
+-(BOOL)isHalfTile:(QuickTiGame2dMapTile*)tile {
+    NSInteger row    = [self getTileRowCount:tile];
+    NSInteger column = [self getTileColumnCount:tile];
+    
+    return (row > 1 || column > 1) && (row != column);
 }
 
 /*
