@@ -338,6 +338,9 @@
         [param setObject:@"0" forKey:@"offsetX"];
         [param setObject:@"0" forKey:@"offsetY"];
         
+        [param setObject:@"0" forKey:@"rowCount"];
+        [param setObject:@"0" forKey:@"columnCount"];
+        
         NSDictionary* info = [args objectAtIndex:i];
         for (id key in info) {
             id value = [info objectForKey:key];
