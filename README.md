@@ -16,7 +16,7 @@
 </modules>
 ```
 
-It is important to include the correct version number. If you don't know what version you have installed, just navigate back to the modules folder and inside the ti.admob directory you should see another folder with a version number. Include this version number in your code.
+It is important to include the correct version number. If you don't know what version you have installed, just navigate back to the modules folder and inside the com.googlecode.quicktigame2d directory you should see another folder with a version number. Include this version number in your code.
 
 * clean and re-build your project
 
