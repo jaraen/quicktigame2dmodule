@@ -133,10 +133,32 @@ public class MapSpriteProxy extends SpriteProxy {
 		
 		return info;
 	}
+	
 	@Kroll.method
 	public boolean setTile(@SuppressWarnings("rawtypes") HashMap info) {
 		return updateTile(info);
 	}
+
+	@Kroll.method
+	public boolean canUpdate(@SuppressWarnings("rawtypes") HashMap info) {
+		int index = -1;
+		if (info.containsKey("index")) {
+			index = TiConvert.toInt(info.get("index"));
+		}
+		
+	    QuickTiGame2dMapTile target = getMapSprite().getTile(index);
+	    if (target == null) return false;
+	    
+	    QuickTiGame2dMapTile tile = new QuickTiGame2dMapTile();
+	    tile.indexcc(target);
+	    
+		if (info.containsKey("flip")) {
+			tile.flip = TiConvert.toBoolean(info.get("flip"));
+		}
+		
+		return getMapSprite().canUpdate(index, tile);
+	}
+	
 	
 	@Kroll.method
 	public boolean updateTile(@SuppressWarnings("rawtypes") HashMap info) {
@@ -166,7 +188,7 @@ public class MapSpriteProxy extends SpriteProxy {
 			alpha = (float)TiConvert.toDouble(info.get("alpha"));
 		}
 
-	    if (index >= getMapSprite().getTileCount()) {
+	    if (index < 0 || index >= getMapSprite().getTileCount()) {
 	        return false;
 	    }
 	    
@@ -187,9 +209,7 @@ public class MapSpriteProxy extends SpriteProxy {
 			tile.flip = TiConvert.toBoolean(info.get("flip"));
 		}
 	    
-	    getMapSprite().setTile(index, tile);
-	    
-	    return true;
+	    return getMapSprite().setTile(index, tile);
 	}
 	
 	@SuppressWarnings({ "unchecked", "rawtypes" })

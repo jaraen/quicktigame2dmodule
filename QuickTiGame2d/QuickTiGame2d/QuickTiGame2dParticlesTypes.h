@@ -141,6 +141,7 @@ typedef struct {
 @property (readwrite) NSInteger columnCount;
 
 -(void)cc:(QuickTiGame2dMapTile*)other;
+-(void)indexcc:(QuickTiGame2dMapTile*)other;
 @end
 
 #define MAXIMUM_UPDATE_RATE 60.0f	// The maximum number of updates that occur per frame

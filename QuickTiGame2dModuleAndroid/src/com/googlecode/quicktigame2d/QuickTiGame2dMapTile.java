@@ -134,6 +134,11 @@ public class QuickTiGame2dMapTile {
         columnCount    = other.columnCount;
     }
     
+    public void indexcc(QuickTiGame2dMapTile other) {
+    	this.cc(other);
+    	index = other.index;
+    }
+    
     public String description() {
         return String.format("index:%d, gid:%d, firstgid:%d size:%fx%f, initial:%fx%f atlas:%fx%f atlas size:%fx%f offset:%fx%f overwrap:%fx%f overwrap atlas:%fx%f count:%dx%d parent:%d isChild:%s flip:%s",
         					index, gid, firstgid, width, height, initialX, initialY, atlasX, atlasY, atlasWidth, 

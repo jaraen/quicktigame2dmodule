@@ -81,7 +81,7 @@
 -(NSArray*)getTiles;
 -(QuickTiGame2dMapTile*)getTileAtPosition:(float)sx sy:(float)sy;
 -(QuickTiGame2dMapTile*)getTile:(NSInteger)index;
--(void)setTile:(NSInteger)index tile:(QuickTiGame2dMapTile*)tile;
+-(BOOL)setTile:(NSInteger)index tile:(QuickTiGame2dMapTile*)tile;
 -(void)setTiles:(NSArray*)data;
 -(BOOL)removeTile:(NSInteger)index;
 -(BOOL)flipTile:(NSInteger)index;
@@ -108,5 +108,7 @@
 -(BOOL)hasChild:(QuickTiGame2dMapTile*)tile;
 -(NSInteger)getTileRowCount:(QuickTiGame2dMapTile*)tile;
 -(NSInteger)getTileColumnCount:(QuickTiGame2dMapTile*)tile;
+
+- (BOOL)canUpdate:(NSInteger)index tile:(QuickTiGame2dMapTile*)tile;
 
 @end

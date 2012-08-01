@@ -541,16 +541,48 @@ public class QuickTiGame2dMapSprite extends QuickTiGame2dSprite {
 	    return tile;
 	}
 
-	public void setTile(int index, QuickTiGame2dMapTile tile) {
+	public boolean canUpdate(int index, QuickTiGame2dMapTile tile) {
+	    if (getChildTileRowCount(tile) < 2) return true;
+	    
+	    int rowCount    = tile.flip ? tile.columnCount : tile.rowCount;
+	    int columnCount = tile.flip ? tile.rowCount : tile.columnCount;
+	    
+	    for (int row = 0; row < rowCount; row++) {
+	        for (int column = 0; column < columnCount; column++) {
+	            if (row == 0 && column == 0) continue;
+	            
+	            QuickTiGame2dMapTile target = getTile(index + column + (row * tileCountX));
+	            if (target == null) continue;
+	            
+	            if (target.isChild && target.parent != index) {
+	                return false;
+	            } else if (target.gid > 0) {
+	                return false;
+	            } else if (hasChild(target)) {
+	                return false;
+	            }
+	        }
+	    }
+	    
+	    return true;
+	}
+
+	public boolean setTile(int index, QuickTiGame2dMapTile tile) {
 		QuickTiGame2dMapTile target = getTile(index);
 	    if (target != null && target.isChild) {
 	        Log.d(Quicktigame2dModule.LOG_TAG, String.format(
 	        		"Tile %d can not be replaced because it is part of multiple tiles.", index));
-	        return;
+	        return false;
 	    }
 	    
 	    tile = updateTileProperty(tile);
 		
+	    if (!canUpdate(index, tile)) {
+	        Log.d(Quicktigame2dModule.LOG_TAG, String.format(
+	        		"Tile %d can not be replaced because another tile is found.", index));
+	        return false;
+	    }
+	    
 	    // check if this tile consists of multiple tiles
 	    // this assumes tile has same tile count for X&Y axis (2x2, 3x3, 4x4)
 	    int childRowCount = getChildTileRowCount(tile);
@@ -576,8 +608,8 @@ public class QuickTiGame2dMapSprite extends QuickTiGame2dSprite {
 	                neighbor.alpha = 0;
 	                neighbor.parent = index;
 	                
-	                // Clear neighboring tile that is not used
 	                if (!isTileSpaceUsed(tile, row, column)) {
+		                // Clear neighboring tile that is not used
 	                    if (target2 != null && target2.parent == index) {
 	                        neighbor.clearViewProperty(this);
 	                    } else {
@@ -627,9 +659,13 @@ public class QuickTiGame2dMapSprite extends QuickTiGame2dSprite {
 	            tile2.suppressUpdate = true;
 	            
 	            if (!isTileSpaceUsed(tile, i, 0)) {
-	                tile2.clearViewProperty(this);
-	                tile2.alpha = 0;
-	                tile2.suppressUpdate = false;
+                    if (target2 != null && target2.parent == index) {
+                    	tile2.clearViewProperty(this);
+                    	tile2.alpha = 0;
+                    	tile2.suppressUpdate = false;
+                    } else {
+                    	continue;
+                    }
 	            }
 	            
 	    	    synchronized(updatedTiles) {
@@ -643,6 +679,8 @@ public class QuickTiGame2dMapSprite extends QuickTiGame2dSprite {
 	    synchronized(updatedTiles) {
 	    	updatedTiles.put(Integer.valueOf(index), tile);
 	    }
+	    
+	    return true;
 	}
 
 	public void setTiles(List<Integer> data) {
@@ -686,10 +724,9 @@ public class QuickTiGame2dMapSprite extends QuickTiGame2dSprite {
 	    		if (target2 == null) continue;
 	    		
 	    		QuickTiGame2dMapTile tile2 = new QuickTiGame2dMapTile();
-	    		tile2.cc(target2);
-	    		tile2.index = target2.index;
+	    		tile2.indexcc(target2);
 
-	            if (tile2.index != index && (!tile2.isChild || tile2.parent != target.index)) {
+	            if (target2.index != index && (!target2.isChild || target2.parent != index)) {
 	                continue;
 	            }
 	            
