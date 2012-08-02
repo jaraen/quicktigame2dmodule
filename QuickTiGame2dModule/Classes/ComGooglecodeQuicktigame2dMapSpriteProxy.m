@@ -375,6 +375,14 @@
                         [param setObject:[value objectForKey:atlasKey] forKey:@"atlasHeight"];
                     }
                 }
+            } else if ([key isEqualToString:@"properties"]) {
+                for (id property in value) {
+                    if ([property isEqualToString:@"rowCount"]) {
+                        [param setObject:[value objectForKey:property] forKey:@"rowCount"];
+                    } else if ([property isEqualToString:@"columnCount"]) {
+                        [param setObject:[value objectForKey:property] forKey:@"columnCount"];
+                    }
+                }
             } else {
                 [param setObject:value forKey:key];
             }

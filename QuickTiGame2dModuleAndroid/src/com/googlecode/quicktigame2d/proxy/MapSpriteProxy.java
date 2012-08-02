@@ -400,6 +400,16 @@ public class MapSpriteProxy extends SpriteProxy {
 							param.put("atlasHeight", String.valueOf(atlasValues.get(atlasKey)));
 						}
 					}
+				} else if ("properties".equals(key)) {
+					@SuppressWarnings("rawtypes")
+					Map properties = (Map) info.get(key);
+					for (Object property : properties.keySet()) {
+						if ("rowCount".equals(property)) {
+							param.put("rowCount", String.valueOf(properties.get(property)));
+						} else if ("columnCount".equals(property)) {
+							param.put("columnCount", String.valueOf(properties.get(property)));
+						}
+					}
 				} else {
 					if (info.get(key) != null) {
 						param.put(String.valueOf(key), String.valueOf(info.get(key)));
