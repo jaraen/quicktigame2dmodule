@@ -114,6 +114,14 @@
                            forKey:@"height"];
     [dic setValue:NUMFLOAT(tile.margin)  forKey:@"margin"];
     [dic setValue:NUMFLOAT(tile.border)  forKey:@"border"];
+    
+    NSDictionary* properties = [mapSprite.gidproperties objectForKey:[NSNumber numberWithInt:tile.gid]];
+     
+    if (properties != nil) {
+        [dic setObject:properties forKey:@"properties"];
+    } else {
+        [dic removeObjectForKey:@"properties"];
+    }
 }
 
 -(id)getTile:(id)args {
@@ -383,11 +391,13 @@
                         [param setObject:[value objectForKey:property] forKey:@"columnCount"];
                     }
                 }
+            } else if ([key isEqualToString:@"tileproperties"] && [info objectForKey:@"firstgid"] != nil) {
+                [(QuickTiGame2dMapSprite*)sprite updateGIDProperties:value firstgid:[[info objectForKey:@"firstgid"] intValue]];
             } else {
                 [param setObject:value forKey:key];
             }
         }
-        [((QuickTiGame2dMapSprite*)sprite) addTileset:param];
+        [(QuickTiGame2dMapSprite*)sprite addTileset:param];
         [param release];
     }
 }

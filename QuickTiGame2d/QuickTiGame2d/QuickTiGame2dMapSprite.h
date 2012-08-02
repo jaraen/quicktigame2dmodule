@@ -55,6 +55,7 @@
     
     NSMutableArray* tilesetgids;
     NSMutableDictionary* tilesets;
+    NSMutableDictionary* gidproperties;
     
     float tileOffsetX;
     float tileOffsetY;
@@ -70,6 +71,7 @@
 @property (readwrite) float tileTiltFactorY;
 @property (readwrite) float tileOffsetX;
 @property (readwrite) float tileOffsetY;
+@property (readonly)  NSMutableDictionary* gidproperties;
 
 -(void)onLoad;
 -(void)bindVertex;
@@ -111,4 +113,5 @@
 
 - (BOOL)canUpdate:(NSInteger)index tile:(QuickTiGame2dMapTile*)tile;
 
+- (void)updateGIDProperties:(NSDictionary*)info firstgid:(NSInteger)firstgid;
 @end

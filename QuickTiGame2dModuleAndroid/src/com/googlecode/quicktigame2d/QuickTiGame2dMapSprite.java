@@ -71,10 +71,15 @@ public class QuickTiGame2dMapSprite extends QuickTiGame2dSprite {
     
     private Map<String, Map<String, String>> tilesets = new HashMap<String, Map<String, String>>();
     private List<Map<String, String>> tilesetgids = new ArrayList<Map<String, String>>();
+    private Map<Integer, Map<String, String>> gidproperties = new HashMap<Integer, Map<String, String>>();
     
     public QuickTiGame2dMapSprite() {
 		firstgid = 0;
 	}
+    
+    public Map<String, String> getGIDProperties(int gid) {
+    	return gidproperties.get(Integer.valueOf(gid));
+    }
     
     public boolean updateTileCount() {
         if (width == 0 || height == 0 || tileWidth == 0 || tileHeight == 0) return false;
@@ -497,6 +502,13 @@ public class QuickTiGame2dMapSprite extends QuickTiGame2dSprite {
     // this assumes tile has same tile count for X&Y axis (2x2, 3x3, 4x4)
 	public boolean hasChild(QuickTiGame2dMapTile tile) {
 		return getChildTileRowCount(tile) > 1;
+	}
+	
+	public void updateGIDProperties(Map<String, Map<String, String>> info, int firstgid) {
+		for (String key : info.keySet()) {
+			int gid = firstgid + Integer.parseInt(key);
+			gidproperties.put(Integer.valueOf(gid), info.get(key));
+		}
 	}
 
 	private QuickTiGame2dMapTile updateTileProperty(QuickTiGame2dMapTile tile) {

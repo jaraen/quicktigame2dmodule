@@ -104,6 +104,14 @@ public class MapSpriteProxy extends SpriteProxy {
 				getMapSprite().getScaledTileHeight(tile) : getMapSprite().getScaledTileHeight()));
 		info.put("margin",   Double.valueOf(tile.margin));
 		info.put("border",   Double.valueOf(tile.border));
+		
+		Map<String, String> properties = getMapSprite().getGIDProperties(tile.gid);
+		
+		if (properties != null) {
+			info.put("properties", properties);
+		} else {
+			info.remove("properties");
+		}
 	}
 	
 	@SuppressWarnings("rawtypes")
@@ -373,6 +381,7 @@ public class MapSpriteProxy extends SpriteProxy {
 		return getMapSprite().getTilesets();
 	}
 	
+	@SuppressWarnings("rawtypes")
 	@Kroll.setProperty @Kroll.method
 	public void setTilesets(Object[] args) {
 		for (int i = 0; i < args.length; i++) {
@@ -382,13 +391,11 @@ public class MapSpriteProxy extends SpriteProxy {
 			param.put("rowCount", "0");
 			param.put("columnCount", "0");
 			
-			@SuppressWarnings("rawtypes")
 			Map info = (Map) args[i];
 			
 			for (Object key : info.keySet()) {
-				@SuppressWarnings("rawtypes")
-				Map value = (Map) info.get(key);
 				if ("atlas".equals(key)) {
+					Map value = (Map) info.get(key);
 					for (Object property : value.keySet()) {
 						if ("x".equals(property)) {
 							param.put("atlasX", String.valueOf(value.get(property)));
@@ -401,6 +408,7 @@ public class MapSpriteProxy extends SpriteProxy {
 						}
 					}
 				} else if ("properties".equals(key)) {
+					Map value = (Map) info.get(key);
 					for (Object property : value.keySet()) {
 						if ("rowCount".equals(property)) {
 							param.put("rowCount", String.valueOf(value.get(property)));
@@ -408,10 +416,23 @@ public class MapSpriteProxy extends SpriteProxy {
 							param.put("columnCount", String.valueOf(value.get(property)));
 						}
 					}
-				} else {
-					if (info.get(key) != null) {
-						param.put(String.valueOf(key), String.valueOf(info.get(key)));
+				} else if ("tileproperties".equals(key) && info.get("firstgid") != null) {
+					Map value = (Map) info.get(key);
+					Map<String, Map<String, String>> properties = new HashMap<String, Map<String, String>>();
+					
+					for (Object property : value.keySet()) {
+						Map<String, String> holder = new HashMap<String, String>();
+						
+						Map subvalue = (Map)value.get(property);
+						for (Object k : subvalue.keySet()) {
+							holder.put(String.valueOf(k), String.valueOf(subvalue.get(k)));
+						}
+						
+						properties.put(String.valueOf(property), holder);
 					}
+					getMapSprite().updateGIDProperties(properties, Integer.parseInt(String.valueOf(info.get("firstgid"))));
+				} else {
+					param.put(String.valueOf(key), String.valueOf(info.get(key)));
 				}
 			}
 			

@@ -163,7 +163,7 @@
 @implementation QuickTiGame2dMapSprite
 @synthesize tileWidth, tileHeight, tileCount, tileCountX, tileCountY;
 @synthesize firstgid, tileTiltFactorX, tileTiltFactorY;
-@synthesize tileOffsetX, tileOffsetY;
+@synthesize tileOffsetX, tileOffsetY, gidproperties;
 
 -(id)init {
     self = [super init];
@@ -182,6 +182,8 @@
         
         tilesets = [[NSMutableDictionary alloc] init];
         tilesetgids = [[NSMutableArray alloc] init];
+        
+        gidproperties = [[NSMutableDictionary alloc] init];
     }
     return self;
 }
@@ -191,6 +193,7 @@
     [updatedTiles release];
     [tilesets release];
     [tilesetgids release];
+    [gidproperties release];
     
 	if (quads)   free(quads);
 	if (indices) free(indices);
@@ -615,6 +618,13 @@
  */
 -(BOOL)hasChild:(QuickTiGame2dMapTile*)tile {
     return [self getChildTileRowCount:tile] > 1;
+}
+
+- (void)updateGIDProperties:(NSDictionary*)info firstgid:(NSInteger)_firstgid {
+    for (id key in info) {
+        int gid = _firstgid + [key intValue];
+        [gidproperties setObject:[info objectForKey:key] forKey:[NSNumber numberWithInt:gid]];
+    }
 }
 
 -(void)updateTileProperty:(QuickTiGame2dMapTile*)tile {
