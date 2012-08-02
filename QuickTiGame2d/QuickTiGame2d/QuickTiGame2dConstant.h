@@ -28,6 +28,8 @@
 #ifndef NativeView_QuickTiGame2dConstant_h
 #define NativeView_QuickTiGame2dConstant_h
 
+typedef void (^CommandBlock)(void);
+
 #define SHARED_MODULE_NAME "com.googlecode.quicktigame2d"
 
 #define DEFAULT_ANIMATION_NAME "default_animation"

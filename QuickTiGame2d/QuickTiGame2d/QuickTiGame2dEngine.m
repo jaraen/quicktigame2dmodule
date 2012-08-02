@@ -26,6 +26,7 @@
 // EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 // 
 #import "QuickTiGame2dEngine.h"
+#import "QuickTiGame2dConstant.h"
 
 @interface QuickTiGame2dEngine (PrivateMethods)
 - (void)updateViewport;
@@ -63,8 +64,6 @@ static NSDate* startTime;
 static BOOL debug;
 static GLenum correctionHint = GL_NICEST;
 static GLint  textureFilter  = GL_NEAREST;
-
-typedef void (^CommandBlock)(void);
 
 - (id)init {
     self = [super init];
