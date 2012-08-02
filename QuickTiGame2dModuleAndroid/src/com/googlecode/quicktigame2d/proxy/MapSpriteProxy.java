@@ -386,28 +386,26 @@ public class MapSpriteProxy extends SpriteProxy {
 			Map info = (Map) args[i];
 			
 			for (Object key : info.keySet()) {
+				@SuppressWarnings("rawtypes")
+				Map value = (Map) info.get(key);
 				if ("atlas".equals(key)) {
-					@SuppressWarnings("rawtypes")
-					Map atlasValues = (Map) info.get(key);
-					for (Object atlasKey : atlasValues.keySet()) {
-						if ("x".equals(atlasKey)) {
-							param.put("atlasX", String.valueOf(atlasValues.get(atlasKey)));
-						} else if ("y".equals(atlasKey)) {
-							param.put("atlasY", String.valueOf(atlasValues.get(atlasKey)));
-						} else if ("w".equals(atlasKey)) {
-							param.put("atlasWidth", String.valueOf(atlasValues.get(atlasKey)));
-						} else if ("h".equals(atlasKey)) {
-							param.put("atlasHeight", String.valueOf(atlasValues.get(atlasKey)));
+					for (Object property : value.keySet()) {
+						if ("x".equals(property)) {
+							param.put("atlasX", String.valueOf(value.get(property)));
+						} else if ("y".equals(property)) {
+							param.put("atlasY", String.valueOf(value.get(property)));
+						} else if ("w".equals(property)) {
+							param.put("atlasWidth", String.valueOf(value.get(property)));
+						} else if ("h".equals(property)) {
+							param.put("atlasHeight", String.valueOf(value.get(property)));
 						}
 					}
 				} else if ("properties".equals(key)) {
-					@SuppressWarnings("rawtypes")
-					Map properties = (Map) info.get(key);
-					for (Object property : properties.keySet()) {
+					for (Object property : value.keySet()) {
 						if ("rowCount".equals(property)) {
-							param.put("rowCount", String.valueOf(properties.get(property)));
+							param.put("rowCount", String.valueOf(value.get(property)));
 						} else if ("columnCount".equals(property)) {
-							param.put("columnCount", String.valueOf(properties.get(property)));
+							param.put("columnCount", String.valueOf(value.get(property)));
 						}
 					}
 				} else {

@@ -364,15 +364,15 @@
         for (id key in info) {
             id value = [info objectForKey:key];
             if ([key isEqualToString:@"atlas"]) {
-                for (id atlasKey in value) {
-                    if ([atlasKey isEqualToString:@"x"]) {
-                        [param setObject:[value objectForKey:atlasKey] forKey:@"atlasX"];
-                    } else if ([atlasKey isEqualToString:@"y"]) {
-                        [param setObject:[value objectForKey:atlasKey] forKey:@"atlasY"];
-                    } else if ([atlasKey isEqualToString:@"w"]) {
-                        [param setObject:[value objectForKey:atlasKey] forKey:@"atlasWidth"];
-                    } else if ([atlasKey isEqualToString:@"h"]) {
-                        [param setObject:[value objectForKey:atlasKey] forKey:@"atlasHeight"];
+                for (id property in value) {
+                    if ([property isEqualToString:@"x"]) {
+                        [param setObject:[value objectForKey:property] forKey:@"atlasX"];
+                    } else if ([property isEqualToString:@"y"]) {
+                        [param setObject:[value objectForKey:property] forKey:@"atlasY"];
+                    } else if ([property isEqualToString:@"w"]) {
+                        [param setObject:[value objectForKey:property] forKey:@"atlasWidth"];
+                    } else if ([property isEqualToString:@"h"]) {
+                        [param setObject:[value objectForKey:property] forKey:@"atlasHeight"];
                     }
                 }
             } else if ([key isEqualToString:@"properties"]) {
