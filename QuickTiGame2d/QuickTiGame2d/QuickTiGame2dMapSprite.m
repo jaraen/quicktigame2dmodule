@@ -732,8 +732,12 @@
             QuickTiGame2dMapTile* target = [self getTile:index + column + (row * tileCountX)];
             if (target == nil) continue;
             
-            if (target.isChild && target.parent != index) {
-                return FALSE;
+            if (target.isChild) {
+                if (target.parent == index) {
+                    continue;
+                } else {
+                    return FALSE;
+                }
             } else if (target.gid > 0) {
                 return FALSE;
             } else if ([self hasChild:target]) {

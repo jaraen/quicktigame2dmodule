@@ -590,8 +590,12 @@ public class QuickTiGame2dMapSprite extends QuickTiGame2dSprite {
 	            QuickTiGame2dMapTile target = getTile(index + column + (row * tileCountX));
 	            if (target == null) continue;
 	            
-	            if (target.isChild && target.parent != index) {
-	                return false;
+	            if (target.isChild) {
+	            	if (target.parent == index) {
+	            		continue;
+	            	} else {
+	            		return false;
+	            	}
 	            } else if (target.gid > 0) {
 	                return false;
 	            } else if (hasChild(target)) {
