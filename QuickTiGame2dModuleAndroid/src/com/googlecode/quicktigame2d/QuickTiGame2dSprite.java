@@ -34,6 +34,8 @@ import java.nio.FloatBuffer;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Queue;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
 import javax.microedition.khronos.opengles.GL10;
 import javax.microedition.khronos.opengles.GL11;
@@ -47,6 +49,7 @@ import org.xml.sax.XMLReader;
 import org.xml.sax.helpers.DefaultHandler;
 
 import com.googlecode.quicktigame2d.opengl.GLHelper;
+import com.googlecode.quicktigame2d.util.RunnableGL;
 
 import android.graphics.BitmapFactory;
 import android.util.Log;
@@ -117,6 +120,9 @@ public class QuickTiGame2dSprite {
     protected boolean followParentTransformColor      = true;
     protected boolean followParentTransformFrameIndex = false;
     
+	protected Queue<RunnableGL> beforeCommandQueue = new ConcurrentLinkedQueue<RunnableGL>();
+	protected Queue<RunnableGL> afterCommandQueue  = new ConcurrentLinkedQueue<RunnableGL>();;
+
 	public QuickTiGame2dSprite() {
         // color param RGBA
         param_color[0] = 1.0f;
@@ -204,6 +210,10 @@ public class QuickTiGame2dSprite {
     		return;
     	}
     	
+		while(!beforeCommandQueue.isEmpty()) {
+			beforeCommandQueue.poll().run(gl);
+		}
+		
 		if (frameIndexChanged) {
 			frameIndex = nextFrameIndex;
 			frameIndexChanged = false;
@@ -281,6 +291,10 @@ public class QuickTiGame2dSprite {
 	    // draw sprite
 	    gl.glDrawElements(GL11.GL_TRIANGLE_FAN, 4, GL11.GL_UNSIGNED_SHORT, 0);
 	    
+		while(beforeCommandQueue.isEmpty() && !afterCommandQueue.isEmpty()) {
+			afterCommandQueue.poll().run(gl);
+		}
+		
 	    gl.glBindBuffer(GL11.GL_ELEMENT_ARRAY_BUFFER, 0);
 	    gl.glBindBuffer(GL11.GL_ARRAY_BUFFER, 0);
 	    gl.glBindTexture(GL11.GL_TEXTURE_2D, 0);

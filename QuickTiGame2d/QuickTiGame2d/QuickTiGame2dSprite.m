@@ -133,6 +133,9 @@
         followParentTransformRotationCenter = TRUE;
         
         tag = @"";
+        
+        beforeCommandQueue = [[ArrayStackQueue alloc] init];
+        afterCommandQueue  = [[ArrayStackQueue alloc] init];
     }
     return self;
 }
@@ -277,6 +280,12 @@
 -(void)drawFrame {
     if (!loaded) return;
 	
+    @synchronized(beforeCommandQueue) {
+        while ([beforeCommandQueue count] > 0) {
+            ((CommandBlock)[beforeCommandQueue poll])();
+        }
+    }
+    
 	if (frameIndexChanged) {
 		frameIndex = nextFrameIndex;
 		frameIndexChanged = FALSE;
@@ -358,6 +367,12 @@
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 	glBindTexture(GL_TEXTURE_2D, 0);
+    
+    @synchronized(afterCommandQueue) {
+        while ([beforeCommandQueue count] == 0 && [afterCommandQueue count] > 0) {
+            ((CommandBlock)[afterCommandQueue poll])();
+        }
+    }
 }
 
 -(void)onDispose {
@@ -394,6 +409,8 @@
     [transforms release];
     [transformsToBeRemoved release];
     [children release];
+    [beforeCommandQueue release];
+    [afterCommandQueue release];
     
     [super dealloc];
 }

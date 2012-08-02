@@ -32,6 +32,7 @@
 #import "QuickTiGame2dTexture.h"
 #import "QuickTiGame2dAnimationFrame.h"
 #import "QuickTiGame2dTransform.h"
+#import "ArrayStackQueue.h"
 
 @interface QuickTiGame2dImagePackInfo : NSObject {
     NSString* name;
@@ -105,6 +106,9 @@
     BOOL  followParentTransformColor;
     BOOL  followParentTransformFrameIndex;
     BOOL  followParentTransformRotationCenter;
+    
+    ArrayStackQueue* beforeCommandQueue;
+    ArrayStackQueue* afterCommandQueue;
 }
 @property (readonly) BOOL hasTexture;
 @property (readonly) NSInteger frameCount;

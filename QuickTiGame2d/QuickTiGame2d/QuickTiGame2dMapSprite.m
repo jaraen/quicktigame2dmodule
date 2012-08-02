@@ -41,6 +41,7 @@
 - (void)updateTileProperty:(QuickTiGame2dMapTile*)tile;
 - (NSInteger)getChildTileRowCount:(QuickTiGame2dMapTile*)tile;
 - (BOOL)isHalfTile:(QuickTiGame2dMapTile*)tile;
+- (void)reloadQuadBuffer;
 @end
 
 @interface QuickTiGame2dMapTile (PrivateMethods)
@@ -173,6 +174,7 @@
         
         tileChanged = FALSE;
         
+        verticesID = 0;
         firstgid = 0;
         
         orientation = MAP_ORIENTATION_ORTHOGONAL;
@@ -233,6 +235,24 @@
     }
 }
 
+-(void)reloadQuadBuffer {
+    if (!loaded) return;
+    
+    @synchronized(beforeCommandQueue) {
+        CommandBlock command = [^{
+            if (quads)   free(quads);
+            if (indices) free(indices);
+            
+            if ([self updateTileCount]) {
+                [self createQuadBuffer];
+            }
+        } copy];
+        
+        [beforeCommandQueue push:command];
+        [command release];
+    }
+}
+
 -(void)onDispose {
     [super onDispose];
 }
@@ -242,6 +262,13 @@
 }
 
 -(void)drawFrame {
+    
+    @synchronized(beforeCommandQueue) {
+        while ([beforeCommandQueue count] > 0) {
+            ((CommandBlock)[beforeCommandQueue poll])();
+        }
+    }
+    
     @synchronized (transforms) {
         [self onTransform];
     }
@@ -331,6 +358,12 @@
     glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
     
     glDisableClientState(GL_COLOR_ARRAY);
+    
+    @synchronized(afterCommandQueue) {
+        while ([beforeCommandQueue count] == 0 && [afterCommandQueue count] > 0) {
+            ((CommandBlock)[afterCommandQueue poll])();
+        }
+    }
 }
 
 -(float)tex_coord_startX:(QuickTiGame2dMapTile*)tile {
@@ -410,6 +443,7 @@
     indices = calloc(sizeof(GLushort),   tileCount * 6);
     
     [tiles removeAllObjects];
+    [updatedTiles removeAllObjects];
     
     for( int i = 0; i < tileCount; i++) {
 		indices[i * 6 + 0] = i * 4 + 0;
@@ -502,8 +536,10 @@
         }
 	}
     
-	// Generate the vertices VBO
-	glGenBuffers(1, &verticesID);
+    // Generate the vertices VBO
+    if (verticesID == 0) {
+        glGenBuffers(1, &verticesID);
+    }
     glBindBuffer(GL_ARRAY_BUFFER, verticesID);
     glBufferData(GL_ARRAY_BUFFER, 128 * tileCount, quads, GL_DYNAMIC_DRAW);
     glBindBuffer(GL_ARRAY_BUFFER, 0);
@@ -711,7 +747,6 @@
 
 -(BOOL)setTile:(NSInteger)index tile:(QuickTiGame2dMapTile*)tile {
     
-    
     if ([self getTile:index].isChild) {
         NSLog(@"[DEBUG] Tile %d can not be replaced because it is part of multiple tiles.", index);
         return FALSE;
@@ -829,23 +864,34 @@
 }
 
 -(void)setTiles:(NSArray*)data {
-    for (int i = 0; i < [data count]; i++) {
+    
+    [self reloadQuadBuffer];
+    
+    @synchronized(beforeCommandQueue) {
+        CommandBlock command = [^{
+            for (int i = 0; i < [data count]; i++) {
+                
+                QuickTiGame2dMapTile* overwrap = [updatedTiles objectForKey:[NSNumber numberWithInt:i]];
+                if (overwrap != nil && overwrap.suppressUpdate) {
+                    overwrap.suppressUpdate = FALSE;
+                    continue;
+                }
+                
+                QuickTiGame2dMapTile* tile = [[QuickTiGame2dMapTile alloc] init];
+                tile.gid = [[data objectAtIndex:i] intValue];
+                tile.alpha = 1;
+                tile.index = i;
+                
+                [self setTile:i tile:tile];
+                
+                [tile release];
+            }
+        } copy];
         
-        QuickTiGame2dMapTile* overwrap = [updatedTiles objectForKey:[NSNumber numberWithInt:i]];
-        if (overwrap != nil && overwrap.suppressUpdate) {
-            overwrap.suppressUpdate = FALSE;
-            continue;
-        }
-        
-        QuickTiGame2dMapTile* tile = [[QuickTiGame2dMapTile alloc] init];
-        tile.gid = [[data objectAtIndex:i] intValue];
-        tile.alpha = 1;
-        tile.index = i;
-        
-        [self setTile:i tile:tile];
-        
-        [tile release];
+        [beforeCommandQueue push:command];
+        [command release];
     }
+
 }
 
 -(void)updateImageSize {

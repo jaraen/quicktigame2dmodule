@@ -40,6 +40,7 @@ import javax.microedition.khronos.opengles.GL11;
 import org.appcelerator.kroll.common.Log;
 
 import com.googlecode.quicktigame2d.opengl.GLHelper;
+import com.googlecode.quicktigame2d.util.RunnableGL;
 
 public class QuickTiGame2dMapSprite extends QuickTiGame2dSprite {
     private float[] quads;
@@ -75,6 +76,7 @@ public class QuickTiGame2dMapSprite extends QuickTiGame2dSprite {
     
     public QuickTiGame2dMapSprite() {
 		firstgid = 0;
+		verticesID[0] = 0;
 	}
     
     public Map<String, String> getGIDProperties(int gid) {
@@ -110,11 +112,26 @@ public class QuickTiGame2dMapSprite extends QuickTiGame2dSprite {
 	    	createQuadBuffer(gl);
 	    }
 	}
+    
+    private void reloadQuadBuffer() {
+    	beforeCommandQueue.offer(new RunnableGL() {
+    		@Override
+    		public void run(GL10 gl) {
+    		    if (updateTileCount()) {
+    		    	createQuadBuffer(gl);
+    		    }
+    		}
+    	});
+    }
 
     @Override
 	public void onDrawFrame(GL10 gl10) {
 		GL11 gl = (GL11)gl10;
 
+		while(!beforeCommandQueue.isEmpty()) {
+			beforeCommandQueue.poll().run(gl);
+		}
+		
 	    synchronized (transforms) {
 			onTransform();
 	    }
@@ -205,6 +222,10 @@ public class QuickTiGame2dMapSprite extends QuickTiGame2dSprite {
 		gl.glBlendFunc(GL11.GL_ONE, GL11.GL_ONE_MINUS_SRC_ALPHA);
 	    
 		gl.glDisableClientState(GL11.GL_COLOR_ARRAY);
+		
+		while(beforeCommandQueue.isEmpty() && !afterCommandQueue.isEmpty()) {
+			afterCommandQueue.poll().run(gl);
+		}
 	}
 
     @Override
@@ -231,6 +252,7 @@ public class QuickTiGame2dMapSprite extends QuickTiGame2dSprite {
 	    indices   = new short[tileCount * 6];
 	    
 	    tiles.clear();
+	    updatedTiles.clear();
 	    
 	    for( int i = 0; i < tileCount; i++) {
 			indices[i * 6 + 0] = (short) (i * 4 + 0);
@@ -324,7 +346,9 @@ public class QuickTiGame2dMapSprite extends QuickTiGame2dSprite {
 	    indicesBuffer = GLHelper.createShortBuffer(indices);
 
 	    // Generate the vertices VBO
-		gl.glGenBuffers(1, verticesID, 0);
+	    if (verticesID[0] == 0) {
+	    	gl.glGenBuffers(1, verticesID, 0);
+	    }
 		gl.glBindBuffer(GL11.GL_ARRAY_BUFFER, verticesID[0]);
 		gl.glBufferData(GL11.GL_ARRAY_BUFFER, 128 * tileCount, quadsBuffer, GL11.GL_STATIC_DRAW);
 		gl.glBindBuffer(GL11.GL_ARRAY_BUFFER, 0);
@@ -695,22 +719,30 @@ public class QuickTiGame2dMapSprite extends QuickTiGame2dSprite {
 	    return true;
 	}
 
-	public void setTiles(List<Integer> data) {
-	    for (int i = 0; i < data.size(); i++) {
-	    	
-	    	QuickTiGame2dMapTile overwrap = updatedTiles.get(Integer.valueOf(i));
-	    	if (overwrap != null && overwrap.suppressUpdate) {
-	    		overwrap.suppressUpdate = false;
-	    		continue;
-	    	}
-	    	
-	        QuickTiGame2dMapTile tile = new QuickTiGame2dMapTile();
-	        tile.gid = data.get(i).intValue();
-	        tile.alpha = 1;
-	        tile.index = i;
-	        
-	        setTile(i, tile);
-	    }
+	public void setTiles(final List<Integer> data) {
+		
+		reloadQuadBuffer();
+		
+		beforeCommandQueue.offer(new RunnableGL() {
+			@Override
+			public void run(GL10 gl) {
+			    for (int i = 0; i < data.size(); i++) {
+			    	
+			    	QuickTiGame2dMapTile overwrap = updatedTiles.get(Integer.valueOf(i));
+			    	if (overwrap != null && overwrap.suppressUpdate) {
+			    		overwrap.suppressUpdate = false;
+			    		continue;
+			    	}
+			    	
+			        QuickTiGame2dMapTile tile = new QuickTiGame2dMapTile();
+			        tile.gid = data.get(i).intValue();
+			        tile.alpha = 1;
+			        tile.index = i;
+			        
+			        setTile(i, tile);
+			    }
+			}
+		});
 	}
 
 	public boolean removeTile(int index) {
