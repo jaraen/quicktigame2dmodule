@@ -112,9 +112,17 @@ public class QuickTiGame2dScene {
 	}
 
 	public void onDispose() {
+		if (!loaded) return;
+		
+		if (getDebug()) Log.d(Quicktigame2dModule.LOG_TAG, "QuickTiGame2dScene.onDispose");
+		
 		waitingForAddSprites.clear();
 		waitingForRemoveSprites.clear();
 		sprites.clear();
+		
+		transform = null;
+		view = null;
+		
 		loaded = false;
 	}
 	
@@ -277,7 +285,6 @@ public class QuickTiGame2dScene {
 	public void setHUD(boolean isHUD) {
 		this.isHUD = isHUD;
 	}
-
 }
 
 class SpriteComparator implements Comparator<QuickTiGame2dSprite> {

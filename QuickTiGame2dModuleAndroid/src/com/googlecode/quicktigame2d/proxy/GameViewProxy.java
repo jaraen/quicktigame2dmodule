@@ -243,6 +243,11 @@ public class GameViewProxy extends TiViewProxy implements GameViewEventListener 
 		getView().registerForMultiTouch();
 	}
 	
+	@Kroll.method
+	public void cleanupResources() {
+		onDispose();
+	}
+	
 	@Kroll.setProperty @Kroll.method
 	public void setAlpha(float alpha) {
 		getView().setAlpha(alpha);
@@ -527,12 +532,18 @@ public class GameViewProxy extends TiViewProxy implements GameViewEventListener 
 
 	@Override
 	public void onDispose() {
-		KrollDict notificationEventCache = new KrollDict();
 		if (getDebug()) Log.d(Quicktigame2dModule.LOG_TAG, "GameViewProxy.onDispose");
-		notificationEventCache.put("eventName", "ondispose");
-		notificationEventCache.put("uptime", uptime());
-		this.fireEvent("ondispose", notificationEventCache, false);
-		if (topScene() != null) topScene().onNotification(notificationEventCache);
+		
+		for (SceneProxy scene : sceneStack) {
+			scene.onDispose();
+		}
+		
+		sceneStack.clear();
+		screenInfoCache.clear();
+		cameraInfoCache.clear();
+
+		cameraTransform = null;
+		previousScene = null;
 	}
 
 	@Override

@@ -235,6 +235,33 @@ public class QuickTiGame2dGameView extends GLSurfaceView implements Renderer, On
 				listener.onDispose();
 			}
 		}
+		
+		synchronized(sceneStack) {
+			for (QuickTiGame2dScene scene : sceneStack) {
+				scene.onDispose();
+			}
+		}
+		
+		beforeCommandQueue.clear();
+		afterCommandQueue.clear();
+		
+		snapshotSprite = null;
+		snapshotTexture = null;
+		
+		defaultPortraitCamera = null;
+		defaultLandscapeCamera = null;
+		customCamera = null;
+		transformCameraCache = null;
+		
+		textureCache.clear();
+		sceneStack.clear();
+		listeners.clear();
+		
+		cameraTransforms.clear();
+		cameraTransformsToBeRemoved.clear();
+		
+		hudScene = null;
+		previousScene = null;
 	}
 	
 	public void onLoadSprite(QuickTiGame2dSprite sprite) {

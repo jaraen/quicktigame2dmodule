@@ -305,6 +305,19 @@ public class QuickTiGame2dSprite {
 	    if (debug && hasTexture && !getTexture().isSnapshot()) Log.d(Quicktigame2dModule.LOG_TAG, String.format("unload Sprite: %s", image));
 	    if (hasTexture && !getTexture().isSnapshot()) view.onUnloadSprite(this);
 	    QuickTiGame2dGameView.deleteGLBuffer(frames_vbos);
+	    
+	    currentAnimation = null;
+	    animations.clear();
+	    imagepacks.clear();
+	    imagepacks_names.clear();
+
+	    view = null;
+	    transforms.clear();
+	    transformsToBeRemoved.clear();
+	    children.clear();
+	    beforeCommandQueue.clear();
+	    afterCommandQueue.clear();
+	    
 	    loaded = false;
 	}
 

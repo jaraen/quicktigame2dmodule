@@ -230,6 +230,19 @@ public class QuickTiGame2dMapSprite extends QuickTiGame2dSprite {
 
     @Override
 	public void onDispose() {
+    	quads = new float[0];
+    	indices = new short[0];
+
+    	tiles.clear();
+    	updatedTiles.clear();
+
+    	quadsBuffer = null;
+    	indicesBuffer = null;
+
+    	tilesets.clear();
+    	tilesetgids.clear();
+    	gidproperties.clear();
+    	
 		super.onDispose();
 	}
 

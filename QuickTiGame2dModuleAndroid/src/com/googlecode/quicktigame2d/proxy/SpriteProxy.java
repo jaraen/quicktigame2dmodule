@@ -93,6 +93,19 @@ public class SpriteProxy extends KrollProxy {
 	public void onNotification(KrollDict info) {
 		fireEvent(info.getString("eventName"), info);
 	}
+	
+	public void onDispose() {
+		
+		if (sprite != null) {
+			sprite.onDispose();
+		}
+		
+		sprite = null;
+		transforms.clear();
+		centerInfoCache.clear();
+		rotationCenterInfoCache.clear();
+		scaleCenterInfoCache.clear();
+	}
 
 	public void onTransformNotification(KrollDict info) {
 		Object source = info.get("source");
