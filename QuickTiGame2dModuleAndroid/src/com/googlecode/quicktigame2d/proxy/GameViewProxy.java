@@ -32,6 +32,7 @@ import java.util.HashMap;
 import java.util.Stack;
 
 import org.appcelerator.kroll.KrollDict;
+import org.appcelerator.kroll.KrollRuntime;
 import org.appcelerator.kroll.annotations.Kroll;
 import org.appcelerator.titanium.TiBaseActivity;
 import org.appcelerator.titanium.proxy.TiViewProxy;
@@ -244,8 +245,8 @@ public class GameViewProxy extends TiViewProxy implements GameViewEventListener 
 	}
 	
 	@Kroll.method
-	public void cleanupResources() {
-		onDispose();
+	public void cleanupGarbage() {
+		KrollRuntime.suggestGC();
 	}
 	
 	@Kroll.setProperty @Kroll.method
