@@ -195,8 +195,7 @@ public class GameView extends TiUIView implements OnLifecycleEvent {
 	
 	@Override
 	public void onDestroy(Activity activity) {
-		// Nothing to do because it's too late for cleanup
-		// Use GameViewProxy.cleanupResources to clear resources manually
+		getGameView().onDispose();
 	}
 
 	@Override
