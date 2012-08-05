@@ -651,9 +651,9 @@ public class QuickTiGame2dMapSprite extends QuickTiGame2dSprite {
 	                
 	                if (target2 != null) {
 	                    neighbor.cc(target2);
-	                } else {
-	                    neighbor = updateTileProperty(neighbor);
 	                }
+	                
+                    neighbor = updateTileProperty(neighbor);
 	                
 	                neighbor.index = index2;
 	                neighbor.isChild = true;

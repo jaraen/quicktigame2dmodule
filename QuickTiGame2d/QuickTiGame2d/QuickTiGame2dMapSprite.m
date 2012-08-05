@@ -778,9 +778,9 @@
                 
                 if (target != nil) {
                     [neighbor cc:target];
-                } else {
-                    [self updateTileProperty:neighbor];
                 }
+                
+                [self updateTileProperty:neighbor];
                 
                 neighbor.index = index2;
                 neighbor.isChild = TRUE;
