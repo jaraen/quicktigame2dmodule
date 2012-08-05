@@ -787,6 +787,7 @@
                 neighbor.suppressUpdate = TRUE;
                 neighbor.alpha = 0;
                 neighbor.parent = index;
+                neighbor.gid = tile.gid;
                 
                 if (![self isTileSpaceUsed:tile row:row column:column]) {
                     // Clear neighboring tile that is not used

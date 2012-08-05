@@ -660,6 +660,7 @@ public class QuickTiGame2dMapSprite extends QuickTiGame2dSprite {
 	                neighbor.suppressUpdate = true;
 	                neighbor.alpha = 0;
 	                neighbor.parent = index;
+	                neighbor.gid = tile.gid;
 	                
 	                if (!isTileSpaceUsed(tile, row, column)) {
 		                // Clear neighboring tile that is not used
