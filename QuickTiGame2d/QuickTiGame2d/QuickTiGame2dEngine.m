@@ -43,7 +43,7 @@
 - (void)completeTransformCamera:(QuickTiGame2dTransform*) transform;
 - (void)clearTransformCameras;
 - (void)clearTransformCamera:(QuickTiGame2dTransform*)transform;
-+ (void)unloadTexture:(NSString*)name;
++ (void)unloadTexture:(NSString*)name tag:(NSString*)tag;
 + (void)unloadAllTextures;
 
 - (void)prepareScreenShot;
@@ -57,6 +57,7 @@
 @synthesize usePerspective;
 
 static NSMutableDictionary* textureCache;
+static NSMutableDictionary* textureTagCache;
 static ArrayStackQueue* beforeCommandQueue;
 static ArrayStackQueue* afterCommandQueue;
 static GLuint squareVBOPointerCache[2];
@@ -70,6 +71,7 @@ static GLint  textureFilter  = GL_NEAREST;
     if (self != nil) {
         sceneStack   = [[ArrayStackQueue alloc] init];
         textureCache = [[NSMutableDictionary alloc] init];
+        textureTagCache = [[NSMutableDictionary alloc] init];
         notificationEventCache = [[NSMutableDictionary alloc] init];
         fpsNotificationEventCache = [[NSMutableDictionary alloc] init];
         sceneNotificationEventCache = [[NSMutableDictionary alloc] init];
@@ -122,6 +124,9 @@ static GLint  textureFilter  = GL_NEAREST;
     [textureCache release];
     textureCache = nil;
 
+    [textureTagCache release];
+    textureTagCache = nil;
+    
     [beforeCommandQueue release];
     [afterCommandQueue release];
     
@@ -463,7 +468,15 @@ static GLint  textureFilter  = GL_NEAREST;
     glDeleteBuffers(2, squareVBOPointerCache);
 }
 
-+(void)loadTexture:(NSString*)name {
+/*
+ * Param name should not be null. tag can be null.
+ * If tag equals not null, cache tag with texture name
+ */
++(void)loadTexture:(NSString*)name tag:(NSString*)tag {
+    if (debug && name == nil) {
+        NSLog(@"[WARN] QuickTiGame2dEngine:loadTexture name should not be nil!");
+        return;
+    }
     @synchronized(textureCache) {
         if ([textureCache objectForKey:name] == nil) {
             QuickTiGame2dTexture* texture = [[QuickTiGame2dTexture alloc] init];
@@ -475,17 +488,56 @@ static GLint  textureFilter  = GL_NEAREST;
             [texture release];
         }
     }
+    
+    if (tag != nil && [tag length] > 0) {
+        @synchronized(textureTagCache) {
+            [textureTagCache setObject:name forKey:tag];
+        }
+    }
 }
 
-+(void)loadTexture:(NSString*)name texture:(QuickTiGame2dTexture*)texture {
+/*
+ * Param name should not be null. tag can be null.
+ * If tag equals not null, cache tag with texture name
+ */
++(void)loadTexture:(NSString*)name texture:(QuickTiGame2dTexture*)texture tag:(NSString*)tag {
+    if (debug && name == nil) {
+        NSLog(@"[WARN] QuickTiGame2dEngine:loadTexture name should not be nil!");
+        return;
+    }
     @synchronized(textureCache) {
         if ([textureCache objectForKey:name] == nil) {
             [textureCache setObject:texture forKey:name];
         }
     }
+    
+    if (tag != nil && [tag length] > 0) {
+        @synchronized(textureTagCache) {
+            [textureTagCache setObject:name forKey:tag];
+        }
+    }
 }
 
-+(void)unloadTexture:(NSString*)name {
+/*
+ * Param name or tag can be null,
+ * If tag equals not null, search for name by tag from cache
+ */
++(void)unloadTexture:(NSString*)name tag:(NSString *)tag {
+    
+    @synchronized(textureTagCache) {
+        if (name == nil && tag != nil && [tag length] > 0) {
+            name = [textureTagCache objectForKey:tag];
+            if (name != nil) {
+                [textureTagCache removeObjectForKey:tag];
+            }
+        }
+    }
+    
+    if (debug && name == nil && tag == nil) {
+        NSLog(@"[WARN] QuickTiGame2dEngine:unloadTexture both name and tag equals nil!");
+        return;
+    }
+    
     @synchronized(textureCache) {
         QuickTiGame2dTexture* texture = [textureCache objectForKey:name];
         if (texture != nil) {
@@ -493,6 +545,7 @@ static GLint  textureFilter  = GL_NEAREST;
             [textureCache removeObjectForKey:name];
         }
     }
+    
 }
 
 +(void)unloadAllTextures {
@@ -503,12 +556,16 @@ static GLint  textureFilter  = GL_NEAREST;
     
         [textureCache removeAllObjects];
     }
+    
+    @synchronized(textureTagCache) {
+        [textureTagCache removeAllObjects];
+    }
 }
 
-+(void)commitLoadTexture:(NSString*)name {
++(void)commitLoadTexture:(NSString*)name tag:(NSString*)tag {
     @synchronized(afterCommandQueue) {
         CommandBlock command = [^{
-            [QuickTiGame2dEngine loadTexture:name];
+            [QuickTiGame2dEngine loadTexture:name tag:tag];
         } copy];
         
         [afterCommandQueue push:command];
@@ -516,10 +573,10 @@ static GLint  textureFilter  = GL_NEAREST;
     }
 }
 
-+(void)commitUnloadTexture:(NSString*)name {
++(void)commitUnloadTexture:(NSString*)name tag:(NSString*)tag {
     @synchronized(afterCommandQueue) {
         CommandBlock command = [^{
-            [QuickTiGame2dEngine unloadTexture:name];
+            [QuickTiGame2dEngine unloadTexture:name tag:tag];
         } copy];
         
         [afterCommandQueue push:command];

@@ -120,7 +120,7 @@ public class QuickTiGame2dParticles extends QuickTiGame2dSprite {
 	    loadParticleXML();
 	    
 	    if (gzipBase64Data != null && gzipBase64Data.length() > 0) {
-	    	view.loadTexture(gl, image, gzipBase64Data);
+	    	view.loadTexture(gl, image, gzipBase64Data, tag);
 	    	gzipBase64Data = "";
 	    }
 	    
@@ -128,7 +128,7 @@ public class QuickTiGame2dParticles extends QuickTiGame2dSprite {
 		
 	    // if texture is not yet cached, try to load texture here
 		if (aTexture == null && image != null) {
-			view.loadTexture(gl, image);
+			view.loadTexture(gl, image, tag);
 			aTexture = view.getTextureFromCache(image);
 		}
 		

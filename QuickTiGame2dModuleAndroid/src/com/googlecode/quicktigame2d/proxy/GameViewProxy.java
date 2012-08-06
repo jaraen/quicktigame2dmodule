@@ -122,14 +122,24 @@ public class GameViewProxy extends TiViewProxy implements GameViewEventListener 
 	
 	@Kroll.method
 	public void loadTexture(String texture) {
-		getView().loadTexture(texture);
+		getView().loadTexture(texture, null);
 	}
 
 	@Kroll.method
+	public void loadTextureWithTag(String texture, String tag) {
+		getView().loadTexture(texture, tag);
+	}
+	
+	@Kroll.method
 	public void unloadTexture(String texture) {
-		getView().unloadTexture(texture);
+		getView().unloadTexture(texture, null);
 	}
 
+	@Kroll.method
+	public void unloadTextureByTag(String tag) {
+		getView().unloadTexture(null, tag);
+	}
+	
 	@Kroll.method
 	public void start() {
 		getView().start();

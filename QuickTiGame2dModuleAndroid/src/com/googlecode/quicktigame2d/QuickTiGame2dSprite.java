@@ -163,7 +163,7 @@ public class QuickTiGame2dSprite {
 		
 	    // if texture is not yet cached, try to load texture here
 		if (aTexture == null && image != null) {
-			view.loadTexture(gl, image);
+			view.loadTexture(gl, image, tag);
 			aTexture = view.getTextureFromCache(image);
 		}
 		

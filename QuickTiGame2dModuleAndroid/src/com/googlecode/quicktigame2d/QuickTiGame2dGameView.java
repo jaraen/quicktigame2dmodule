@@ -119,6 +119,7 @@ public class QuickTiGame2dGameView extends GLSurfaceView implements Renderer, On
 	private boolean debug  = false;
 	
 	private HashMap<String, QuickTiGame2dTexture> textureCache = new HashMap<String, QuickTiGame2dTexture>();
+	private HashMap<String, String> textureTagCache = new HashMap<String, String>();
 	
 	private Stack<QuickTiGame2dScene> sceneStack = new Stack<QuickTiGame2dScene>();
 	private List<GameViewEventListener> listeners = new ArrayList<GameViewEventListener>();
@@ -254,6 +255,7 @@ public class QuickTiGame2dGameView extends GLSurfaceView implements Renderer, On
 		transformCameraCache = null;
 		
 		textureCache.clear();
+		textureTagCache.clear();
 		sceneStack.clear();
 		listeners.clear();
 		
@@ -300,20 +302,20 @@ public class QuickTiGame2dGameView extends GLSurfaceView implements Renderer, On
 		releaseSnapshot();
 	}
 	
-	public void commitLoadTexture(final String texture) {
+	public void commitLoadTexture(final String texture, final String tag) {
     	afterCommandQueue.offer(new RunnableGL() {
     		@Override
     		public void run(GL10 gl) {
-				loadTexture(gl, texture);
+				loadTexture(gl, texture, tag);
     		}
     	});
 	}
 
-	public void commitUnloadTexture(final String texture) {
+	public void commitUnloadTexture(final String texture, final String tag) {
     	afterCommandQueue.offer(new RunnableGL() {
     		@Override
     		public void run(GL10 gl) {
-				unloadTexture(gl, texture);
+				unloadTexture(gl, texture, tag);
     		}
     	});
 	}
@@ -323,7 +325,12 @@ public class QuickTiGame2dGameView extends GLSurfaceView implements Renderer, On
 		return textureCache.get(name);
 	}
 	
-	public void loadTexture(GL10 gl, String name) {
+	public void loadTexture(GL10 gl, String name, String tag) {
+		if (debug && name == null) {
+        	Log.w(Quicktigame2dModule.LOG_TAG, 
+            		"QuickTiGame2dGameView:loadTexture name should not be null!");
+			return;
+		}
 		if (textureCache.containsKey(name)) return;
 		
 		QuickTiGame2dTexture texture = new QuickTiGame2dTexture(getContext());
@@ -331,9 +338,18 @@ public class QuickTiGame2dGameView extends GLSurfaceView implements Renderer, On
 		texture.setName(name);
 		texture.onLoad(gl);
 		textureCache.put(name, texture);
+		
+		if (tag != null && tag.length() > 0) {
+			textureTagCache.put(tag,  name);
+		}
 	}
 	
-	public void loadTexture(GL10 gl, String name, String gzipBase64Data) {
+	public void loadTexture(GL10 gl, String name, String gzipBase64Data, String tag) {
+		if (debug && name == null) {
+        	Log.w(Quicktigame2dModule.LOG_TAG, 
+            		"QuickTiGame2dGameView:loadTexture name should not be null!");
+			return;
+		}
 		if (textureCache.containsKey(name)) return;
 
 		byte[] data = new byte[0];
@@ -354,9 +370,26 @@ public class QuickTiGame2dGameView extends GLSurfaceView implements Renderer, On
 		texture.onLoad(gl, data);
 		
 		textureCache.put(name, texture);
+		
+		if (tag != null && tag.length() > 0) {
+			textureTagCache.put(tag,  name);
+		}
 	}
 	
-	public void unloadTexture(GL10 gl, String name) {
+	public void unloadTexture(GL10 gl, String name, String tag) {
+		if (name == null && tag != null && tag.length() > 0) {
+			name = textureTagCache.get(tag);
+			if (name != null) {
+				textureTagCache.remove(tag);
+			}
+		}
+		
+		if (debug && name == null && tag == null) {
+        	Log.w(Quicktigame2dModule.LOG_TAG, 
+            		"QuickTiGame2dGameView:unloadTexture both name and tag equals null!");
+			return;
+		}
+		
 		if (!textureCache.containsKey(name)) return;
 		QuickTiGame2dTexture texture = textureCache.get(name);
 		texture.onDispose(gl);

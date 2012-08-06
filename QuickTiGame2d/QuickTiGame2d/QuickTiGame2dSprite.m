@@ -186,7 +186,7 @@
     
     // if texture is not yet cached, try to load texture here
     if (aTexture == nil && image != nil) {
-        [QuickTiGame2dEngine loadTexture:image];
+        [QuickTiGame2dEngine loadTexture:image tag:self.tag];
         aTexture =[[QuickTiGame2dEngine sharedTextureCache] objectForKey:image];
     }
     
