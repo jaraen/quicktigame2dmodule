@@ -205,7 +205,7 @@ public class QuickTiGame2dMapSprite extends QuickTiGame2dSprite {
 	    }
 	    
 		// Configure the vertex pointer which will use the currently bound VBO for its data
-	    gl.glVertexPointer(2, GL11.GL_FLOAT, 36, 0);
+	    gl.glVertexPointer(3, GL11.GL_FLOAT, 36, 0);
 	    gl.glColorPointer(4, GL11.GL_FLOAT,  36,   (4 * 5));
 	    gl.glTexCoordPointer(2, GL11.GL_FLOAT, 36, (4 * 3));
 
@@ -491,7 +491,6 @@ public class QuickTiGame2dMapSprite extends QuickTiGame2dSprite {
 	    quads[vi + 33] = tile.green * tile.alpha * parentAlpha; // green
 	    quads[vi + 34] = tile.blue * tile.alpha * parentAlpha;  // blue
 	    quads[vi + 35] = tile.alpha * parentAlpha; // alpha
-	    
 	    
 	    if (tile.width > 0 && tile.height > 0) {
 	        
