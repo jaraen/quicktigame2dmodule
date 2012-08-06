@@ -30,6 +30,7 @@ package com.googlecode.quicktigame2d;
 import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.ref.WeakReference;
 import java.nio.FloatBuffer;
 import java.nio.ShortBuffer;
 
@@ -114,7 +115,9 @@ public class QuickTiGame2dParticles extends QuickTiGame2dSprite {
 	public void onLoad(GL10 gl, QuickTiGame2dGameView view) {
 		if (loaded) return;
 		
-		this.view = view;
+		if (this.view == null) {
+			this.view = new WeakReference<QuickTiGame2dGameView>(view);
+		}
 
 	    // load particle setting from Particle Designer XML
 	    loadParticleXML();

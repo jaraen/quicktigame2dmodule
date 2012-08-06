@@ -30,6 +30,7 @@ package com.googlecode.quicktigame2d;
 import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.ref.WeakReference;
 import java.nio.FloatBuffer;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -77,7 +78,7 @@ public class QuickTiGame2dSprite {
 	protected float[] param_rotate = new float[5];
 	protected float[] param_scale  = new float[6];
 	
-	protected QuickTiGame2dGameView view;
+	protected WeakReference<QuickTiGame2dGameView> view = null;
 
 	protected String image;
 	protected String tag = "";
@@ -151,13 +152,15 @@ public class QuickTiGame2dSprite {
 	}
 
 	public QuickTiGame2dTexture getTexture() {
-		return view.getTextureFromCache(image);
+		return view.get().getTextureFromCache(image);
 	}
 
 	public void onLoad(GL10 gl, QuickTiGame2dGameView view) {
 		if (loaded) return;
 		
-		this.view = view;
+		if (this.view == null) {
+			this.view = new WeakReference<QuickTiGame2dGameView>(view);
+		}
 
 		QuickTiGame2dTexture aTexture = view.getTextureFromCache(image);
 		
@@ -303,7 +306,7 @@ public class QuickTiGame2dSprite {
 	public void onDispose() {
 		if (!loaded) return;
 	    if (debug && hasTexture && !getTexture().isSnapshot()) Log.d(Quicktigame2dModule.LOG_TAG, String.format("unload Sprite: %s", image));
-	    if (hasTexture && !getTexture().isSnapshot()) view.onUnloadSprite(this);
+	    if (hasTexture && !getTexture().isSnapshot() && view != null) view.get().onUnloadSprite(this);
 	    QuickTiGame2dGameView.deleteGLBuffer(frames_vbos);
 	    
 	    currentAnimation = null;
@@ -951,7 +954,7 @@ public class QuickTiGame2dSprite {
 	        // fire onStartTransform event
 	        if (!transform.isStartEventFired()) {
 	        	transform.setStartEventFired(true);
-	        	view.onStartTransform(transform);
+	        	view.get().onStartTransform(transform);
 	        }
 	        
 	        if (transform.hasExpired()) {
@@ -1097,7 +1100,7 @@ public class QuickTiGame2dSprite {
 	    
 	    transform.setCompleted(true);
 	    
-	    view.onCompleteTransform(transform);
+	    view.get().onCompleteTransform(transform);
 	}
 
 	public void clearTransforms() {
