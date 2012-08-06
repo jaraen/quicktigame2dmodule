@@ -336,14 +336,14 @@
 
     // Update the buffer when the tile data has been changed
     if (tileChanged) {
-        glBufferSubData(GL_ARRAY_BUFFER, 0, 128 * tileCount, quads);
+        glBufferSubData(GL_ARRAY_BUFFER, 0, 144 * tileCount, quads);
         tileChanged = FALSE;
     }
     
 	// Configure the vertex pointer which will use the currently bound VBO for its data
-    glVertexPointer(2, GL_FLOAT, 32, 0);
-    glColorPointer(4, GL_FLOAT,  32,   (GLvoid*)(4 * 4));
-    glTexCoordPointer(2, GL_FLOAT, 32, (GLvoid*)(4 * 2));
+    glVertexPointer(3, GL_FLOAT, 36, 0);
+    glColorPointer(4, GL_FLOAT,  36,   (GLvoid*)(4 * 5));
+    glTexCoordPointer(2, GL_FLOAT, 36, (GLvoid*)(4 * 3));
     
 	if (hasTexture) {
         glEnable(GL_TEXTURE_2D);
@@ -437,9 +437,9 @@
     clearGLErrors(@"before createQuadBuffer");
     
     //
-    // quad = ([vertex x, vertex y, texture x, texture y, red, green, blue, alpha] * 4) = 8 * 4 * (float=4bytes) = 128 bytes
+    // quad = ([vertex x, vertex y, vertex z, texture x, texture y, red, green, blue, alpha] * 4) = 9 * 4 * (float=4bytes) = 144 bytes
     //
-    quads   = calloc(sizeof(float) * 32, tileCount);
+    quads   = calloc(sizeof(float) * 9 * 4, tileCount);
     indices = calloc(sizeof(GLushort),   tileCount * 6);
     
     [tiles removeAllObjects];
@@ -472,7 +472,7 @@
     NSInteger index = 0;
     for(int ty = 0; ty < tileCountY; ty++) {
         for (int tx = 0; tx < tileCountX; tx++) {
-            int vi = index * 32;
+            int vi = index * 36;
             
             if (orientation == MAP_ORIENTATION_ISOMETRIC) {
                 float iso_startX = (tx * tileTiltFactorX  * tileWidth)  - (ty * tileTiltFactorX  * tileWidth);
@@ -480,18 +480,22 @@
                 
                 quads[vi + 0] = iso_startX;  // vertex  x
                 quads[vi + 1] = iso_startY;  // vertex  y
+                quads[vi + 2] = 0;           // vertex  z
                 
                 // -----------------------------
-                quads[vi + 8] = iso_startX;              // vertex  x
-                quads[vi + 9] = iso_startY + tileHeight; // vertex  y
+                quads[vi + 9] = iso_startX;               // vertex  x
+                quads[vi + 10] = iso_startY + tileHeight; // vertex  y
+                quads[vi + 11] = 0;                       // vertex z
                 
                 // -----------------------------
-                quads[vi + 16] = iso_startX + tileWidth; // vertex  x
-                quads[vi + 17] = iso_startY + tileHeight; // vertex  y
+                quads[vi + 18] = iso_startX + tileWidth;  // vertex  x
+                quads[vi + 19] = iso_startY + tileHeight; // vertex  y
+                quads[vi + 20] = 0;                       // vertex z
                 
                 // -----------------------------
-                quads[vi + 24] = iso_startX + tileWidth; // vertex  x
-                quads[vi + 25] = iso_startY;             // vertex  y
+                quads[vi + 27] = iso_startX + tileWidth;  // vertex  x
+                quads[vi + 28] = iso_startY;              // vertex  y
+                quads[vi + 29] = 0;                       // vertex z
             } else if (orientation == MAP_ORIENTATION_HEXAGONAL) {
                 if (ty % 2 == 1 && tx >= tileCountX - 1) {
                     continue;
@@ -503,34 +507,42 @@
                 
                 quads[vi + 0] = hex_startX;  // vertex  x
                 quads[vi + 1] = hex_startY;  // vertex  y
+                quads[vi + 2] = 0;           // vertex  z
                 
                 // -----------------------------
-                quads[vi + 8] = hex_startX;              // vertex  x
-                quads[vi + 9] = hex_startY + tileHeight; // vertex  y
+                quads[vi + 9] = hex_startX;               // vertex x
+                quads[vi + 10] = hex_startY + tileHeight; // vertex y
+                quads[vi + 11] = 0;                       // vertex z
                 
                 // -----------------------------
-                quads[vi + 16] = hex_startX + tileWidth; // vertex  x
-                quads[vi + 17] = hex_startY + tileHeight; // vertex  y
+                quads[vi + 18] = hex_startX + tileWidth;  // vertex  x
+                quads[vi + 19] = hex_startY + tileHeight; // vertex  y
+                quads[vi + 20] = 0;                       // vertex z
                 
                 // -----------------------------
-                quads[vi + 24] = hex_startX + tileWidth; // vertex  x
-                quads[vi + 25] = hex_startY;             // vertex  y
+                quads[vi + 27] = hex_startX + tileWidth;  // vertex  x
+                quads[vi + 28] = hex_startY;              // vertex  y
+                quads[vi + 29] = 0;                       // vertex z
 
             } else {
                 quads[vi + 0] = tx * tileWidth;  // vertex  x
                 quads[vi + 1] = ty * tileHeight; // vertex  y
+                quads[vi + 2] = 0;               // vertex  z
                 
                 // -----------------------------
-                quads[vi + 8] = (tx * tileWidth);               // vertex  x
-                quads[vi + 9] = (ty * tileHeight) + tileHeight; // vertex  y
+                quads[vi + 9]  = (tx * tileWidth);                // vertex  x
+                quads[vi + 10] = (ty * tileHeight) + tileHeight;  // vertex  y
+                quads[vi + 11] = 0;                               // vertex  z
                 
                 // -----------------------------
-                quads[vi + 16] = (tx * tileWidth)  + tileWidth;  // vertex  x
-                quads[vi + 17] = (ty * tileHeight) + tileHeight; // vertex  y
+                quads[vi + 18] = (tx * tileWidth)  + tileWidth;  // vertex  x
+                quads[vi + 19] = (ty * tileHeight) + tileHeight; // vertex  y
+                quads[vi + 20] = 0;                              // vertex  z
                 
                 // -----------------------------
-                quads[vi + 24] = (tx * tileWidth) + tileWidth;  // vertex  x
-                quads[vi + 25] = (ty * tileHeight);             // vertex  y
+                quads[vi + 27] = (tx * tileWidth) + tileWidth;  // vertex  x
+                quads[vi + 28] = (ty * tileHeight);             // vertex  y
+                quads[vi + 29] = 0;                             // vertex  z
             }
             index++;
         }
@@ -541,7 +553,7 @@
         glGenBuffers(1, &verticesID);
     }
     glBindBuffer(GL_ARRAY_BUFFER, verticesID);
-    glBufferData(GL_ARRAY_BUFFER, 128 * tileCount, quads, GL_DYNAMIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, 144 * tileCount, quads, GL_DYNAMIC_DRAW);
     glBindBuffer(GL_ARRAY_BUFFER, 0);
 	
     clearGLErrors(@"createQuadBuffer");
@@ -550,7 +562,7 @@
 - (void)updateQuad:(NSInteger)index tile:(QuickTiGame2dMapTile*)cctile{
     if (index >= [tiles count]) return;
     
-    int vi = index * 32;
+    int vi = index * 36;
     
     QuickTiGame2dMapTile* tile = [tiles objectAtIndex:index];
     [tile cc:cctile];
@@ -559,41 +571,41 @@
     
     float parentAlpha = [self alpha];
     
-    quads[vi + 2] = tile.flip ? [self tileCoordEndX:tile] : [self tileCoordStartX:tile]; // texture x
-    quads[vi + 3] = [self tileCoordEndY:tile]; // texture y
+    quads[vi + 3] = tile.flip ? [self tileCoordEndX:tile] : [self tileCoordStartX:tile]; // texture x
+    quads[vi + 4] = [self tileCoordEndY:tile]; // texture y
     
-    quads[vi + 4] = tile.red * tile.alpha * parentAlpha;   // red
-    quads[vi + 5] = tile.green * tile.alpha * parentAlpha; // green
-    quads[vi + 6] = tile.blue * tile.alpha * parentAlpha;  // blue
-    quads[vi + 7] = tile.alpha * parentAlpha; // alpha
-    
-    // -----------------------------
-    quads[vi + 10] = tile.flip ? [self tileCoordEndX:tile] : [self tileCoordStartX:tile];
-    quads[vi + 11] = [self tileCoordStartY:tile];
-    
-    quads[vi + 12] = tile.red * tile.alpha * parentAlpha;   // red
-    quads[vi + 13] = tile.green * tile.alpha * parentAlpha; // green
-    quads[vi + 14] = tile.blue * tile.alpha * parentAlpha;  // blue
-    quads[vi + 15] = tile.alpha * parentAlpha; // alpha
+    quads[vi + 5] = tile.red * tile.alpha * parentAlpha;   // red
+    quads[vi + 6] = tile.green * tile.alpha * parentAlpha; // green
+    quads[vi + 7] = tile.blue * tile.alpha * parentAlpha;  // blue
+    quads[vi + 8] = tile.alpha * parentAlpha; // alpha
     
     // -----------------------------
-    quads[vi + 18] = tile.flip ? [self tileCoordStartX:tile] : [self tileCoordEndX:tile];
-    quads[vi + 19] = [self tileCoordStartY:tile];
+    quads[vi + 12] = tile.flip ? [self tileCoordEndX:tile] : [self tileCoordStartX:tile];
+    quads[vi + 13] = [self tileCoordStartY:tile];
     
-    quads[vi + 20] = tile.red * tile.alpha * parentAlpha;   // red
-    quads[vi + 21] = tile.green * tile.alpha * parentAlpha; // green
-    quads[vi + 22] = tile.blue * tile.alpha * parentAlpha;  // blue
-    quads[vi + 23] = tile.alpha * parentAlpha; // alpha
+    quads[vi + 14] = tile.red * tile.alpha * parentAlpha;   // red
+    quads[vi + 15] = tile.green * tile.alpha * parentAlpha; // green
+    quads[vi + 16] = tile.blue * tile.alpha * parentAlpha;  // blue
+    quads[vi + 17] = tile.alpha * parentAlpha; // alpha
+    
+    // -----------------------------
+    quads[vi + 21] = tile.flip ? [self tileCoordStartX:tile] : [self tileCoordEndX:tile];
+    quads[vi + 22] = [self tileCoordStartY:tile];
+    
+    quads[vi + 23] = tile.red * tile.alpha * parentAlpha;   // red
+    quads[vi + 24] = tile.green * tile.alpha * parentAlpha; // green
+    quads[vi + 25] = tile.blue * tile.alpha * parentAlpha;  // blue
+    quads[vi + 26] = tile.alpha * parentAlpha; // alpha
     
     // -----------------------------
     
-    quads[vi + 26] = tile.flip ? [self tileCoordStartX:tile] : [self tileCoordEndX:tile];
-    quads[vi + 27] = [self tileCoordEndY:tile];
+    quads[vi + 30] = tile.flip ? [self tileCoordStartX:tile] : [self tileCoordEndX:tile];
+    quads[vi + 31] = [self tileCoordEndY:tile];
     
-    quads[vi + 28] = tile.red * tile.alpha * parentAlpha;   // red
-    quads[vi + 29] = tile.green * tile.alpha * parentAlpha; // green
-    quads[vi + 30] = tile.blue * tile.alpha * parentAlpha;  // blue
-    quads[vi + 31] = tile.alpha * parentAlpha; // alpha
+    quads[vi + 32] = tile.red * tile.alpha * parentAlpha;   // red
+    quads[vi + 33] = tile.green * tile.alpha * parentAlpha; // green
+    quads[vi + 34] = tile.blue * tile.alpha * parentAlpha;  // blue
+    quads[vi + 35] = tile.alpha * parentAlpha; // alpha
     
     if (tile.width > 0 && tile.height > 0) {
         
@@ -605,19 +617,22 @@
         
         quads[vi + 0] = tile.initialX + tile.offsetX;  // vertex  x
         quads[vi + 1] = tile.initialY + tile.offsetY;  // vertex  y
+        quads[vi + 2] = 0;                             // vertex  z
             
-        quads[vi + 8]  = tile.initialX + tile.offsetX; // vertex  x
-        quads[vi + 25] = tile.initialY + tile.offsetY; // vertex  y
+        quads[vi + 9]  = tile.initialX + tile.offsetX; // vertex  x
+        quads[vi + 10] = quads[vi + 1] + tile.height;  // vertex  y
+        quads[vi + 11] = 0;                            // vertex  z
         // -----------------------------
         
-        quads[vi + 9]  = quads[vi + 1] + tile.height; // vertex  y
+        // -----------------------------
+        quads[vi + 18] = quads[vi + 0] + tile.width;  // vertex  x
+        quads[vi + 19] = quads[vi + 1] + tile.height; // vertex  y
+        quads[vi + 20] = 0;                           // vertex  z
         
         // -----------------------------
-        quads[vi + 16] = quads[vi + 0] + tile.width;  // vertex  x
-        quads[vi + 17] = quads[vi + 1] + tile.height; // vertex  y
-        
-        // -----------------------------
-        quads[vi + 24] = quads[vi + 0] + tile.width;  // vertex  x
+        quads[vi + 27] = quads[vi + 0] + tile.width;   // vertex  x
+        quads[vi + 28] = tile.initialY + tile.offsetY; // vertex  y
+        quads[vi + 29] = 0;                            // vertex  z
     }
 }
 

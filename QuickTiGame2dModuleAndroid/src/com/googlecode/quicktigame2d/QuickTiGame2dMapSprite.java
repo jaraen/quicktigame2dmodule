@@ -200,14 +200,14 @@ public class QuickTiGame2dMapSprite extends QuickTiGame2dSprite {
 	    if (tileChanged) {
 		    quadsBuffer.put(quads);
 		    quadsBuffer.position(0);
-			gl.glBufferData(GL11.GL_ARRAY_BUFFER, 128 * tileCount, quadsBuffer, GL11.GL_STATIC_DRAW);
+			gl.glBufferData(GL11.GL_ARRAY_BUFFER, 144 * tileCount, quadsBuffer, GL11.GL_STATIC_DRAW);
 	    	tileChanged = false;
 	    }
 	    
 		// Configure the vertex pointer which will use the currently bound VBO for its data
-	    gl.glVertexPointer(2, GL11.GL_FLOAT, 32, 0);
-	    gl.glColorPointer(4, GL11.GL_FLOAT,  32,   (4 * 4));
-	    gl.glTexCoordPointer(2, GL11.GL_FLOAT, 32, (4 * 2));
+	    gl.glVertexPointer(2, GL11.GL_FLOAT, 36, 0);
+	    gl.glColorPointer(4, GL11.GL_FLOAT,  36,   (4 * 5));
+	    gl.glTexCoordPointer(2, GL11.GL_FLOAT, 36, (4 * 3));
 
 		if (hasTexture) {
 			gl.glEnable(GL11.GL_TEXTURE_2D);
@@ -261,7 +261,7 @@ public class QuickTiGame2dMapSprite extends QuickTiGame2dSprite {
 	    
 		GL11 gl = (GL11)gl10;
 		
-	    quads     = new float[32 * tileCount];
+	    quads     = new float[36 * tileCount];
 	    indices   = new short[tileCount * 6];
 	    
 	    tiles.clear();
@@ -290,7 +290,7 @@ public class QuickTiGame2dMapSprite extends QuickTiGame2dSprite {
 	    int index = 0;
 	    for(int ty = 0; ty < tileCountY; ty++) {
 	        for (int tx = 0; tx < tileCountX; tx++) {
-	            int vi = index * 32;
+	            int vi = index * 36;
 	            
 	            if (orientation == QuickTiGame2dConstant.MAP_ORIENTATION_ISOMETRIC) {
 	            	float iso_startX = (tx * tileTiltFactorX  * tileWidth)  - (ty * tileTiltFactorX  * tileWidth);
@@ -298,18 +298,22 @@ public class QuickTiGame2dMapSprite extends QuickTiGame2dSprite {
 
 	            	quads[vi + 0] = iso_startX;  // vertex  x
 	            	quads[vi + 1] = iso_startY;  // vertex  y
+	            	quads[vi + 2] = 0;           // vertex  z
 
 	            	// -----------------------------
-	            	quads[vi + 8] = iso_startX;              // vertex  x
-	            	quads[vi + 9] = iso_startY + tileHeight; // vertex  y
+	            	quads[vi + 9] = iso_startX;               // vertex  x
+	            	quads[vi + 10] = iso_startY + tileHeight; // vertex  y
+	            	quads[vi + 11] = 0;                       // vertex  z
 
 	            	// -----------------------------
-	            	quads[vi + 16] = iso_startX + tileWidth; // vertex  x
-	            	quads[vi + 17] = iso_startY + tileHeight; // vertex  y
+	            	quads[vi + 18] = iso_startX + tileWidth;  // vertex  x
+	            	quads[vi + 19] = iso_startY + tileHeight; // vertex  y
+	            	quads[vi + 20] = 0;                       // vertex  z
 
 	            	// -----------------------------
-	            	quads[vi + 24] = iso_startX + tileWidth; // vertex  x
-	            	quads[vi + 25] = iso_startY;             // vertex  y
+	            	quads[vi + 27] = iso_startX + tileWidth; // vertex  x
+	            	quads[vi + 28] = iso_startY;             // vertex  y
+	            	quads[vi + 29] = 0;                      // vertex  z
 	            	
 	            } else if (orientation == QuickTiGame2dConstant.MAP_ORIENTATION_HEXAGONAL) {
 	                if (ty % 2 == 1 && tx >= tileCountX - 1) {
@@ -322,34 +326,42 @@ public class QuickTiGame2dMapSprite extends QuickTiGame2dSprite {
 	                
 	                quads[vi + 0] = hex_startX;  // vertex  x
 	                quads[vi + 1] = hex_startY;  // vertex  y
+	            	quads[vi + 2] = 0;           // vertex  z
 	                
 	                // -----------------------------
-	                quads[vi + 8] = hex_startX;              // vertex  x
-	                quads[vi + 9] = hex_startY + tileHeight; // vertex  y
+	                quads[vi + 9] = hex_startX;               // vertex  x
+	                quads[vi + 10] = hex_startY + tileHeight; // vertex  y
+	            	quads[vi + 11] = 0;                       // vertex  z
 	                
 	                // -----------------------------
-	                quads[vi + 16] = hex_startX + tileWidth; // vertex  x
-	                quads[vi + 17] = hex_startY + tileHeight; // vertex  y
+	                quads[vi + 18] = hex_startX + tileWidth;  // vertex  x
+	                quads[vi + 19] = hex_startY + tileHeight; // vertex  y
+	            	quads[vi + 20] = 0;                       // vertex  z
 	                
 	                // -----------------------------
-	                quads[vi + 24] = hex_startX + tileWidth; // vertex  x
-	                quads[vi + 25] = hex_startY;             // vertex  y
+	                quads[vi + 27] = hex_startX + tileWidth; // vertex  x
+	                quads[vi + 28] = hex_startY;             // vertex  y
+	            	quads[vi + 29] = 0;                      // vertex  z
 	            	
 	            } else {
 	            	quads[vi + 0] = tx * tileWidth;  // vertex  x
 	            	quads[vi + 1] = ty * tileHeight; // vertex  y
+	            	quads[vi + 2] = 0;               // vertex  z
 
 	            	// -----------------------------
-	            	quads[vi + 8] = (tx * tileWidth); // vertex  x
-	            	quads[vi + 9] = (ty * tileHeight) + tileHeight; // vertex  y
+	            	quads[vi + 9]  = (tx * tileWidth);               // vertex  x
+	            	quads[vi + 10] = (ty * tileHeight) + tileHeight; // vertex  y
+	            	quads[vi + 11] = 0;                              // vertex  z
 
 	            	// -----------------------------
-	            	quads[vi + 16] = (tx * tileWidth)  + tileWidth;  // vertex  x
-	            	quads[vi + 17] = (ty * tileHeight) + tileHeight; // vertex  y
+	            	quads[vi + 18] = (tx * tileWidth)  + tileWidth;  // vertex  x
+	            	quads[vi + 19] = (ty * tileHeight) + tileHeight; // vertex  y
+	            	quads[vi + 20] = 0;                              // vertex  z
 
 	            	// -----------------------------
-	            	quads[vi + 24] = (tx * tileWidth) + tileWidth;  // vertex  x
-	            	quads[vi + 25] = (ty * tileHeight);  // vertex  y
+	            	quads[vi + 27] = (tx * tileWidth) + tileWidth;  // vertex  x
+	            	quads[vi + 28] = (ty * tileHeight);             // vertex  y
+	            	quads[vi + 29] = 0;                             // vertex  z
 	            }
 	            index++;
 	        }
@@ -363,7 +375,7 @@ public class QuickTiGame2dMapSprite extends QuickTiGame2dSprite {
 	    	gl.glGenBuffers(1, verticesID, 0);
 	    }
 		gl.glBindBuffer(GL11.GL_ARRAY_BUFFER, verticesID[0]);
-		gl.glBufferData(GL11.GL_ARRAY_BUFFER, 128 * tileCount, quadsBuffer, GL11.GL_STATIC_DRAW);
+		gl.glBufferData(GL11.GL_ARRAY_BUFFER, 144 * tileCount, quadsBuffer, GL11.GL_STATIC_DRAW);
 		gl.glBindBuffer(GL11.GL_ARRAY_BUFFER, 0);
 	}
 
@@ -436,7 +448,7 @@ public class QuickTiGame2dMapSprite extends QuickTiGame2dSprite {
 	private void updateQuad(int index, QuickTiGame2dMapTile cctile) {
 	    if (index >= tiles.size()) return;
 	    
-	    int vi = index * 32;
+	    int vi = index * 36;
 	    QuickTiGame2dMapTile tile = tiles.get(index);
 	    tile.cc(cctile);
 	    
@@ -444,41 +456,41 @@ public class QuickTiGame2dMapSprite extends QuickTiGame2dSprite {
 	    
 	    float parentAlpha =  getAlpha();
 	    
-	    quads[vi + 2] = tile.flip? tileCoordEndX(tile) : tileCoordStartX(tile); // texture x
-	    quads[vi + 3] = tileCoordEndY(tile);  // texture y
+	    quads[vi + 3] = tile.flip? tileCoordEndX(tile) : tileCoordStartX(tile); // texture x
+	    quads[vi + 4] = tileCoordEndY(tile);  // texture y
 	    
-	    quads[vi + 4] = tile.red * tile.alpha * parentAlpha;   // red
-	    quads[vi + 5] = tile.green * tile.alpha * parentAlpha; // green
-	    quads[vi + 6] = tile.blue * tile.alpha * parentAlpha;  // blue
-	    quads[vi + 7] = tile.alpha * parentAlpha; // alpha
-	    
-	    // -----------------------------
-	    quads[vi + 10] = tile.flip? tileCoordEndX(tile) : tileCoordStartX(tile);
-	    quads[vi + 11] = tileCoordStartY(tile);
-	    
-	    quads[vi + 12] = tile.red * tile.alpha * parentAlpha;   // red
-	    quads[vi + 13] = tile.green * tile.alpha * parentAlpha; // green
-	    quads[vi + 14] = tile.blue * tile.alpha * parentAlpha;  // blue
-	    quads[vi + 15] = tile.alpha * parentAlpha; // alpha
+	    quads[vi + 5] = tile.red * tile.alpha * parentAlpha;   // red
+	    quads[vi + 6] = tile.green * tile.alpha * parentAlpha; // green
+	    quads[vi + 7] = tile.blue * tile.alpha * parentAlpha;  // blue
+	    quads[vi + 8] = tile.alpha * parentAlpha; // alpha
 	    
 	    // -----------------------------
-	    quads[vi + 18] = tile.flip ? tileCoordStartX(tile) : tileCoordEndX(tile);
-	    quads[vi + 19] = tileCoordStartY(tile);
+	    quads[vi + 12] = tile.flip? tileCoordEndX(tile) : tileCoordStartX(tile);
+	    quads[vi + 13] = tileCoordStartY(tile);
 	    
-	    quads[vi + 20] = tile.red * tile.alpha * parentAlpha;   // red
-	    quads[vi + 21] = tile.green * tile.alpha * parentAlpha; // green
-	    quads[vi + 22] = tile.blue * tile.alpha * parentAlpha;  // blue
-	    quads[vi + 23] = tile.alpha * parentAlpha; // alpha
+	    quads[vi + 14] = tile.red * tile.alpha * parentAlpha;   // red
+	    quads[vi + 15] = tile.green * tile.alpha * parentAlpha; // green
+	    quads[vi + 16] = tile.blue * tile.alpha * parentAlpha;  // blue
+	    quads[vi + 17] = tile.alpha * parentAlpha; // alpha
+	    
+	    // -----------------------------
+	    quads[vi + 21] = tile.flip ? tileCoordStartX(tile) : tileCoordEndX(tile);
+	    quads[vi + 22] = tileCoordStartY(tile);
+	    
+	    quads[vi + 23] = tile.red * tile.alpha * parentAlpha;   // red
+	    quads[vi + 24] = tile.green * tile.alpha * parentAlpha; // green
+	    quads[vi + 25] = tile.blue * tile.alpha * parentAlpha;  // blue
+	    quads[vi + 26] = tile.alpha * parentAlpha; // alpha
 	    
 	    // -----------------------------
 	    
-	    quads[vi + 26] = tile.flip ? tileCoordStartX(tile) : tileCoordEndX(tile);
-	    quads[vi + 27] = tileCoordEndY(tile);
+	    quads[vi + 30] = tile.flip ? tileCoordStartX(tile) : tileCoordEndX(tile);
+	    quads[vi + 31] = tileCoordEndY(tile);
 	    
-	    quads[vi + 28] = tile.red * tile.alpha * parentAlpha;   // red
-	    quads[vi + 29] = tile.green * tile.alpha * parentAlpha; // green
-	    quads[vi + 30] = tile.blue * tile.alpha * parentAlpha;  // blue
-	    quads[vi + 31] = tile.alpha * parentAlpha; // alpha
+	    quads[vi + 32] = tile.red * tile.alpha * parentAlpha;   // red
+	    quads[vi + 33] = tile.green * tile.alpha * parentAlpha; // green
+	    quads[vi + 34] = tile.blue * tile.alpha * parentAlpha;  // blue
+	    quads[vi + 35] = tile.alpha * parentAlpha; // alpha
 	    
 	    
 	    if (tile.width > 0 && tile.height > 0) {
@@ -491,19 +503,21 @@ public class QuickTiGame2dMapSprite extends QuickTiGame2dSprite {
 	        
 	        quads[vi + 0] = tile.initialX + tile.offsetX;  // vertex  x
 	        quads[vi + 1] = tile.initialY + tile.offsetY;  // vertex  y
+        	quads[vi + 2] = 0;                             // vertex  z
 	            
-	        quads[vi + 8]  = tile.initialX + tile.offsetX; // vertex  x
-	        quads[vi + 25] = tile.initialY + tile.offsetY; // vertex  y
-	        // -----------------------------
-	        
-	        quads[vi + 9]  = quads[vi + 1] + tile.height; // vertex  y
+	        quads[vi + 9]  = tile.initialX + tile.offsetX; // vertex  x
+	        quads[vi + 10] = quads[vi + 1] + tile.height;  // vertex  y
+        	quads[vi + 11] = 0;                            // vertex  z
 	        
 	        // -----------------------------
-	        quads[vi + 16] = quads[vi + 0] + tile.width;  // vertex  x
-	        quads[vi + 17] = quads[vi + 1] + tile.height; // vertex  y
+	        quads[vi + 18] = quads[vi + 0] + tile.width;  // vertex  x
+	        quads[vi + 19] = quads[vi + 1] + tile.height; // vertex  y
+        	quads[vi + 20] = 0;                           // vertex  z
 	        
 	        // -----------------------------
-	        quads[vi + 24] = quads[vi + 0] + tile.width;  // vertex  x
+	        quads[vi + 27] = quads[vi + 0] + tile.width;   // vertex  x
+	        quads[vi + 28] = tile.initialY + tile.offsetY; // vertex  y
+        	quads[vi + 29] = 0;                            // vertex  z
 	    }
 	    
 	}
