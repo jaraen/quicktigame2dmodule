@@ -167,7 +167,6 @@ public class MapSpriteProxy extends SpriteProxy {
 		return getMapSprite().canUpdate(index, tile);
 	}
 	
-	
 	@Kroll.method
 	public boolean updateTile(@SuppressWarnings("rawtypes") HashMap info) {
 		int index = -1;
@@ -195,10 +194,6 @@ public class MapSpriteProxy extends SpriteProxy {
 		if (info.containsKey("alpha")) {
 			alpha = (float)TiConvert.toDouble(info.get("alpha"));
 		}
-
-	    if (index < 0 || index >= getMapSprite().getTileCount()) {
-	        return false;
-	    }
 	    
 	    QuickTiGame2dMapTile target = getMapSprite().getTile(index);
 	    

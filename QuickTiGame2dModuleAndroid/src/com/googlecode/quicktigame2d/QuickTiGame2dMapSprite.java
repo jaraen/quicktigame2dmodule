@@ -562,8 +562,6 @@ public class QuickTiGame2dMapSprite extends QuickTiGame2dSprite {
 	}
 
 	private QuickTiGame2dMapTile updateTileProperty(QuickTiGame2dMapTile tile) {
-	    tile.firstgid = firstgid;
-        
 	    // Update tile properties if we found multiple tilesets
 	    if (tilesets.size() > 1) {
 	    	if (tile.gid <= 0) {
@@ -1033,7 +1031,6 @@ public class QuickTiGame2dMapSprite extends QuickTiGame2dSprite {
 	    }
 	    
 	    if (tilesets.size() == 0) {
-	        this.firstgid   = (int)Float.parseFloat(prop.get("firstgid"));
 	        this.tileWidth  = Float.parseFloat(prop.get("tilewidth"));
 	        this.tileHeight = Float.parseFloat(prop.get("tileheight"));
 	        this.tileOffsetX = Float.parseFloat(prop.get("offsetX"));

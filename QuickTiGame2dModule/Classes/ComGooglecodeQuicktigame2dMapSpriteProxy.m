@@ -129,11 +129,6 @@
     NSInteger index = [args intValue];
     
     QuickTiGame2dMapSprite* mapSprite = (QuickTiGame2dMapSprite*)sprite;
-    
-    if (index >= mapSprite.tileCount) {
-        return nil;
-    }
-    
     QuickTiGame2dMapTile*  tile = [mapSprite getTile:index];
     
     if (tile != nil) {
@@ -172,10 +167,6 @@
     float     green  = [TiUtils floatValue:@"green"  properties:args  def:-1];
     float     blue   = [TiUtils floatValue:@"blue"   properties:args  def:-1];
     float     alpha  = [TiUtils floatValue:@"alpha"  properties:args  def:-1];
-    
-    if (index < 0 || index >= ((QuickTiGame2dMapSprite*)sprite).tileCount) {
-        return NUMBOOL(FALSE);
-    }
     
     QuickTiGame2dMapTile* target = [((QuickTiGame2dMapSprite*)sprite) getTile:index];
     
@@ -223,13 +214,7 @@
     ENSURE_SINGLE_ARG(args, NSNumber);
     NSInteger index = [args intValue];
     
-    if (index < 0 || index >= ((QuickTiGame2dMapSprite*)sprite).tileCount) {
-        return NUMBOOL(FALSE);
-    }
-    
-    [((QuickTiGame2dMapSprite*)sprite) removeTile:index];
-    
-    return NUMBOOL(TRUE);
+    return NUMBOOL([((QuickTiGame2dMapSprite*)sprite) removeTile:index]);
 }
 
 -(id)setTile:(id)args {
@@ -240,13 +225,7 @@
     ENSURE_SINGLE_ARG(args, NSNumber);
     NSInteger index = [args intValue];
     
-    if (index >= ((QuickTiGame2dMapSprite*)sprite).tileCount) {
-        return NUMBOOL(FALSE);
-    }
-    
-    [((QuickTiGame2dMapSprite*)sprite) flipTile:index];
-    
-    return NUMBOOL(TRUE);
+    return NUMBOOL([((QuickTiGame2dMapSprite*)sprite) flipTile:index]);
 }
 
 - (id)border {

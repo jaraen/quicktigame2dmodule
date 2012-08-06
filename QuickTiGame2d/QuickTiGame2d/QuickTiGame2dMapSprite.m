@@ -69,7 +69,7 @@
         height = 0;
         atlasX = 0;
         atlasY = 0;
-        firstgid = 0;
+        firstgid = 1;
         atlasWidth  = 0;
         atlasHeight = 0;
         offsetX = 0;
@@ -679,8 +679,6 @@
 }
 
 -(void)updateTileProperty:(QuickTiGame2dMapTile*)tile {
-    tile.firstgid = firstgid;
-    
     // Update tile properties if we found multiple tilesets
     if ([tilesets count] > 1) {
         if (tile.gid <= 0) {
@@ -961,7 +959,7 @@
 }
 
 -(BOOL)flipTile:(NSInteger)index {
-    if (index >= [tiles count]) return FALSE;
+    if (index < 0 || index >= [tiles count]) return FALSE;
     
     QuickTiGame2dMapTile* tile = [tiles objectAtIndex:index];
     tile.flip = !tile.flip;
@@ -1128,7 +1126,6 @@
     }
     
     if ([tilesets count] == 0) {
-        self.firstgid   = [[prop objectForKey:@"firstgid"]   intValue];
         self.tileWidth  = [[prop objectForKey:@"tilewidth"]  floatValue];
         self.tileHeight = [[prop objectForKey:@"tileheight"] floatValue];
         self.tileOffsetX =[[prop objectForKey:@"offsetX"] floatValue];
