@@ -209,11 +209,12 @@
     if (width == 0 || height == 0 || tileWidth == 0 || tileHeight == 0) return FALSE;
     
     if (orientation != MAP_ORIENTATION_HEXAGONAL) {
-        tileCountX = ceilf(width / tileWidth);
-        tileCountY = ceilf(height / tileHeight);
+        tileCountX = ceilf(width  / (tileWidth  * tileTiltFactorX));
+        tileCountY = ceilf(height / (tileHeight * tileTiltFactorY));
+        
         tileCount  = tileCountX * tileCountY;
     } else {
-        tileCountX = ceilf(width / tileWidth);
+        tileCountX = ceilf(width  / (tileWidth  * tileTiltFactorX));
         tileCountY = ceilf(height / (tileHeight * tileTiltFactorY));
         
         tileCount = (tileCountX * tileCountY) - (tileCountY / 2);
