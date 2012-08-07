@@ -330,12 +330,21 @@ public class MapSpriteProxy extends SpriteProxy {
 		getMapSprite().updateTileCount();
 	}
 	
+	@Kroll.getProperty @Kroll.method
+	public int getWidth() {
+		return sprite.getWidth();
+	}
+	
 	@Kroll.setProperty @Kroll.method
 	public void setHeight(int height) {
 		super.setHeight(height);
 		getMapSprite().updateTileCount();
 	}
-	
+
+	@Kroll.getProperty @Kroll.method
+	public int getHeight() {
+		return sprite.getHeight();
+	}
 	
 	@Kroll.getProperty @Kroll.method
 	public Integer[] getTiles() {
@@ -476,6 +485,29 @@ public class MapSpriteProxy extends SpriteProxy {
 		} else {
 			getMapSprite().animateTile(tileIndex, (int)Double.parseDouble(arg1.toString()), arg2, arg3, arg4);
 		}
+	}
+	
+	@Override
+	@Kroll.setProperty @Kroll.method
+	public void setCenter(@SuppressWarnings("rawtypes") HashMap info) {
+		if (info.containsKey("x")) {
+			float x = (float)TiConvert.toDouble(info.get("x"));
+			sprite.setX(x);
+		}
+		if (info.containsKey("y")) {
+			float y = (float)TiConvert.toDouble(info.get("y"));
+			sprite.setY(y - sprite.getScaledHeight());
+		}
+	}
+	
+	@Override
+	@SuppressWarnings("rawtypes")
+	@Kroll.getProperty @Kroll.method
+	public HashMap getCenter() {
+		centerInfoCache.put("x" , sprite.getX());
+		centerInfoCache.put("y" , sprite.getY() + sprite.getScaledHeight());
+		
+		return centerInfoCache;
 	}
 
 }

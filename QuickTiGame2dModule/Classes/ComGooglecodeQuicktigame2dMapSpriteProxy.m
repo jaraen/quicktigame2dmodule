@@ -437,5 +437,27 @@
     [[self mapsprite] animateTile:tileIndex start:start count:count interval:interval loop:loop];
 }
 
+- (id)center {
+    if ([self mapsprite].orientation == MAP_ORIENTATION_ISOMETRIC) {
+        [centerInfoCache setValue:NUMFLOAT(sprite.x) forKey:@"x"];
+        [centerInfoCache setValue:NUMFLOAT(sprite.y + sprite.scaledHeight) forKey:@"y"];
+        return centerInfoCache;
+    } else {
+        return [super center];
+    }
+}
+
+- (void)setCenter:(id)value {
+    if ([self mapsprite].orientation == MAP_ORIENTATION_ISOMETRIC) {
+        ENSURE_SINGLE_ARG(value, NSDictionary);
+        float x  = [TiUtils floatValue:@"x"  properties:value  def:0];
+        float y  = [TiUtils floatValue:@"y"  properties:value  def:0];
+        
+        if ([value objectForKey:@"x"] != nil) sprite.x = x;
+        if ([value objectForKey:@"y"] != nil) sprite.y = y - sprite.scaledHeight;
+    } else {
+        return [super setCenter:value];
+    }
+}
 @end
  
