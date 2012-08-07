@@ -68,14 +68,17 @@
     [super onNotification:type userInfo:userInfo];
 }
 
+-(QuickTiGame2dMapSprite*)mapsprite {
+    return (QuickTiGame2dMapSprite*)sprite;
+}
+
 #pragma Public APIs
 
 -(id)getTileAtPosition:(id)args {
     float sx = [[args objectAtIndex:0] floatValue]; 
     float sy = [[args objectAtIndex:1] floatValue];
     
-    QuickTiGame2dMapSprite* mapSprite = (QuickTiGame2dMapSprite*)sprite;
-    QuickTiGame2dMapTile* tile = [mapSprite getTileAtPosition:sx sy:sy];
+    QuickTiGame2dMapTile* tile = [[self mapsprite] getTileAtPosition:sx sy:sy];
     
     if (tile != nil) {
         [self updateTileInfoProxyCache:tileInfoCache tile:tile];
@@ -87,7 +90,7 @@
 }
 
 -(void)updateTileInfoProxyCache:(NSMutableDictionary*)dic tile:(QuickTiGame2dMapTile*)tile {
-    QuickTiGame2dMapSprite* mapSprite = (QuickTiGame2dMapSprite*)sprite;
+    QuickTiGame2dMapSprite* mapSprite = [self mapsprite];
     
     [dic setValue:NUMINT(tile.index)    forKey:@"index"];
     [dic setValue:NUMINT(tile.gid)      forKey:@"gid"];
@@ -128,8 +131,7 @@
     ENSURE_SINGLE_ARG(args, NSNumber);
     NSInteger index = [args intValue];
     
-    QuickTiGame2dMapSprite* mapSprite = (QuickTiGame2dMapSprite*)sprite;
-    QuickTiGame2dMapTile*  tile = [mapSprite getTile:index];
+    QuickTiGame2dMapTile*  tile = [[self mapsprite] getTile:index];
     
     if (tile != nil) {
         [self updateTileInfoProxyCache:tileInfoCache tile:tile];
@@ -145,7 +147,8 @@
     
     NSInteger index  = [TiUtils intValue:@"index"  properties:args def:-1];
     
-    QuickTiGame2dMapTile* target = [((QuickTiGame2dMapSprite*)sprite) getTile:index];
+    QuickTiGame2dMapSprite* mapSprite = [self mapsprite];
+    QuickTiGame2dMapTile* target = [mapSprite getTile:index];
     if (target == nil) return NUMBOOL(TRUE);
     
     QuickTiGame2dMapTile* tile = [[[QuickTiGame2dMapTile alloc] init] autorelease];
@@ -155,7 +158,7 @@
         tile.flip = [TiUtils boolValue:@"flip" properties:args def:tile.flip];
     }
 
-    return NUMBOOL([(QuickTiGame2dMapSprite*)sprite canUpdate:index tile:tile]);
+    return NUMBOOL([mapSprite canUpdate:index tile:tile]);
 }
 
 -(id)updateTile:(id)args {
@@ -168,7 +171,8 @@
     float     blue   = [TiUtils floatValue:@"blue"   properties:args  def:-1];
     float     alpha  = [TiUtils floatValue:@"alpha"  properties:args  def:-1];
     
-    QuickTiGame2dMapTile* target = [((QuickTiGame2dMapSprite*)sprite) getTile:index];
+    QuickTiGame2dMapSprite* mapSprite = [self mapsprite];
+    QuickTiGame2dMapTile* target = [mapSprite getTile:index];
     
     if (target == nil) return NUMBOOL(FALSE);
     
@@ -185,7 +189,7 @@
         tile.flip = [TiUtils boolValue:@"flip"  properties:args def:FALSE];
     }
     
-    BOOL isUpdated = [((QuickTiGame2dMapSprite*)sprite) setTile:index tile:tile];
+    BOOL isUpdated = [mapSprite setTile:index tile:tile];
     
     [tile release];
     
@@ -200,11 +204,11 @@
             [data addObject:[value objectForKey:@"gid"]];
         }
         
-        [((QuickTiGame2dMapSprite*)sprite) setTiles:data];
+        [[self mapsprite] setTiles:data];
         
         [data release];
     } else {
-        [((QuickTiGame2dMapSprite*)sprite) setTiles:args];
+        [[self mapsprite] setTiles:args];
     }
     
     return NUMBOOL(TRUE);
@@ -214,7 +218,7 @@
     ENSURE_SINGLE_ARG(args, NSNumber);
     NSInteger index = [args intValue];
     
-    return NUMBOOL([((QuickTiGame2dMapSprite*)sprite) removeTile:index]);
+    return NUMBOOL([[self mapsprite] removeTile:index]);
 }
 
 -(id)setTile:(id)args {
@@ -225,7 +229,7 @@
     ENSURE_SINGLE_ARG(args, NSNumber);
     NSInteger index = [args intValue];
     
-    return NUMBOOL([((QuickTiGame2dMapSprite*)sprite) flipTile:index]);
+    return NUMBOOL([[self mapsprite] flipTile:index]);
 }
 
 - (id)border {
@@ -247,58 +251,58 @@
 }
 
 - (id)tileWidth {
-    return NUMINT(((QuickTiGame2dMapSprite*)sprite).tileWidth);
+    return NUMINT([self mapsprite].tileWidth);
 }
 
 - (void)setTileWidth:(id)value {
     ENSURE_SINGLE_ARG(value, NSNumber);
-    ((QuickTiGame2dMapSprite*)sprite).tileWidth = [value intValue];
-    [((QuickTiGame2dMapSprite*)sprite) updateTileCount];
+    [self mapsprite].tileWidth = [value intValue];
+    [[self mapsprite] updateTileCount];
 }
 
 - (id)tileHeight {
-    return NUMINT(((QuickTiGame2dMapSprite*)sprite).tileHeight);
+    return NUMINT([self mapsprite].tileHeight);
 }
 
 - (void)setTileHeight:(id)value {
     ENSURE_SINGLE_ARG(value, NSNumber);
-    ((QuickTiGame2dMapSprite*)sprite).tileHeight = [value intValue];
-    [((QuickTiGame2dMapSprite*)sprite) updateTileCount];
+    [self mapsprite].tileHeight = [value intValue];
+    [[self mapsprite] updateTileCount];
 }
 
 - (id)firstgid {
-    return NUMINT(((QuickTiGame2dMapSprite*)sprite).firstgid);
+    return NUMINT([self mapsprite].firstgid);
 }
 
 - (void)setFirstgid:(id)value {
     ENSURE_SINGLE_ARG(value, NSNumber);
-    ((QuickTiGame2dMapSprite*)sprite).firstgid = [value intValue];
+    [self mapsprite].firstgid = [value intValue];
 }
 
 - (id)orientation {
-    return NUMINT(((QuickTiGame2dMapSprite*)sprite).orientation);
+    return NUMINT([self mapsprite].orientation);
 }
 
 - (void)setOrientation:(id)value {
     ENSURE_SINGLE_ARG(value, NSNumber);
-    ((QuickTiGame2dMapSprite*)sprite).orientation = [value intValue];
-    [((QuickTiGame2dMapSprite*)sprite) updateTileCount];
+    [self mapsprite].orientation = [value intValue];
+    [[self mapsprite] updateTileCount];
 }
 
 - (id)tileCount {
-    return NUMINT(((QuickTiGame2dMapSprite*)sprite).tileCount);
+    return NUMINT([self mapsprite].tileCount);
 }
 
 - (id)tileCountX {
-    return NUMINT(((QuickTiGame2dMapSprite*)sprite).tileCountX);
+    return NUMINT([self mapsprite].tileCountX);
 }
 
 - (id)tileCountY {
-    return NUMINT(((QuickTiGame2dMapSprite*)sprite).tileCountY);
+    return NUMINT([self mapsprite].tileCountY);
 }
 
 - (id)tiles {
-    return [((QuickTiGame2dMapSprite*)sprite) getTiles];
+    return [[self mapsprite] getTiles];
 }
 
 - (void)setTiles:(id)value {
@@ -307,34 +311,34 @@
 
 - (void)setWidth:(id)value {
     [super setWidth:value];
-    [((QuickTiGame2dMapSprite*)sprite) updateTileCount];
+    [[self mapsprite] updateTileCount];
 }
 
 - (void)setHeight:(id)value {
     [super setHeight:value];
-    [((QuickTiGame2dMapSprite*)sprite) updateTileCount];
+    [[self mapsprite] updateTileCount];
 }
 
 - (id)tileTiltFactorX {
-    return NUMFLOAT(((QuickTiGame2dMapSprite*)sprite).tileTiltFactorX);
+    return NUMFLOAT([self mapsprite].tileTiltFactorX);
 }
 
 - (void)setTileTiltFactorX:(id)value {
     ENSURE_SINGLE_ARG(value, NSNumber);
-    ((QuickTiGame2dMapSprite*)sprite).tileTiltFactorX = [value floatValue];
+    [self mapsprite].tileTiltFactorX = [value floatValue];
 }
 
 - (id)tileTiltFactorY {
-    return NUMFLOAT(((QuickTiGame2dMapSprite*)sprite).tileTiltFactorY);
+    return NUMFLOAT([self mapsprite].tileTiltFactorY);
 }
 
 - (void)setTileTiltFactorY:(id)value {
     ENSURE_SINGLE_ARG(value, NSNumber);
-    ((QuickTiGame2dMapSprite*)sprite).tileTiltFactorY = [value floatValue];
+    [self mapsprite].tileTiltFactorY = [value floatValue];
 }
 
 - (id)tilesets {
-    return [((QuickTiGame2dMapSprite*)sprite) tilesets];
+    return [[self mapsprite] tilesets];
 }
 
 - (void)setTilesets:(id)args {
@@ -371,19 +375,19 @@
                     }
                 }
             } else if ([key isEqualToString:@"tileproperties"] && [info objectForKey:@"firstgid"] != nil) {
-                [(QuickTiGame2dMapSprite*)sprite updateGIDProperties:value firstgid:[[info objectForKey:@"firstgid"] intValue]];
+                [[self mapsprite] updateGIDProperties:value firstgid:[[info objectForKey:@"firstgid"] intValue]];
             } else {
                 [param setObject:value forKey:key];
             }
         }
-        [(QuickTiGame2dMapSprite*)sprite addTileset:param];
+        [[self mapsprite] addTileset:param];
         [param release];
     }
 }
 
 -(void)stop:(id)args {
     ENSURE_SINGLE_ARG(args, NSNumber);
-    [(QuickTiGame2dMapSprite*)sprite deleteAnimation:[NSString stringWithFormat:@"%d", [args intValue]]];
+    [[self mapsprite] deleteAnimation:[NSString stringWithFormat:@"%d", [args intValue]]];
 }
 
 - (void)animate:(id)args {
@@ -393,9 +397,9 @@
         NSInteger interval  = [[args objectAtIndex:2] intValue];
         
         if ([args count] == 3) {
-            [((QuickTiGame2dMapSprite*)sprite) animateTile:tileIndex frames:frames interval:interval];
+            [[self mapsprite] animateTile:tileIndex frames:frames interval:interval];
         } else {
-            [((QuickTiGame2dMapSprite*)sprite) animateTile:tileIndex frames:frames interval:interval loop:[[args objectAtIndex:3] intValue]];
+            [[self mapsprite] animateTile:tileIndex frames:frames interval:interval loop:[[args objectAtIndex:3] intValue]];
         }
         return;
     }
@@ -411,7 +415,7 @@
     NSInteger interval = [[args objectAtIndex:3] intValue];
     NSInteger loop = [[args objectAtIndex:4] intValue];
     
-    [((QuickTiGame2dMapSprite*)sprite) animateTile:tileIndex start:start count:count interval:interval loop:loop];
+    [[self mapsprite] animateTile:tileIndex start:start count:count interval:interval loop:loop];
 }
 
 @end
