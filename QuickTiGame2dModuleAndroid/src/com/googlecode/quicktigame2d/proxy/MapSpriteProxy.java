@@ -43,6 +43,8 @@ import com.googlecode.quicktigame2d.Quicktigame2dModule;
 @Kroll.proxy(creatableInModule=Quicktigame2dModule.class)
 public class MapSpriteProxy extends SpriteProxy {
 	
+	private HashMap<String, Object> mapSizeInfoCache = new HashMap<String, Object>();
+	
 	public MapSpriteProxy() {
 		sprite = new QuickTiGame2dMapSprite();
 	}
@@ -375,6 +377,26 @@ public class MapSpriteProxy extends SpriteProxy {
 	public Map<String, Map<String, String>> getTilesets() {
 		return getMapSprite().getTilesets();
 	}
+
+	@Kroll.setProperty @Kroll.method
+	public void setMapSize(@SuppressWarnings("rawtypes") HashMap info) {
+		if (info.containsKey("width") && info.containsKey("height")) {
+			int width  = TiConvert.toInt(info.get("width"));
+			int height = TiConvert.toInt(info.get("height"));
+			
+			getMapSprite().updateMapSize(width, height);
+		}
+	}
+
+	@SuppressWarnings("rawtypes")
+	@Kroll.getProperty @Kroll.method
+	public HashMap getMapSize() {
+		mapSizeInfoCache.put("width",  getMapSprite().getTileCountX());
+		mapSizeInfoCache.put("height", getMapSprite().getTileCountY());
+		
+		return mapSizeInfoCache;
+	}
+	
 	
 	@SuppressWarnings("rawtypes")
 	@Kroll.setProperty @Kroll.method

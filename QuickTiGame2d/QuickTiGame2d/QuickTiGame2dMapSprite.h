@@ -59,6 +59,8 @@
     
     float tileOffsetX;
     float tileOffsetY;
+    
+    BOOL shouldUpdateTileCount;
 }
 @property (readwrite) float tileWidth;
 @property (readwrite) float tileHeight;
@@ -114,4 +116,5 @@
 - (BOOL)canUpdate:(NSInteger)index tile:(QuickTiGame2dMapTile*)tile;
 
 - (void)updateGIDProperties:(NSDictionary*)info firstgid:(NSInteger)firstgid;
+- (void)updateMapSize:(NSInteger)_x ycount:(NSInteger)_y;
 @end

@@ -74,6 +74,8 @@ public class QuickTiGame2dMapSprite extends QuickTiGame2dSprite {
     private List<Map<String, String>> tilesetgids = new ArrayList<Map<String, String>>();
     private Map<Integer, Map<String, String>> gidproperties = new HashMap<Integer, Map<String, String>>();
     
+    private boolean shouldUpdateTileCount = false;
+    
     public QuickTiGame2dMapSprite() {
 		firstgid = 1;
 		verticesID[0] = 0;
@@ -84,18 +86,27 @@ public class QuickTiGame2dMapSprite extends QuickTiGame2dSprite {
     }
     
     public boolean updateTileCount() {
-        if (width == 0 || height == 0 || tileWidth == 0 || tileHeight == 0) return false;
+        if (tileWidth == 0 || tileHeight == 0) return false;
         
-	    if (orientation != QuickTiGame2dConstant.MAP_ORIENTATION_HEXAGONAL) {
-	    	tileCountX = (int)Math.ceil(width / tileWidth);
-	    	tileCountY = (int)Math.ceil(height / tileHeight);
-	    	tileCount  = tileCountX * tileCountY;
-	    } else {
-	        tileCountX = (int)Math.ceil(width / tileWidth);
-	        tileCountY = (int)Math.ceil(height / (tileHeight * tileTiltFactorY));
+        if (shouldUpdateTileCount) {
+            tileCount  = tileCountX * tileCountY;
+            
+            width  = (int)(tileWidth  * tileCountX * tileTiltFactorX);
+            height = (int)(tileHeight * tileCountY * tileTiltFactorY);
+            
+            shouldUpdateTileCount = false;
+        } else {
+        	if (orientation != QuickTiGame2dConstant.MAP_ORIENTATION_HEXAGONAL) {
+        		tileCountX = (int)Math.ceil(width  / (tileWidth  * tileTiltFactorX));
+        		tileCountY = (int)Math.ceil(height / (tileHeight * tileTiltFactorY));
+        		tileCount  = tileCountX * tileCountY;
+        	} else {
+        		tileCountX = (int)Math.ceil(width  / (tileWidth  * tileTiltFactorX));
+        		tileCountY = (int)Math.ceil(height / (tileHeight * tileTiltFactorY));
 	        
-	        tileCount = (tileCountX * tileCountY) - (tileCountY / 2);
-	    }
+        		tileCount = (tileCountX * tileCountY) - (tileCountY / 2);
+        	}
+        }
 	    return true;
     }
     
@@ -1151,5 +1162,12 @@ public class QuickTiGame2dMapSprite extends QuickTiGame2dSprite {
 	    }
 	    
 	    return true;
+	}
+	
+	public void updateMapSize(int x, int y) {
+		this.tileCountX = x;
+		this.tileCountY = y;
+		
+		shouldUpdateTileCount = true;
 	}
 }

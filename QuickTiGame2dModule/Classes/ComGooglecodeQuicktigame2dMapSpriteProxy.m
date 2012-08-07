@@ -45,12 +45,14 @@
         sprite = [[QuickTiGame2dMapSprite alloc] init];
         
         tileInfoCache = [[NSMutableDictionary alloc] init];
+        mapSizeInfoCache  = [[NSMutableDictionary alloc] init];
     }
     return self;
 }
 
 - (void)dealloc {
     [tileInfoCache release];
+    [mapSizeInfoCache release];
     [super dealloc];
 }
 
@@ -287,6 +289,23 @@
     ENSURE_SINGLE_ARG(value, NSNumber);
     [self mapsprite].orientation = [value intValue];
     [[self mapsprite] updateTileCount];
+}
+
+- (id)mapSize {
+    [mapSizeInfoCache setValue:NUMINT([self mapsprite].tileCountX) forKey:@"width"];
+    [mapSizeInfoCache setValue:NUMINT([self mapsprite].tileCountY) forKey:@"height"];
+    
+    return mapSizeInfoCache;
+}
+
+- (void)setMapSize:(id)value {
+    ENSURE_SINGLE_ARG(value, NSDictionary);
+    NSInteger width  = [TiUtils intValue:@"width"   properties:value def:0];
+    NSInteger height = [TiUtils intValue:@"height"  properties:value def:0];
+    
+    if (width > 0 && height > 0) {
+        [[self mapsprite] updateMapSize:width ycount:height];
+    }
 }
 
 - (id)tileCount {
