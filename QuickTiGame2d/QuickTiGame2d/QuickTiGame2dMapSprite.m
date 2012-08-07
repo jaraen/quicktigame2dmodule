@@ -175,7 +175,7 @@
         tileChanged = FALSE;
         
         verticesID = 0;
-        firstgid = 0;
+        firstgid = 1;
         
         orientation = MAP_ORIENTATION_ORTHOGONAL;
         
@@ -373,7 +373,7 @@
 }
 
 -(NSInteger)getTileNumber:(QuickTiGame2dMapTile*)tile {
-    return tile.gid - tile.firstgid - self.firstgid;
+    return tile.gid - tile.firstgid - (self.firstgid - 1);
 }
 
 -(float)tex_coord_startX:(QuickTiGame2dMapTile*)tile {
@@ -689,8 +689,8 @@
 }
 
 -(void)updateTileProperty:(QuickTiGame2dMapTile*)tile {
-    // Update tile properties if we found multiple tilesets
-    if ([tilesets count] > 1) {
+    // Update tile properties
+    if ([tilesets count] > 0) {
         if (tile.gid <= 0) {
             tile.image = [[tilesetgids objectAtIndex:0] objectForKey:@"image"];
         } else if (tile.image == nil) {

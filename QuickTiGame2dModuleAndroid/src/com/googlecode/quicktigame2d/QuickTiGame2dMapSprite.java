@@ -75,7 +75,7 @@ public class QuickTiGame2dMapSprite extends QuickTiGame2dSprite {
     private Map<Integer, Map<String, String>> gidproperties = new HashMap<Integer, Map<String, String>>();
     
     public QuickTiGame2dMapSprite() {
-		firstgid = 0;
+		firstgid = 1;
 		verticesID[0] = 0;
 	}
     
@@ -380,13 +380,13 @@ public class QuickTiGame2dMapSprite extends QuickTiGame2dSprite {
 	}
 	
 	private int getTileNumber(QuickTiGame2dMapTile tile) {
-		return tile.gid - tile.firstgid - this.firstgid;
+		return tile.gid - tile.firstgid - (this.firstgid - 1);
 	}
 
 	private float tex_coord_startX(QuickTiGame2dMapTile tile) {
 		int tileNo = getTileNumber(tile);
 		
-		if (tilesets.size() > 1) {
+		if (tilesets.size() > 0) {
 	        float awidth = tile.atlasWidth > 0 ? tile.atlasWidth : width;
 	        float twidth = tile.isOverwrap ? tile.overwrapWidth : tile.width > 0 ? tile.width : tileWidth;
 	        
