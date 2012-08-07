@@ -136,16 +136,6 @@ public class QuickTiGame2dMapSprite extends QuickTiGame2dSprite {
 			onTransform();
 	    }
 	    
-	    synchronized (updatedTiles) {
-	        tileChanged = updatedTiles.size() > 0;
-	        if (tileChanged) {
-	            for (Map.Entry<Integer, QuickTiGame2dMapTile> e : updatedTiles.entrySet()) {
-	                updateQuad(e.getKey().intValue(), e.getValue());
-	            }
-	            updatedTiles.clear();
-	        }
-	    }
-	    
 	    synchronized (animations) {
 			if (animating && animations.size() > 0) {
 				for (String name : animations.keySet()) {
@@ -164,6 +154,16 @@ public class QuickTiGame2dMapSprite extends QuickTiGame2dSprite {
 					animation.setLastOnAnimationInterval(uptime);
 				}
 			}
+	    }
+	    
+	    synchronized (updatedTiles) {
+	        tileChanged = updatedTiles.size() > 0;
+	        if (tileChanged) {
+	            for (Map.Entry<Integer, QuickTiGame2dMapTile> e : updatedTiles.entrySet()) {
+	                updateQuad(e.getKey().intValue(), e.getValue());
+	            }
+	            updatedTiles.clear();
+	        }
 	    }
 		
 	    gl.glMatrixMode(GL11.GL_MODELVIEW);
@@ -378,9 +378,13 @@ public class QuickTiGame2dMapSprite extends QuickTiGame2dSprite {
 		gl.glBufferData(GL11.GL_ARRAY_BUFFER, 144 * tileCount, quadsBuffer, GL11.GL_STATIC_DRAW);
 		gl.glBindBuffer(GL11.GL_ARRAY_BUFFER, 0);
 	}
+	
+	private int getTileNumber(QuickTiGame2dMapTile tile) {
+		return tile.gid - tile.firstgid - this.firstgid;
+	}
 
 	private float tex_coord_startX(QuickTiGame2dMapTile tile) {
-		int tileNo = tile.gid - tile.firstgid;
+		int tileNo = getTileNumber(tile);
 		
 		if (tilesets.size() > 1) {
 	        float awidth = tile.atlasWidth > 0 ? tile.atlasWidth : width;
@@ -403,7 +407,7 @@ public class QuickTiGame2dMapSprite extends QuickTiGame2dSprite {
 	}
 
 	private float tex_coord_startY(QuickTiGame2dMapTile tile) {
-	    int tileNo = tile.gid - tile.firstgid;
+	    int tileNo = getTileNumber(tile);
 	    
 		if (tilesets.size() > 1) {
 	        float awidth  = tile.atlasWidth  > 0 ? tile.atlasWidth  : width;
@@ -452,7 +456,7 @@ public class QuickTiGame2dMapSprite extends QuickTiGame2dSprite {
 	    QuickTiGame2dMapTile tile = tiles.get(index);
 	    tile.cc(cctile);
 	    
-	    if (tile.gid - tile.firstgid < 0) tile.alpha = 0;
+	    if (getTileNumber(tile) < 0) tile.alpha = 0;
 	    
 	    float parentAlpha =  getAlpha();
 	    

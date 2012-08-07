@@ -273,16 +273,6 @@
         [self onTransform];
     }
     
-    @synchronized (updatedTiles) {
-        tileChanged = [updatedTiles count] > 0;
-        if (tileChanged) {
-            for (NSNumber* num in updatedTiles) {
-                [self updateQuad:[num intValue] tile:[updatedTiles objectForKey:num]];
-            }
-            [updatedTiles removeAllObjects];
-        }
-    }
-    
     @synchronized (animations) {
         if (animating && [animations count] > 0) {
             for (NSString* name in animations) {
@@ -293,13 +283,28 @@
                 }
                 int index = animation.nameAsInt;
                 if (index >= 0) {
-                    QuickTiGame2dMapTile* updateTileCache = [self getTile:index];
+                    QuickTiGame2dMapTile* cctile = [self getTile:index];
+                    QuickTiGame2dMapTile* updateTileCache = [[QuickTiGame2dMapTile alloc] init];
+                    [updateTileCache indexcc:cctile];
+                    
                     updateTileCache.gid = [animation getNextIndex:tileCount withIndex:updateTileCache.gid];
                     
                     [self setTile:index tile:updateTileCache];
+                    
+                    [updateTileCache release];
                 }
                 animation.lastOnAnimationInterval = uptime;
             }
+        }
+    }
+    
+    @synchronized (updatedTiles) {
+        tileChanged = [updatedTiles count] > 0;
+        if (tileChanged) {
+            for (NSNumber* num in updatedTiles) {
+                [self updateQuad:[num intValue] tile:[updatedTiles objectForKey:num]];
+            }
+            [updatedTiles removeAllObjects];
         }
     }
     
@@ -366,8 +371,12 @@
     }
 }
 
+-(NSInteger)getTileNumber:(QuickTiGame2dMapTile*)tile {
+    return tile.gid - tile.firstgid - self.firstgid;
+}
+
 -(float)tex_coord_startX:(QuickTiGame2dMapTile*)tile {
-    int tileNo = tile.gid - tile.firstgid;
+    int tileNo = [self getTileNumber:tile];
     if ([tilesets count] > 1) {
         float awidth = tile.atlasWidth > 0 ? tile.atlasWidth : width;
         float twidth = tile.isOverwrap ? tile.overwrapWidth : tile.width > 0 ? tile.width : tileWidth;
@@ -390,7 +399,7 @@
 }
 
 -(float)tex_coord_startY:(QuickTiGame2dMapTile*)tile {
-    int tileNo = tile.gid - tile.firstgid;
+    int tileNo = [self getTileNumber:tile];
     
     if ([tilesets count] > 1) {
         float awidth  = tile.atlasWidth  > 0 ? tile.atlasWidth  : width;
@@ -567,7 +576,7 @@
     QuickTiGame2dMapTile* tile = [tiles objectAtIndex:index];
     [tile cc:cctile];
     
-    if (tile.gid - tile.firstgid < 0) tile.alpha = 0;
+    if ([self getTileNumber:tile] < 0) tile.alpha = 0;
     
     float parentAlpha = [self alpha];
     
