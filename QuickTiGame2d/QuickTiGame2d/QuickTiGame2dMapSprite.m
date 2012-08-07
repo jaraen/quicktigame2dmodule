@@ -187,7 +187,7 @@
         
         gidproperties = [[NSMutableDictionary alloc] init];
         
-        shouldUpdateTileCount = FALSE;
+        useFixedTileCount = FALSE;
     }
     return self;
 }
@@ -210,13 +210,11 @@
 -(BOOL)updateTileCount {
     if (tileWidth <= 0 || tileHeight <= 0) return FALSE;
     
-    if (shouldUpdateTileCount) {
+    if (useFixedTileCount) {
         tileCount  = tileCountX * tileCountY;
         
-        width  = tileWidth  * tileCountX * tileTiltFactorX;
-        height = tileHeight * tileCountY * tileTiltFactorY;
-        
-        shouldUpdateTileCount = FALSE;
+        self.width  = tileWidth  * tileCountX * tileTiltFactorX;
+        self.height = tileHeight * tileCountY * tileTiltFactorY;
     } else {
         if (orientation != MAP_ORIENTATION_HEXAGONAL) {
             tileCountX = ceilf(width  / (tileWidth  * tileTiltFactorX));
@@ -1250,6 +1248,7 @@
     tileCountX = _x;
     tileCountY = _y;
     
-    shouldUpdateTileCount = TRUE;
+    useFixedTileCount = TRUE;
+    [self updateTileCount];
 }
 @end

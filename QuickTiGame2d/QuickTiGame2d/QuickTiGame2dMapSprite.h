@@ -60,7 +60,7 @@
     float tileOffsetX;
     float tileOffsetY;
     
-    BOOL shouldUpdateTileCount;
+    BOOL useFixedTileCount;
 }
 @property (readwrite) float tileWidth;
 @property (readwrite) float tileHeight;

@@ -74,7 +74,7 @@ public class QuickTiGame2dMapSprite extends QuickTiGame2dSprite {
     private List<Map<String, String>> tilesetgids = new ArrayList<Map<String, String>>();
     private Map<Integer, Map<String, String>> gidproperties = new HashMap<Integer, Map<String, String>>();
     
-    private boolean shouldUpdateTileCount = false;
+    private boolean useFixedTileCount = false;
     
     public QuickTiGame2dMapSprite() {
 		firstgid = 1;
@@ -88,13 +88,11 @@ public class QuickTiGame2dMapSprite extends QuickTiGame2dSprite {
     public boolean updateTileCount() {
         if (tileWidth == 0 || tileHeight == 0) return false;
         
-        if (shouldUpdateTileCount) {
+        if (useFixedTileCount) {
             tileCount  = tileCountX * tileCountY;
             
             width  = (int)(tileWidth  * tileCountX * tileTiltFactorX);
             height = (int)(tileHeight * tileCountY * tileTiltFactorY);
-            
-            shouldUpdateTileCount = false;
         } else {
         	if (orientation != QuickTiGame2dConstant.MAP_ORIENTATION_HEXAGONAL) {
         		tileCountX = (int)Math.ceil(width  / (tileWidth  * tileTiltFactorX));
@@ -1168,6 +1166,8 @@ public class QuickTiGame2dMapSprite extends QuickTiGame2dSprite {
 		this.tileCountX = x;
 		this.tileCountY = y;
 		
-		shouldUpdateTileCount = true;
+		useFixedTileCount = true;
+		
+		this.updateTileCount();
 	}
 }
