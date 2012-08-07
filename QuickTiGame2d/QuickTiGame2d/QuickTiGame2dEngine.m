@@ -415,6 +415,11 @@ static GLint  textureFilter  = GL_NEAREST;
     [self loadSquareVBOPointer];
 
     if ([snapshotTexture onLoadSnapshot:framebufferWidth height:framebufferHeight]) {
+        QuickTiGame2dTexture* texture = [textureCache objectForKey:snapshotTexture.name];
+        if (texture != nil) {
+            [texture onDispose];
+            [textureCache removeObjectForKey:snapshotTexture.name];
+        }
         [textureCache setObject:snapshotTexture forKey:snapshotTexture.name];
     }
     
