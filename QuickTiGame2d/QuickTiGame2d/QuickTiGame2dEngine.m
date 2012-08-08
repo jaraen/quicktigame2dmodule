@@ -592,12 +592,12 @@ static GLint  textureFilter  = GL_NEAREST;
 }
 
 +(void)commitUnloadTexture:(NSString*)name tag:(NSString*)tag {
-    @synchronized(beforeCommandQueue) {
+    @synchronized(afterCommandQueue) {
         CommandBlock command = [^{
             [QuickTiGame2dEngine unloadTexture:name tag:tag];
         } copy];
         
-        [beforeCommandQueue push:command];
+        [afterCommandQueue push:command];
         [command release];
     }
 }
