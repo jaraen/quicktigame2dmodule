@@ -496,7 +496,7 @@ public class MapSpriteProxy extends SpriteProxy {
 		}
 		if (info.containsKey("y")) {
 			float y = (float)TiConvert.toDouble(info.get("y"));
-			sprite.setY(y - sprite.getScaledHeight());
+			sprite.setY(y - sprite.getScaledHeight() * 0.5f);
 		}
 	}
 	
@@ -505,7 +505,7 @@ public class MapSpriteProxy extends SpriteProxy {
 	@Kroll.getProperty @Kroll.method
 	public HashMap getCenter() {
 		centerInfoCache.put("x" , sprite.getX());
-		centerInfoCache.put("y" , sprite.getY() + sprite.getScaledHeight());
+		centerInfoCache.put("y" , sprite.getY() + sprite.getScaledHeight() * 0.5f);
 		
 		return centerInfoCache;
 	}

@@ -440,7 +440,7 @@
 - (id)center {
     if ([self mapsprite].orientation == MAP_ORIENTATION_ISOMETRIC) {
         [centerInfoCache setValue:NUMFLOAT(sprite.x) forKey:@"x"];
-        [centerInfoCache setValue:NUMFLOAT(sprite.y + sprite.scaledHeight) forKey:@"y"];
+        [centerInfoCache setValue:NUMFLOAT(sprite.y + sprite.scaledHeight * 0.5) forKey:@"y"];
         return centerInfoCache;
     } else {
         return [super center];
@@ -454,7 +454,7 @@
         float y  = [TiUtils floatValue:@"y"  properties:value  def:0];
         
         if ([value objectForKey:@"x"] != nil) sprite.x = x;
-        if ([value objectForKey:@"y"] != nil) sprite.y = y - sprite.scaledHeight;
+        if ([value objectForKey:@"y"] != nil) sprite.y = y - sprite.scaledHeight * 0.5;
     } else {
         return [super setCenter:value];
     }

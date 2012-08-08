@@ -213,8 +213,14 @@
     if (useFixedTileCount) {
         tileCount  = tileCountX * tileCountY;
         
-        self.width  = tileWidth  * tileCountX * tileTiltFactorX;
-        self.height = tileHeight * tileCountY * tileTiltFactorY;
+        if (orientation == MAP_ORIENTATION_ISOMETRIC) {
+            self.width  = (int)(tileWidth  * tileCountX * tileTiltFactorX * 2);
+            self.height = (int)(self.width * 0.5f);
+        } else {
+            self.width  = (int)(tileWidth  * tileCountX * tileTiltFactorX);
+            self.height = (int)(tileHeight * tileCountY * tileTiltFactorY);
+        }
+        
     } else {
         if (orientation != MAP_ORIENTATION_HEXAGONAL) {
             tileCountX = ceilf(width  / (tileWidth  * tileTiltFactorX));

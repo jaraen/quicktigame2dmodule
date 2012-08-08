@@ -91,8 +91,14 @@ public class QuickTiGame2dMapSprite extends QuickTiGame2dSprite {
         if (useFixedTileCount) {
             tileCount  = tileCountX * tileCountY;
             
-            width  = (int)(tileWidth  * tileCountX * tileTiltFactorX);
-            height = (int)(tileHeight * tileCountY * tileTiltFactorY);
+            if (orientation == QuickTiGame2dConstant.MAP_ORIENTATION_ISOMETRIC) {
+            	this.width  = (int)(tileWidth  * tileCountX * tileTiltFactorX * 2);
+            	this.height = (int)(this.width * 0.5f);
+            } else {
+            	this.width  = (int)(tileWidth  * tileCountX * tileTiltFactorX);
+            	this.height = (int)(tileHeight * tileCountY * tileTiltFactorY);
+            }
+            
         } else {
         	if (orientation != QuickTiGame2dConstant.MAP_ORIENTATION_HEXAGONAL) {
         		tileCountX = (int)Math.ceil(width  / (tileWidth  * tileTiltFactorX));
