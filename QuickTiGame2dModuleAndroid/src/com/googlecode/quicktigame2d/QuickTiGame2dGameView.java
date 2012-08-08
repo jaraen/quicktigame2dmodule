@@ -303,7 +303,7 @@ public class QuickTiGame2dGameView extends GLSurfaceView implements Renderer, On
 	}
 	
 	public void commitLoadTexture(final String texture, final String tag) {
-    	afterCommandQueue.offer(new RunnableGL() {
+    	beforeCommandQueue.offer(new RunnableGL() {
     		@Override
     		public void run(GL10 gl) {
 				loadTexture(gl, texture, tag);
@@ -312,7 +312,7 @@ public class QuickTiGame2dGameView extends GLSurfaceView implements Renderer, On
 	}
 
 	public void commitUnloadTexture(final String texture, final String tag) {
-    	afterCommandQueue.offer(new RunnableGL() {
+    	beforeCommandQueue.offer(new RunnableGL() {
     		@Override
     		public void run(GL10 gl) {
 				unloadTexture(gl, texture, tag);
