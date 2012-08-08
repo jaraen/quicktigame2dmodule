@@ -33,6 +33,7 @@ import java.util.HashMap;
 import org.appcelerator.kroll.KrollDict;
 import org.appcelerator.kroll.KrollProxy;
 import org.appcelerator.kroll.annotations.Kroll;
+import org.appcelerator.titanium.TiBlob;
 import org.appcelerator.titanium.util.TiConvert;
 
 import com.googlecode.quicktigame2d.QuickTiGame2dSprite;
@@ -148,6 +149,11 @@ public class SpriteProxy extends KrollProxy {
 
 	public QuickTiGame2dSprite getSprite() {
 		return sprite;
+	}
+	
+	@Kroll.method
+	public void loadTextureByBlob(String name, TiBlob blob) {
+		sprite.loadTexture(name, blob.getBytes());
 	}
 	
 	@Kroll.method

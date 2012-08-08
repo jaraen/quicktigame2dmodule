@@ -27,6 +27,7 @@
 // 
 #import "QuickTiGame2dSprite.h"
 #import "QuickTiGame2dEngine.h"
+#import "ParticleDataReader.h"
 #import "math.h"
 
 @interface QuickTiGame2dSprite (PrivateMethods)
@@ -177,6 +178,25 @@
 
 -(QuickTiGame2dTexture*)texture {
     return [[QuickTiGame2dEngine sharedTextureCache] objectForKey:image];
+}
+
+-(BOOL)loadTexture:(NSString*)name base64string:(NSString*)base64string {
+    return [self loadTexture:name data:[ParticleDataReader dataWithBase64EncodedString:base64string]];
+}
+
+-(BOOL)loadTexture:(NSString*)name data:(NSData*)data {
+    self.image = name;
+    
+    QuickTiGame2dTexture* texture = [[QuickTiGame2dTexture alloc] init];
+    texture.name = name;
+    
+    if ([texture onLoad:data]) {
+        [QuickTiGame2dEngine commitLoadTexture:name texture:texture tag:self.tag];
+    }
+    
+    [texture release];
+    
+    return TRUE;
 }
 
 -(void)onLoad {

@@ -345,13 +345,6 @@ public class QuickTiGame2dGameView extends GLSurfaceView implements Renderer, On
 	}
 	
 	public void loadTexture(GL10 gl, String name, String gzipBase64Data, String tag) {
-		if (debug && name == null) {
-        	Log.w(Quicktigame2dModule.LOG_TAG, 
-            		"QuickTiGame2dGameView:loadTexture name should not be null!");
-			return;
-		}
-		if (textureCache.containsKey(name)) return;
-
 		byte[] data = new byte[0];
 		
 		try {
@@ -364,6 +357,17 @@ public class QuickTiGame2dGameView extends GLSurfaceView implements Renderer, On
 			return;
 		}
 
+		loadTexture(gl, name, data, tag);
+	}
+
+	public void loadTexture(GL10 gl, String name, byte[] data, String tag) {
+		if (debug && name == null) {
+        	Log.w(Quicktigame2dModule.LOG_TAG, 
+            		"QuickTiGame2dGameView:loadTexture name should not be null!");
+			return;
+		}
+		if (textureCache.containsKey(name)) return;
+
 		QuickTiGame2dTexture texture = new QuickTiGame2dTexture(getContext());
 		texture.setDebug(getDebug());
 		texture.setName(name);
@@ -375,7 +379,7 @@ public class QuickTiGame2dGameView extends GLSurfaceView implements Renderer, On
 			textureTagCache.put(tag,  name);
 		}
 	}
-	
+
 	public void unloadTexture(GL10 gl, String name, String tag) {
 		if (name == null && tag != null && tag.length() > 0) {
 			name = textureTagCache.get(tag);

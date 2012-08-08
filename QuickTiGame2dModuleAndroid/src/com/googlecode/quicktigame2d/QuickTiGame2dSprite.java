@@ -122,7 +122,9 @@ public class QuickTiGame2dSprite {
     protected boolean followParentTransformFrameIndex = false;
     
 	protected Queue<RunnableGL> beforeCommandQueue = new ConcurrentLinkedQueue<RunnableGL>();
-	protected Queue<RunnableGL> afterCommandQueue  = new ConcurrentLinkedQueue<RunnableGL>();;
+	protected Queue<RunnableGL> afterCommandQueue  = new ConcurrentLinkedQueue<RunnableGL>();
+	
+	protected byte[] textureData = null;
 
 	public QuickTiGame2dSprite() {
         // color param RGBA
@@ -154,20 +156,32 @@ public class QuickTiGame2dSprite {
 	public QuickTiGame2dTexture getTexture() {
 		return view.get().getTextureFromCache(image);
 	}
+	
+	public boolean loadTexture(String name, byte[] data) {
+		this.textureData  = data;
+		this.image = name;
+		
+		return true;
+	}
 
-	public void onLoad(GL10 gl, QuickTiGame2dGameView view) {
+	public void onLoad(GL10 gl, QuickTiGame2dGameView gameview) {
 		if (loaded) return;
 		
-		if (this.view == null) {
-			this.view = new WeakReference<QuickTiGame2dGameView>(view);
+		if (this.view == null || this.view.get() == null) {
+			this.view = new WeakReference<QuickTiGame2dGameView>(gameview);
+		}
+		
+		if (textureData != null) {
+			this.view.get().loadTexture(gl, image, textureData, tag);
+			textureData = null;
 		}
 
-		QuickTiGame2dTexture aTexture = view.getTextureFromCache(image);
+		QuickTiGame2dTexture aTexture = view.get().getTextureFromCache(image);
 		
 	    // if texture is not yet cached, try to load texture here
 		if (aTexture == null && image != null) {
-			view.loadTexture(gl, image, tag);
-			aTexture = view.getTextureFromCache(image);
+			view.get().loadTexture(gl, image, tag);
+			aTexture = view.get().getTextureFromCache(image);
 		}
 		
 	    if (aTexture != null) {
@@ -198,7 +212,7 @@ public class QuickTiGame2dSprite {
 	    }
 	    
 	    if (debug && hasTexture && !aTexture.isSnapshot()) Log.d(Quicktigame2dModule.LOG_TAG, String.format("load Sprite: %s", image));
-	    if (hasTexture && !aTexture.isSnapshot()) view.onLoadSprite(this);
+	    if (hasTexture && !aTexture.isSnapshot()) view.get().onLoadSprite(this);
 		
 	    if (debug) GLHelper.checkError(gl);
 	    

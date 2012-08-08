@@ -583,7 +583,6 @@ static GLint  textureFilter  = GL_NEAREST;
         CommandBlock command = [^{
             [QuickTiGame2dEngine loadTexture:name texture:texture tag:tag];
             [texture freeData];
-            NSLog(@"[DEBUG] Engine.commitLoadTexture:%@", name);
         } copy];
         
         [beforeCommandQueue push:command];

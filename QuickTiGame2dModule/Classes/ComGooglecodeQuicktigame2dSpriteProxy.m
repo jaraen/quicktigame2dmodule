@@ -470,4 +470,13 @@
     sprite.followParentTransformFrameIndex = [value boolValue];
 }
 
+- (void)loadTextureByBlob:(id)args {
+    NSString* name = [[TiUtils stringValue:[args objectAtIndex:0]] retain];
+    TiBlob*   blob = [[args objectAtIndex:1] retain];
+    
+    [sprite loadTexture:name data:blob.data];
+    
+    [name release];
+    [blob release];
+}
 @end

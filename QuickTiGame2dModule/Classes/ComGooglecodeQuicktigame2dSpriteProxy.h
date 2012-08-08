@@ -62,6 +62,8 @@
 - (void)onAdd;
 - (void)onRemove;
 
+-(void)loadTextureByBlob:(id)args;
+
 -(void)dispose:(id)args;
 -(void)show:(id)args;
 -(void)hide:(id)args;

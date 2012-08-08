@@ -213,6 +213,9 @@
 -(void)fireOnLoadSprite;
 
 -(BOOL)flipY;
+
+-(BOOL)loadTexture:(NSString*)name base64string:(NSString*)base64string;
+-(BOOL)loadTexture:(NSString*)name data:(NSData*)data;
 @end
 
 @interface QuickTiGame2dImagePackParser : NSObject <NSXMLParserDelegate> {
