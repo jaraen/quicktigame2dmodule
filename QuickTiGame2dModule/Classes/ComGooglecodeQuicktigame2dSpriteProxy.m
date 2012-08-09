@@ -470,7 +470,11 @@
     sprite.followParentTransformFrameIndex = [value boolValue];
 }
 
-- (void)loadTextureByBlob:(id)args {
+/*
+ * Load texture from Blob object with given name
+ * The name parameter should be unique among textures
+ */
+- (void)loadTextureByBlobWithName:(id)args {
     NSString* name = [[TiUtils stringValue:[args objectAtIndex:0]] retain];
     TiBlob*   blob = [[args objectAtIndex:1] retain];
     
@@ -479,4 +483,18 @@
     [name release];
     [blob release];
 }
+
+/*
+ * Load texture from Blob object with unique name
+ */
+- (void)loadTextureByBlob:(id)args {
+    TiBlob*   blob = [[args objectAtIndex:0] retain];
+    NSString* name = [[TiUtils createUUID] retain];
+    
+    [sprite loadTexture:name data:blob.data];
+    
+    [name release];
+    [blob release];
+}
+
 @end

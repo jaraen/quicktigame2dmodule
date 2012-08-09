@@ -35,6 +35,7 @@ import org.appcelerator.kroll.KrollProxy;
 import org.appcelerator.kroll.annotations.Kroll;
 import org.appcelerator.titanium.TiBlob;
 import org.appcelerator.titanium.util.TiConvert;
+import org.appcelerator.titanium.util.TiPlatformHelper;
 
 import com.googlecode.quicktigame2d.QuickTiGame2dSprite;
 import com.googlecode.quicktigame2d.Quicktigame2dModule;
@@ -151,9 +152,21 @@ public class SpriteProxy extends KrollProxy {
 		return sprite;
 	}
 	
+	/*
+	 * Load texture from Blob object with given name
+	 * The name parameter should be unique among textures
+	 */
 	@Kroll.method
-	public void loadTextureByBlob(String name, TiBlob blob) {
+	public void loadTextureByBlobWithName(String name, TiBlob blob) {
 		sprite.loadTexture(name, blob.getBytes());
+	}
+	
+	/*
+	 * Load texture from Blob object with unique name
+	 */
+	@Kroll.method
+	public void loadTextureByBlob(TiBlob blob) {
+		sprite.loadTexture(TiPlatformHelper.createUUID(), blob.getBytes());
 	}
 	
 	@Kroll.method
