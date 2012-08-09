@@ -167,7 +167,7 @@ public class QuickTiGame2dSprite {
 	public void onLoad(GL10 gl, QuickTiGame2dGameView gameview) {
 		if (loaded) return;
 		
-		if (this.view == null || this.view.get() == null) {
+		if (this.view == null) {
 			this.view = new WeakReference<QuickTiGame2dGameView>(gameview);
 		}
 		

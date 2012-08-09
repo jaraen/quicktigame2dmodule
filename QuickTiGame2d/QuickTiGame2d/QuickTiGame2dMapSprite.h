@@ -77,7 +77,7 @@
 
 -(void)onLoad;
 -(void)bindVertex;
--(void)drawFrame;
+-(void)drawFrame:(QuickTiGame2dEngine*)engine;
 -(void)onDispose;
 
 -(BOOL)updateTileCount;

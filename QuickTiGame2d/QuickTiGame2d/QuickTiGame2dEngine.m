@@ -364,7 +364,7 @@ static GLint  textureFilter  = GL_NEAREST;
             }
         }
         
-       [scene drawFrame];
+        [scene drawFrame:self];
         
         if ([hudScene hasSprite]) {
             [self updateHUDViewport];
@@ -374,7 +374,7 @@ static GLint  textureFilter  = GL_NEAREST;
             if (!hudScene.loaded) {
                 [hudScene onLoad];
             }
-            [hudScene drawFrame];
+            [hudScene drawFrame:self];
             
             dirty = TRUE;
         }
@@ -391,7 +391,7 @@ static GLint  textureFilter  = GL_NEAREST;
     
     if (snapshotSprite != nil) {
         [snapshotSprite onLoad];
-        [snapshotSprite drawFrame];
+        [snapshotSprite drawFrame:self];
     }
     
     @synchronized(afterCommandQueue) {

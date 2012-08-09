@@ -698,7 +698,10 @@ public class QuickTiGame2dGameView extends GLSurfaceView implements Renderer, On
 			scene.setDebug(debug);
 			scene.setSnapshot(takeSnapshot);
 			
-			scene.onDrawFrame(gl, this);
+			if (!scene.isLoaded()) {
+				scene.onLoad(gl, this);
+			}
+			scene.onDrawFrame(gl);
 			
 	        if (hudScene.hasSprite()) {
 	            updateHUDViewport(gl);
@@ -706,7 +709,10 @@ public class QuickTiGame2dGameView extends GLSurfaceView implements Renderer, On
 	            hudScene.setDebug(debug);
 	            hudScene.setSnapshot(takeSnapshot);
 	            
-	            hudScene.onDrawFrame(gl, this);
+				if (!hudScene.isLoaded()) {
+					hudScene.onLoad(gl, this);
+				}
+	            hudScene.onDrawFrame(gl);
 	            
 	            dirty = true;
 	        }

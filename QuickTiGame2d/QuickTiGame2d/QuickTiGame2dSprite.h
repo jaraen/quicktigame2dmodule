@@ -34,6 +34,8 @@
 #import "QuickTiGame2dTransform.h"
 #import "ArrayStackQueue.h"
 
+@class QuickTiGame2dEngine;
+
 @interface QuickTiGame2dImagePackInfo : NSObject {
     NSString* name;
     NSInteger x;
@@ -152,7 +154,7 @@
 
 -(void)onLoad;
 -(void)bindVertex;
--(void)drawFrame;
+-(void)drawFrame:(QuickTiGame2dEngine*)engine;
 -(void)onDispose;
 
 -(BOOL)setFrameIndex:(NSInteger)index force:(BOOL)force;

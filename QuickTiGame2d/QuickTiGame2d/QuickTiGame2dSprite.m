@@ -297,7 +297,7 @@
     glBindBuffer(GL_ARRAY_BUFFER, 0);
 }
 
--(void)drawFrame {
+-(void)drawFrame:(QuickTiGame2dEngine*)engine {
     if (!loaded) return;
 	
     @synchronized(beforeCommandQueue) {

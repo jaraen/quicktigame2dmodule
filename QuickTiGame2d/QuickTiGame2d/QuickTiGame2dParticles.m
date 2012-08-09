@@ -168,7 +168,7 @@
     }
 }
 
--(void)drawFrame {
+-(void)drawFrame:(QuickTiGame2dEngine*)engine {
     
     [self updateWithDelta:([QuickTiGame2dEngine uptime] - uptime)];
     uptime = [QuickTiGame2dEngine uptime];

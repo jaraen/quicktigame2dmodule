@@ -81,7 +81,7 @@
             selector:@selector(onChangeSpriteZOrder:) name:@"onChangeSpriteZOrder" object:nil];
 }
 
--(void)drawFrame {
+-(void)drawFrame:(QuickTiGame2dEngine*)engine {
     if (!loaded) return;
     
     @synchronized (transform) {
@@ -113,7 +113,7 @@
             dstBlendFactor = sprite.dstBlendFactor;
             glBlendFunc(srcBlendFactor, dstBlendFactor);
         }
-        [sprite drawFrame];
+        [sprite drawFrame:engine];
     }
 }
 

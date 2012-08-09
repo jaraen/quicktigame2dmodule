@@ -276,7 +276,7 @@
     // overwrite parent function..to do nothing
 }
 
--(void)drawFrame {
+-(void)drawFrame:(QuickTiGame2dEngine*)engine {
     
     @synchronized(beforeCommandQueue) {
         while ([beforeCommandQueue count] > 0) {
