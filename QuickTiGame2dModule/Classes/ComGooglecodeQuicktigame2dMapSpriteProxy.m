@@ -76,6 +76,24 @@
 
 #pragma Public APIs
 
+-(id)isSubLayer {
+    return NUMBOOL([self mapsprite].isSubLayer);
+}
+
+-(void)setIsSubLayer:(id)value {
+    ENSURE_SINGLE_ARG(value, NSNumber);
+    [self mapsprite].isSubLayer = [value boolValue];
+}
+
+-(id)isTopLayer {
+    return NUMBOOL([self mapsprite].isTopLayer);
+}
+
+-(void)setIsTopLayer:(id)value {
+    ENSURE_SINGLE_ARG(value, NSNumber);
+    [self mapsprite].isTopLayer = [value boolValue];
+}
+
 -(id)getTileAtPosition:(id)args {
     float sx = [[args objectAtIndex:0] floatValue]; 
     float sy = [[args objectAtIndex:1] floatValue];

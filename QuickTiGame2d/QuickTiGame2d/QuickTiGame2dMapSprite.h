@@ -61,6 +61,9 @@
     float tileOffsetY;
     
     BOOL useFixedTileCount;
+    
+    BOOL isTopLayer;
+    BOOL isSubLayer;
 }
 @property (readwrite) float tileWidth;
 @property (readwrite) float tileHeight;
@@ -74,6 +77,8 @@
 @property (readwrite) float tileOffsetX;
 @property (readwrite) float tileOffsetY;
 @property (readonly)  NSMutableDictionary* gidproperties;
+@property (readwrite) BOOL isTopLayer;
+@property (readwrite) BOOL isSubLayer;
 
 -(void)onLoad;
 -(void)bindVertex;

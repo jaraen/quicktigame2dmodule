@@ -42,6 +42,7 @@
 - (NSInteger)getChildTileRowCount:(QuickTiGame2dMapTile*)tile;
 - (BOOL)isHalfTile:(QuickTiGame2dMapTile*)tile;
 - (void)reloadQuadBuffer;
+- (BOOL)useLayeredMap;
 @end
 
 @interface QuickTiGame2dMapTile (PrivateMethods)
@@ -164,7 +165,7 @@
 @implementation QuickTiGame2dMapSprite
 @synthesize tileWidth, tileHeight, tileCount, tileCountX, tileCountY;
 @synthesize firstgid, tileTiltFactorX, tileTiltFactorY;
-@synthesize tileOffsetX, tileOffsetY, gidproperties;
+@synthesize tileOffsetX, tileOffsetY, gidproperties, isTopLayer, isSubLayer;
 
 -(id)init {
     self = [super init];
@@ -188,6 +189,9 @@
         gidproperties = [[NSMutableDictionary alloc] init];
         
         useFixedTileCount = FALSE;
+        
+        isTopLayer = FALSE;
+        isSubLayer = FALSE;
     }
     return self;
 }
@@ -276,6 +280,14 @@
     // overwrite parent function..to do nothing
 }
 
+/*
+ * Returns TRUE if this map uses layered map
+ * that uses depth buffer to order & render tiles but disables perspective view
+ */
+- (BOOL)useLayeredMap {
+    return isTopLayer || isSubLayer;
+}
+
 -(void)drawFrame:(QuickTiGame2dEngine*)engine {
     
     @synchronized(beforeCommandQueue) {
@@ -320,6 +332,20 @@
                 [self updateQuad:[num intValue] tile:[updatedTiles objectForKey:num]];
             }
             [updatedTiles removeAllObjects];
+        }
+    }
+    
+    if ([self useLayeredMap]) {
+        [engine updateOrthoViewport];
+        
+        glDepthFunc(GL_LEQUAL);
+        glEnable(GL_DEPTH_TEST);
+        
+        // Cut off alpha of sub layer to blend with top layer
+        // sublayer should not use half-translucent alpha
+        if (isSubLayer) {
+            glEnable(GL_ALPHA_TEST);
+            glAlphaFunc(GL_GREATER, 0.5);
         }
     }
     
@@ -377,6 +403,14 @@
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
     glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
     
+    if ([self useLayeredMap]) {
+        glDisable(GL_ALPHA_TEST);
+        glDisable(GL_DEPTH_TEST);
+        glDepthFunc(GL_LESS);
+        
+        [engine forceUpdateViewport];
+    }
+    
     glDisableClientState(GL_COLOR_ARRAY);
     
     @synchronized(afterCommandQueue) {
@@ -384,6 +418,7 @@
             ((CommandBlock)[afterCommandQueue poll])();
         }
     }
+    
 }
 
 -(NSInteger)getTileNumber:(QuickTiGame2dMapTile*)tile {
@@ -639,24 +674,26 @@
             tile.positionFixed = TRUE;
         }
         
+        float tilez = ![self useLayeredMap] ? 0 : tile.alpha > 0 ? index : -1;
+        
         quads[vi + 0] = tile.initialX + tile.offsetX;  // vertex  x
         quads[vi + 1] = tile.initialY + tile.offsetY;  // vertex  y
-        quads[vi + 2] = 0;                             // vertex  z
+        quads[vi + 2] = tilez;                         // vertex  z
             
         quads[vi + 9]  = tile.initialX + tile.offsetX; // vertex  x
         quads[vi + 10] = quads[vi + 1] + tile.height;  // vertex  y
-        quads[vi + 11] = 0;                            // vertex  z
+        quads[vi + 11] = tilez;                        // vertex  z
         // -----------------------------
         
         // -----------------------------
         quads[vi + 18] = quads[vi + 0] + tile.width;  // vertex  x
         quads[vi + 19] = quads[vi + 1] + tile.height; // vertex  y
-        quads[vi + 20] = 0;                           // vertex  z
+        quads[vi + 20] = tilez;                       // vertex  z
         
         // -----------------------------
         quads[vi + 27] = quads[vi + 0] + tile.width;   // vertex  x
         quads[vi + 28] = tile.initialY + tile.offsetY; // vertex  y
-        quads[vi + 29] = 0;                            // vertex  z
+        quads[vi + 29] = tilez;                        // vertex  z
     }
 }
 

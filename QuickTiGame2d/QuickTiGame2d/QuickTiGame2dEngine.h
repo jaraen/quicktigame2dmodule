@@ -113,6 +113,8 @@ typedef struct CameraInfo {
 @property (readwrite) BOOL usePerspective;
 @property (readwrite) float alpha;
 
+- (void)forceUpdateViewport;
+- (void)updateOrthoViewport;
 - (void)drawFrame;
 - (void)onLoad:(GLint)framebufferWidth height:(GLint)framebufferHeight;
 - (void)onGainedFocus;

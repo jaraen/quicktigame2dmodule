@@ -46,6 +46,8 @@
 @property (nonatomic, readonly,  assign) id tileTiltFactorY;
 @property (nonatomic, readwrite, assign) id tilesets;
 @property (nonatomic, readwrite, assign) id mapSize;
+@property (nonatomic, readwrite, assign) id isTopLayer;
+@property (nonatomic, readwrite, assign) id isSubLayer;
 
 -(id)getTileAtPosition:(id)args;
 -(id)getTile:(id)args;

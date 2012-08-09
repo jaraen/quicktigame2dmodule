@@ -205,11 +205,28 @@ static GLint  textureFilter  = GL_NEAREST;
 }
 
 - (void)updateHUDViewport {
-    glViewport(0, 0, framebufferWidth, framebufferHeight); 
+    glViewport(0, 0, framebufferWidth, framebufferHeight);
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
     
-    glOrthof(0, width, height, 0, -100, 100);
+    float zFar = defaultPortraitCamera.zFar;
+    
+    glOrthof(0, width, height, 0, -zFar, zFar);
+}
+
+- (void)updateOrthoViewport {
+    glViewport(0, 0, framebufferWidth, framebufferHeight);
+    glMatrixMode(GL_PROJECTION);
+    glLoadIdentity();
+    
+    float zFar = defaultPortraitCamera.zFar;
+    
+    glOrthof(0, width, height, 0, -zFar, zFar);
+}
+
+- (void)forceUpdateViewport {
+    dirty = TRUE;
+    [self updateViewport];
 }
 
 - (void)updateViewport {
