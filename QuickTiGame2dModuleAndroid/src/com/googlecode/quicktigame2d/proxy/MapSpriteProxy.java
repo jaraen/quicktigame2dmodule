@@ -247,6 +247,26 @@ public class MapSpriteProxy extends SpriteProxy {
 	}
 	
 	@Kroll.getProperty @Kroll.method
+	public boolean getIsTopLayer() {
+		return getMapSprite().isTopLayer();
+	}
+	
+	@Kroll.setProperty @Kroll.method
+	public void setIsTopLayer(boolean enable) {
+		getMapSprite().setTopLayer(enable);
+	}
+	
+	@Kroll.getProperty @Kroll.method
+	public boolean getIsSubLayer() {
+		return getMapSprite().isSubLayer();
+	}
+	
+	@Kroll.setProperty @Kroll.method
+	public void setIsSubLayer(boolean enable) {
+		getMapSprite().setSubLayer(enable);
+	}
+	
+	@Kroll.getProperty @Kroll.method
 	public int getBorder() {
 		return sprite.getBorder();
 	}

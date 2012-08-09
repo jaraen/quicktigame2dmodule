@@ -74,6 +74,9 @@ public class QuickTiGame2dMapSprite extends QuickTiGame2dSprite {
     private List<Map<String, String>> tilesetgids = new ArrayList<Map<String, String>>();
     private Map<Integer, Map<String, String>> gidproperties = new HashMap<Integer, Map<String, String>>();
     
+    private boolean isTopLayer = false;
+    private boolean isSubLayer = false;
+    
     private boolean useFixedTileCount = false;
     
     public QuickTiGame2dMapSprite() {
@@ -138,6 +141,10 @@ public class QuickTiGame2dMapSprite extends QuickTiGame2dSprite {
     		}
     	});
     }
+    
+    private boolean useLayeredMap() {
+    	return isTopLayer || isSubLayer;
+    }
 
     @Override
 	public void onDrawFrame(GL10 gl10) {
@@ -178,6 +185,20 @@ public class QuickTiGame2dMapSprite extends QuickTiGame2dSprite {
 	                updateQuad(e.getKey().intValue(), e.getValue());
 	            }
 	            updatedTiles.clear();
+	        }
+	    }
+	    
+	    if (useLayeredMap()) {
+	    	view.get().updateOrthoViewport(gl);
+	    	
+	    	gl.glDepthFunc(GL10.GL_LEQUAL);
+	    	gl.glEnable(GL10.GL_DEPTH_TEST);
+	    	
+	        // Cut off alpha of sub layer to blend with top layer
+	        // sublayer should not use half-translucent alpha
+	        if (isSubLayer) {
+	            gl.glEnable(GL10.GL_ALPHA_TEST);
+	            gl.glAlphaFunc(GL10.GL_GREATER, 0.5f);
 	        }
 	    }
 		
@@ -235,6 +256,14 @@ public class QuickTiGame2dMapSprite extends QuickTiGame2dSprite {
 	    
 		gl.glBindBuffer(GL11.GL_ARRAY_BUFFER, 0);
 		gl.glBlendFunc(GL11.GL_ONE, GL11.GL_ONE_MINUS_SRC_ALPHA);
+		
+		if (useLayeredMap()) {
+			gl.glDisable(GL10.GL_ALPHA_TEST);
+			gl.glDisable(GL10.GL_DEPTH_TEST);
+			gl.glDepthFunc(GL10.GL_LESS);
+			
+			view.get().forceUpdateViewport(gl);
+		}
 	    
 		gl.glDisableClientState(GL11.GL_COLOR_ARRAY);
 		
@@ -519,23 +548,25 @@ public class QuickTiGame2dMapSprite extends QuickTiGame2dSprite {
 	            tile.positionFixed = true;
 	        }
 	        
+	        float tilez = !useLayeredMap() ? 0 : tile.alpha > 0 ? index : -1;
+	        
 	        quads[vi + 0] = tile.initialX + tile.offsetX;  // vertex  x
 	        quads[vi + 1] = tile.initialY + tile.offsetY;  // vertex  y
-        	quads[vi + 2] = 0;                             // vertex  z
+        	quads[vi + 2] = tilez;                         // vertex  z
 	            
 	        quads[vi + 9]  = tile.initialX + tile.offsetX; // vertex  x
 	        quads[vi + 10] = quads[vi + 1] + tile.height;  // vertex  y
-        	quads[vi + 11] = 0;                            // vertex  z
+        	quads[vi + 11] = tilez;                        // vertex  z
 	        
 	        // -----------------------------
 	        quads[vi + 18] = quads[vi + 0] + tile.width;  // vertex  x
 	        quads[vi + 19] = quads[vi + 1] + tile.height; // vertex  y
-        	quads[vi + 20] = 0;                           // vertex  z
+        	quads[vi + 20] = tilez;                       // vertex  z
 	        
 	        // -----------------------------
 	        quads[vi + 27] = quads[vi + 0] + tile.width;   // vertex  x
 	        quads[vi + 28] = tile.initialY + tile.offsetY; // vertex  y
-        	quads[vi + 29] = 0;                            // vertex  z
+        	quads[vi + 29] = tilez;                        // vertex  z
 	    }
 	    
 	}
@@ -1175,5 +1206,21 @@ public class QuickTiGame2dMapSprite extends QuickTiGame2dSprite {
 		useFixedTileCount = true;
 		
 		this.updateTileCount();
+	}
+
+	public boolean isTopLayer() {
+		return isTopLayer;
+	}
+
+	public void setTopLayer(boolean isTopLayer) {
+		this.isTopLayer = isTopLayer;
+	}
+
+	public boolean isSubLayer() {
+		return isSubLayer;
+	}
+
+	public void setSubLayer(boolean isSubLayer) {
+		this.isSubLayer = isSubLayer;
 	}
 }

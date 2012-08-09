@@ -526,7 +526,24 @@ public class QuickTiGame2dGameView extends GLSurfaceView implements Renderer, On
         gl.glMatrixMode(GL10.GL_PROJECTION);
         gl.glLoadIdentity();
         
-        gl.glOrthof(0, width, height, 0, -100, 100);
+        float zFar = this.defaultPortraitCamera.zFar;
+        
+        gl.glOrthof(0, width, height, 0, -zFar, zFar);
+	}
+	
+	public void updateOrthoViewport(GL10 gl) {
+        gl.glViewport(0, 0, framebufferWidth, framebufferHeight); 
+        gl.glMatrixMode(GL10.GL_PROJECTION);
+        gl.glLoadIdentity();
+        
+        float zFar = this.defaultPortraitCamera.zFar;
+        
+        gl.glOrthof(0, width, height, 0, -zFar, zFar);
+	}
+	
+	public void forceUpdateViewport(GL10 gl) {
+		this.dirty = true;
+		this.updateViewport(gl);
 	}
 	
 	private void updateViewport(GL10 gl) {
