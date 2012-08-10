@@ -1237,6 +1237,10 @@ public class QuickTiGame2dSprite {
 			boolean followParentTransformFrameIndex) {
 		this.followParentTransformFrameIndex = followParentTransformFrameIndex;
 	}
+	
+	public byte[] getTextureData() {
+		return this.textureData;
+	}
 }
 class QuickTiGame2dImagePackInfo {
     private String name;

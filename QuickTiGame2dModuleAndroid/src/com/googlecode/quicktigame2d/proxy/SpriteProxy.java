@@ -37,6 +37,7 @@ import org.appcelerator.titanium.TiBlob;
 import org.appcelerator.titanium.util.TiConvert;
 import org.appcelerator.titanium.util.TiPlatformHelper;
 
+import com.googlecode.quicktigame2d.QuickTiGame2dConstant;
 import com.googlecode.quicktigame2d.QuickTiGame2dSprite;
 import com.googlecode.quicktigame2d.Quicktigame2dModule;
 
@@ -89,6 +90,9 @@ public class SpriteProxy extends KrollProxy {
     	}
     	if (options.containsKey("scaleY")) {
     		setScaleY(options.getDouble("scaleY").floatValue());
+    	}
+    	if (options.containsKey("data")) {
+    		this.setData((TiBlob)options.get("data"));
     	}
     }
 	
@@ -166,7 +170,7 @@ public class SpriteProxy extends KrollProxy {
 	 */
 	@Kroll.method
 	public void loadTextureByBlob(TiBlob blob) {
-		sprite.loadTexture(TiPlatformHelper.createUUID(), blob.getBytes());
+		sprite.loadTexture(QuickTiGame2dConstant.TIBLOB_UNIQUENAME_PREFIX + TiPlatformHelper.createUUID(), blob.getBytes());
 	}
 	
 	@Kroll.method
@@ -554,4 +558,20 @@ public class SpriteProxy extends KrollProxy {
 	public void setFollowParentTransformSize(boolean follow) {
 		sprite.setFollowParentTransformSize(follow);
 	}
+	
+	@Kroll.getProperty @Kroll.method
+	public TiBlob getData() {
+		byte[] data = sprite.getTextureData();
+		if (data == null) {
+			return null;
+		} else {
+			return TiBlob.blobFromData(data, "application/octet-stream");
+		}
+	}
+	
+	@Kroll.setProperty @Kroll.method
+	public void setData(TiBlob blob) {
+		sprite.loadTexture(QuickTiGame2dConstant.TIBLOB_UNIQUENAME_PREFIX + TiPlatformHelper.createUUID(), blob.getBytes());
+	}
+
 }
