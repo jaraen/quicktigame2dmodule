@@ -186,16 +186,7 @@
 
 -(BOOL)loadTexture:(NSString*)name data:(NSData*)data {
     self.image = name;
-    
-    QuickTiGame2dTexture* texture = [[QuickTiGame2dTexture alloc] init];
-    texture.name = name;
-    
-    if ([texture onLoad:data]) {
-        [QuickTiGame2dEngine commitLoadTexture:name texture:texture tag:self.tag];
-    }
-    
-    [texture release];
-    
+    [QuickTiGame2dEngine commitLoadTexture:name data:data tag:self.tag];
     return TRUE;
 }
 

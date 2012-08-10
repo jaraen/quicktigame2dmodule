@@ -127,6 +127,7 @@ typedef struct CameraInfo {
 +(void)commitLoadTexture:(NSString*)name tag:(NSString*)tag;
 +(void)commitUnloadTexture:(NSString*)name tag:(NSString*)tag;
 +(void)commitLoadTexture:(NSString*)name texture:(QuickTiGame2dTexture*)texture tag:(NSString*)tag;
++(void)commitLoadTexture:(NSString*)name data:(NSData*)data tag:(NSString*)tag;
 
 - (QuickTiGame2dScene*)pushScene:(QuickTiGame2dScene*)scene;
 - (QuickTiGame2dScene*)popScene;

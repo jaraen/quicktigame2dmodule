@@ -607,6 +607,25 @@ static GLint  textureFilter  = GL_NEAREST;
     }
 }
 
++(void)commitLoadTexture:(NSString*)name data:(NSData*)data tag:(NSString*)tag {
+    @synchronized(beforeCommandQueue) {
+        CommandBlock command = [^{
+            QuickTiGame2dTexture* texture = [[QuickTiGame2dTexture alloc] init];
+            texture.name = name;
+            
+            if ([texture onLoad:data]) {
+                [QuickTiGame2dEngine loadTexture:texture.name texture:texture tag:tag];
+            }
+            
+            [texture freeData];
+            [texture release];
+        } copy];
+        
+        [beforeCommandQueue push:command];
+        [command release];
+    }
+}
+
 +(void)commitUnloadTexture:(NSString*)name tag:(NSString*)tag {
     @synchronized(afterCommandQueue) {
         CommandBlock command = [^{
