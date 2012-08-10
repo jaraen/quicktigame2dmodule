@@ -35,6 +35,7 @@
     NSMutableDictionary* scaleCenterInfoCache;
 }
 @property (nonatomic, readwrite, assign) id image;
+@property (nonatomic, readwrite, assign) id data;
 @property (nonatomic, readwrite, assign) id tag;
 @property (nonatomic, readwrite, assign) id width;
 @property (nonatomic, readwrite, assign) id height;

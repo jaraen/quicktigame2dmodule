@@ -99,6 +99,28 @@
     
 }
 
+-(void)setData:(id)value {
+    ENSURE_SINGLE_ARG(value, TiBlob);
+    TiBlob* blob = [value retain];
+    
+    NSString* name = [[@TIBLOB_UNIQUENAME_PREFIX stringByAppendingString:[TiUtils createUUID]] retain];
+    
+    [sprite loadTexture:name data:blob.data];
+    
+    [name release];
+    [blob release];
+}
+
+-(id)data {
+    NSData* data = sprite.textureData;
+    
+    if (data == nil) {
+        return (id)[NSNull null];
+    } else {
+        return [[[TiBlob alloc] initWithData:data mimetype:@"application/octet-stream"] autorelease];
+    }
+}
+
 -(void)setImage:(id)value {
     sprite.image = [[[TiUtils stringValue:value] copy] autorelease];
     [sprite updateImageSize];
@@ -488,8 +510,9 @@
  * Load texture from Blob object with unique name
  */
 - (void)loadTextureByBlob:(id)args {
-    TiBlob*   blob = [[args objectAtIndex:0] retain];
-    NSString* name = [[TiUtils createUUID] retain];
+    TiBlob* blob = [[args objectAtIndex:0] retain];
+    
+    NSString* name = [[@TIBLOB_UNIQUENAME_PREFIX stringByAppendingString:[TiUtils createUUID]] retain];
     
     [sprite loadTexture:name data:blob.data];
     

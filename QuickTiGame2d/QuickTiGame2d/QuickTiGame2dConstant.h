@@ -51,6 +51,7 @@ typedef void (^CommandBlock)(void);
 #define AXIS_Z 2
 
 #define SNAPSHOT_TEXTURE_NAME "/quicktigame2d/@snapshot"
+#define TIBLOB_UNIQUENAME_PREFIX "tiblob://"
 
 #define DEFAULT_ONFPS_INTERVAL 5000
 
