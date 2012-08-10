@@ -111,6 +111,8 @@
     
     ArrayStackQueue* beforeCommandQueue;
     ArrayStackQueue* afterCommandQueue;
+    
+    NSData* textureData;
 }
 @property (readonly) BOOL hasTexture;
 @property (readonly) NSInteger frameCount;
@@ -151,6 +153,7 @@
 @property (readwrite) BOOL  followParentTransformFrameIndex;
 @property (readonly) float scaledWidth;
 @property (readonly) float scaledHeight;
+@property (readwrite, retain) NSData* textureData;
 
 -(void)onLoad;
 -(void)bindVertex;

@@ -540,6 +540,19 @@ static GLint  textureFilter  = GL_NEAREST;
     }
 }
 
+
++(void)loadTexture:(NSString*)name data:(NSData*)data tag:(NSString*)tag {
+    QuickTiGame2dTexture* texture = [[QuickTiGame2dTexture alloc] init];
+    texture.name = name;
+    
+    if ([texture onLoad:data]) {
+        [QuickTiGame2dEngine loadTexture:texture.name texture:texture tag:tag];
+    }
+    
+    [texture freeData];
+    [texture release];
+}
+
 /*
  * Param name or tag can be null,
  * If tag equals not null, search for name by tag from cache
@@ -610,15 +623,7 @@ static GLint  textureFilter  = GL_NEAREST;
 +(void)commitLoadTexture:(NSString*)name data:(NSData*)data tag:(NSString*)tag {
     @synchronized(beforeCommandQueue) {
         CommandBlock command = [^{
-            QuickTiGame2dTexture* texture = [[QuickTiGame2dTexture alloc] init];
-            texture.name = name;
-            
-            if ([texture onLoad:data]) {
-                [QuickTiGame2dEngine loadTexture:texture.name texture:texture tag:tag];
-            }
-            
-            [texture freeData];
-            [texture release];
+            [QuickTiGame2dEngine loadTexture:name data:data tag:tag];
         } copy];
         
         [beforeCommandQueue push:command];

@@ -61,6 +61,7 @@
 @synthesize relativeToTransformParent, relativeToTransformParentX, relativeToTransformParentY;
 @synthesize followParentTransformPosition, followParentTransformRotationCenter, followParentTransformScale,
             followParentTransformSize, followParentTransformColor, followParentTransformFrameIndex;
+@synthesize textureData;
 
 - (id)init {
     self = [super init];
@@ -137,6 +138,8 @@
         
         beforeCommandQueue = [[ArrayStackQueue alloc] init];
         afterCommandQueue  = [[ArrayStackQueue alloc] init];
+        
+        textureData = nil;
     }
     return self;
 }
@@ -186,12 +189,18 @@
 
 -(BOOL)loadTexture:(NSString*)name data:(NSData*)data {
     self.image = name;
-    [QuickTiGame2dEngine commitLoadTexture:name data:data tag:self.tag];
+    self.textureData = data;
+    
     return TRUE;
 }
 
 -(void)onLoad {
     if (loaded) return;
+
+    if (self.textureData != nil) {
+        [QuickTiGame2dEngine loadTexture:self.image data:self.textureData tag:self.tag];
+        self.textureData = nil;
+    }
     
     QuickTiGame2dTexture* aTexture = [[QuickTiGame2dEngine sharedTextureCache] objectForKey:image];
     
