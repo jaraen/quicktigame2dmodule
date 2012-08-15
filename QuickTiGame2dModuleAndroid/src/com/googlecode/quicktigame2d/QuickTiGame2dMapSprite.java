@@ -154,6 +154,20 @@ public class QuickTiGame2dMapSprite extends QuickTiGame2dSprite {
 			beforeCommandQueue.poll().run(gl);
 		}
 		
+	    //
+	    // synchronize child layers position & scale
+	    //
+		synchronized (children) {
+			for (QuickTiGame2dSprite child : children) {
+				child.setX(getX());
+				child.setY(getY());
+				child.setScaleX(getScaleX());
+				child.setScaleY(getScaleY());
+				child.setScaleCenterX(getScaleCenterX());
+				child.setScaleCenterY(getScaleCenterY());
+			}
+		}
+		
 	    synchronized (transforms) {
 			onTransform();
 	    }

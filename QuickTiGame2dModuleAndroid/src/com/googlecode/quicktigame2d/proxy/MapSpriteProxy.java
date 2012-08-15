@@ -529,5 +529,14 @@ public class MapSpriteProxy extends SpriteProxy {
 		
 		return centerInfoCache;
 	}
+	
+	@Kroll.method
+	public void addChildLayer(MapSpriteProxy child) {
+		sprite.addChild(child.getSprite());
+	}
 
+	@Kroll.method
+	public void removeChildLayer(MapSpriteProxy child) {
+		sprite.removeChild(child.getSprite());
+	}
 }
