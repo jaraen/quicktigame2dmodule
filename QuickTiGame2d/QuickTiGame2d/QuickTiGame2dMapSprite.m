@@ -296,6 +296,19 @@
         }
     }
     
+    //
+    // synchronize child layers position & scale
+    //
+    @synchronized (children) {
+        for (QuickTiGame2dSprite* child in children) {
+            child.x = self.x;
+            child.y = self.y;
+            child.scaleX = self.scaleX;
+            child.scaleY = self.scaleY;
+            child.scaleCenter = self.scaleCenter;
+        }
+    }
+    
     @synchronized (transforms) {
         [self onTransform];
     }

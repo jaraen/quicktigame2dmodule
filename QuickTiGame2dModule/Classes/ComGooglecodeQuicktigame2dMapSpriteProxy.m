@@ -477,5 +477,16 @@
         return [super setCenter:value];
     }
 }
+
+- (void)addChildLayer:(id)args {
+    ENSURE_SINGLE_ARG(args, ComGooglecodeQuicktigame2dSpriteProxy);
+    [sprite addChild:[args sprite]];
+}
+
+- (void)removeChildLayer:(id)args {
+    ENSURE_SINGLE_ARG(args, ComGooglecodeQuicktigame2dSpriteProxy);
+    [sprite removeChild:[args sprite]];
+}
+
 @end
  

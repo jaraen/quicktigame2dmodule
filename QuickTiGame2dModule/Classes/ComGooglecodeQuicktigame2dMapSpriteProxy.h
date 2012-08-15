@@ -60,4 +60,7 @@
 -(void)stop:(id)args;
 -(id)canUpdate:(id)args;
 
+- (void)addChildLayer:(id)args;
+- (void)removeChildLayer:(id)args;
+
 @end
