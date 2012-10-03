@@ -344,9 +344,32 @@
             ComGooglecodeQuicktigame2dBox2dRevJointProxy *jp = nil;
             break;
     }    
+
+    //setup p1 and p2 so we can assign their value inside the if statement
+    b2Vec2 p1(0,0);
+    b2Vec2 p2(0,0);
     
-    b2Vec2 p1([TiUtils floatValue:@"jointPoint" properties:props def:0.0f], 0.0f),p2([TiUtils floatValue:@"basePoint" properties:props def:0.0f], 0.0f);
-    
+    //read the original property of "jointPoint"
+    CGFloat jointPoint = [TiUtils floatValue:@"jointPoint" properties:props def:-0.9999999999f];
+    //The default value is only used to determine if the "jointPoint" property exists
+    if(jointPoint == -0.9999999999f)
+    {  //No jointPoint property, so use the new (X,Y) properties.   These values sould be passsed
+       //in pixels and not meters.
+        CGFloat jpx = [TiUtils floatValue:@"jointPointX" properties:props def:0.0f] / PTM_RATIO;
+        CGFloat jpy = [TiUtils floatValue:@"jointPointY" properties:props def:0.0f] / PTM_RATIO;
+        
+        CGFloat bpx = [TiUtils floatValue:@"basePointX" properties:props def:0.0f] / PTM_RATIO; 
+        CGFloat bpy = [TiUtils floatValue:@"basePointY" properties:props def:0.0f] / PTM_RATIO;
+        
+        p1 = b2Vec2(jpx, jpy);
+        p2 = b2Vec2(bpx, bpy);
+    }
+    else
+    {  //original "jointPoint" property exists.  Use it in meters not pixels
+        p1 = b2Vec2([TiUtils floatValue:@"jointPoint" properties:props def:0.0f], 0.0f);
+        p2 = b2Vec2([TiUtils floatValue:@"basePoint" properties:props def:0.0f], 0.0f);
+    }
+
     jointDef.localAnchorB.SetZero();
     jointDef.localAnchorA = p1;
     jointDef.bodyA = body1;
